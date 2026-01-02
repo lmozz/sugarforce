@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Procesos</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --text-color: #333;
+        }
+
+        body.dark-mode {
+            --text-color: #eee;
+        }
+
+        .tabs-container {
+            margin-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            padding-top: 15px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            background: rgba(26, 115, 232, 0.05);
+            color: var(--text-color);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .tab-content {
+            display: none;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            padding: 10px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .uuid-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .uuid-text {
+            font-family: monospace;
+            font-size: 14px;
+            color: var(--text-color);
+            flex: 1;
+        }
+
+        #copyUuidBtn {
+            background: none;
+            border: none;
+            color: #1a73e8;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px;
+        }
+
+        #copyUuidBtn:hover {
+            text-decoration: underline;
+        }
+
+        body.dark-mode .uuid-container {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .detail-row-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="../cliente/cliente.html">Clientes</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="procesos.html" class="active">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+                <li><a href="../clasificacion/clasificacion.html">Clasificación</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Procesos</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Buscador por nombre, entidad o UUID...">
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Entidad</th>
+                            <th>Tipo</th>
+                            <th>Estatus</th>
+                            <th>Creado por</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="procesosTableBody">
+                        <!-- Data loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=procesos" frameborder="0"></iframe>
+            </div>
+
+            <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+            <button class="fab" id="addProcesoBtn">+</button>
+        </main>
+    </div>
+
+    <!-- Main Process Modal -->
+    <div class="modal-overlay" id="processModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header" id="modalTitle">Nuevo Proceso</div>
+            <form id="processForm">
+                <input type="hidden" id="processId">
+
+                <!-- UUID Display -->
+                <div class="uuid-container">
+                    <span class="uuid-text" id="uuidDisplay">UUID se generará al guardar</span>
+                    <button type="button" id="copyUuidBtn">Copiar</button>
+                </div>
+
+                <div class="modal-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <input type="text" id="procEntity" required placeholder=" ">
+                        <label for="procEntity">Entidad</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="procType" required readonly placeholder=" " style="cursor: pointer;">
+                        <label for="procType">Tipo de Clasificación</label>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <input type="text" id="procDesc" required placeholder=" ">
+                        <label for="procDesc">Descripción</label>
+                    </div>
+                </div>
+
+                <!-- Tabs for Details -->
+                <div class="tabs-container">
+                    <div class="tab-buttons">
+                        <button type="button" class="tab-btn active" data-tab="responsibles">Responsables</button>
+                        <button type="button" class="tab-btn" data-tab="contacts">Contactos</button>
+                        <button type="button" class="tab-btn" data-tab="notes">Notas</button>
+                        <button type="button" class="tab-btn" data-tab="alerts">Alertas</button>
+                    </div>
+
+                    <!-- Responsibles Tab -->
+                    <div class="tab-content active" id="tab-responsibles">
+                        <div class="detail-header"
+                            style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color);">Administración de Responsables</h4>
+                            <button type="button" class="action-btn" id="addRespBtn"
+                                style="background: #1a73e8; color: white;">+ Agregar</button>
+                        </div>
+                        <table class="detail-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Usuario Responsable</th>
+                                    <th style="width: 80px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="respTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Contacts Tab -->
+                    <div class="tab-content" id="tab-contacts">
+                        <div class="detail-header"
+                            style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color);">Contactos a Notificar</h4>
+                            <button type="button" class="action-btn" id="addContBtn"
+                                style="background: #1a73e8; color: white;">+ Agregar Correo</button>
+                        </div>
+                        <table class="detail-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Correo Electrónico</th>
+                                    <th style="width: 80px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="contTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Notes Tab -->
+                    <div class="tab-content" id="tab-notes">
+                        <div class="detail-header"
+                            style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color);">Historial de Notas</h4>
+                            <button type="button" class="action-btn" id="addNoteBtn"
+                                style="background: #1a73e8; color: white;">+ Nueva Nota</button>
+                        </div>
+                        <table class="detail-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Fecha / Usuario</th>
+                                    <th>Nota</th>
+                                    <th style="width: 80px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="notesTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- Alerts Tab -->
+                    <div class="tab-content" id="tab-alerts">
+                        <div class="detail-header"
+                            style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <h4 style="margin: 0; color: var(--text-color);">Configuración de Alertas</h4>
+                            <button type="button" class="action-btn" id="addAlertBtn"
+                                style="background: #1a73e8; color: white;">+ Nueva Alerta</button>
+                        </div>
+                        <table class="detail-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Días</th>
+                                    <th>Horarios</th>
+                                    <th style="width: 80px;">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alertsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 25px;">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cerrar</button>
+                    <button type="submit" class="modal-btn btn-save" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notify Modal -->
+    <div class="modal-overlay" id="notifyModal" style="z-index: 2200;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">Notificar Cambio de Estatus</div>
+            <form id="notifyForm">
+                <input type="hidden" id="notifyProcId">
+                <div class="input-group">
+                    <select id="notifyStatus" required class="form-select"
+                        style="width: 100%; border-radius: 12px; border: 1px solid rgba(0,0,0,0.2); padding: 12px;">
+                        <!-- Populate dynamic steps here -->
+                    </select>
+                    <label for="notifyStatus">Nuevo Estatus</label>
+                </div>
+                <div class="input-group" style="margin-top: 15px;">
+                    <textarea id="notifyDesc" required placeholder="Descripción obligatoria del cambio..."
+                        style="width: 100%; height: 100px; border-radius: 12px; padding: 10px; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(0,0,0,0.1); color: var(--text-color); outline: none; transition: all 0.3s;"></textarea>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelNotifyBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save">Guardar Cambio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Track History Modal -->
+    <div class="modal-overlay" id="trackModal" style="z-index: 2200;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">Historial de Tracking</div>
+            <div id="trackHistoryContent" style="max-height: 500px; overflow-y: auto; padding: 15px;">
+                <!-- Timeline populated via JS -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" id="closeTrackBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Search Modal (Users, Types) -->
+    <div class="modal-overlay" id="searchModal" style="z-index: 3000;">
+        <div class="modal-content" style="max-width: 450px; max-height: 80vh; display: flex; flex-direction: column;">
+            <div class="modal-header" id="searchModalTitle">Seleccionar...</div>
+            <div class="search-container" style="padding: 15px; margin-bottom: 0;">
+                <input type="text" id="searchModalInput" class="search-input" placeholder="Escriba para filtrar..."
+                    style="width: 100%;">
+            </div>
+            <div id="searchModalResults" style="flex: 1; overflow-y: auto; padding: 10px;"></div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" id="closeSearchBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Multi-Select Day/Time Modal (Special for Alerts) -->
+    <div class="modal-overlay" id="alertConfigModal" style="z-index: 3000;">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">Configurar Alerta</div>
+            <div class="alert-form-body" style="padding: 15px;">
+                <h5 style="margin-bottom: 10px;">Días:</h5>
+                <div id="dayCheckboxes"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px;">
+                    <label><input type="checkbox" value="Lunes"> Lunes</label>
+                    <label><input type="checkbox" value="Martes"> Martes</label>
+                    <label><input type="checkbox" value="Miercoles"> Miércoles</label>
+                    <label><input type="checkbox" value="Jueves"> Jueves</label>
+                    <label><input type="checkbox" value="Viernes"> Viernes</label>
+                    <label><input type="checkbox" value="Sabado"> Sábado</label>
+                    <label><input type="checkbox" value="Domingo"> Domingo</label>
+                </div>
+                <h5 style="margin-bottom: 10px;">Horas:</h5>
+                <div id="timeManualInput" style="display: flex; gap: 8px; align-items: center;">
+                    <input type="number" id="alertHour" min="1" max="12" placeholder="HH"
+                        style="width: 60px; padding: 5px; border-radius: 5px; border: 1px solid rgba(0,0,0,0.2);">
+                    <span>:</span>
+                    <input type="number" id="alertMinute" min="0" max="59" placeholder="MM"
+                        style="width: 60px; padding: 5px; border-radius: 5px; border: 1px solid rgba(0,0,0,0.2);">
+                    <select id="alertPeriod"
+                        style="padding: 5px; border-radius: 5px; border: 1px solid rgba(0,0,0,0.2);">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="modal-btn btn-cancel" id="cancelAlertConfigBtn">Cancelar</button>
+                <button type="button" class="modal-btn btn-save" id="saveAlertConfigBtn">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="procesos.js"></script>
+</body>
+
+</html>
