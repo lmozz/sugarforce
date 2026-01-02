@@ -844,6 +844,117 @@ body.dark-mode .btn-cancel:hover {
 }
 
 /* =========================================
+   AI DOWNLOAD PROGRESS MODAL STYLES
+   ========================================= */
+
+.download-progress-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.model-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.model-name {
+    min-width: 90px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+body.dark-mode .model-name {
+    color: #fff;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+body.dark-mode .progress-bar {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1a73e8, #4cabff);
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.progress-text {
+    min-width: 45px;
+    text-align: right;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a73e8;
+}
+
+body.dark-mode .progress-text {
+    color: #4cabff;
+}
+
+.spinner {
+    border: 3px solid rgba(26, 115, 232, 0.2);
+    border-top: 3px solid #1a73e8;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+body.dark-mode .spinner {
+    border-color: rgba(74, 171, 255, 0.2);
+    border-top-color: #4cabff;
+}
+
+/* =========================================
    RESPONSIVE (MOBILE) STYLES
    ========================================= */
 

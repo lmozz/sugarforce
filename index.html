@@ -24,6 +24,67 @@
             </form>
         </div>
     </div>
+    <!-- AI Models Download Modal -->
+    <div class="modal-overlay open" id="aiDownloadModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">Inicializando Modelos de IA</div>
+            <p style="margin-bottom: 20px; font-size: 14px; opacity: 0.8;">Por favor espere mientras se descargan los
+                modelos necesarios...</p>
+
+            <div class="download-progress-container">
+                <div class="model-progress">
+                    <div class="model-name">Writer</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-writer"></div>
+                    </div>
+                    <div class="progress-text" id="text-writer">0%</div>
+                </div>
+
+                <div class="model-progress">
+                    <div class="model-name">Translator</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-translator"></div>
+                    </div>
+                    <div class="progress-text" id="text-translator">0%</div>
+                </div>
+
+                <div class="model-progress">
+                    <div class="model-name">Detector</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-detector"></div>
+                    </div>
+                    <div class="progress-text" id="text-detector">0%</div>
+                </div>
+
+                <div class="model-progress">
+                    <div class="model-name">Summarizer</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-summarizer"></div>
+                    </div>
+                    <div class="progress-text" id="text-summarizer">0%</div>
+                </div>
+
+                <div class="model-progress">
+                    <div class="model-name">Rewriter</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-rewriter"></div>
+                    </div>
+                    <div class="progress-text" id="text-rewriter">0%</div>
+                </div>
+
+                <div class="model-progress">
+                    <div class="model-name">Session</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-session"></div>
+                    </div>
+                    <div class="progress-text" id="text-session">0%</div>
+                </div>
+            </div>
+
+            <div id="downloadStatus" style="margin-top: 20px; text-align: center; font-weight: 500; color: #1a73e8;">
+            </div>
+        </div>
+    </div>
     <!-- TFA Modal -->
     <div class="modal-overlay" id="tfaModal">
         <div class="modal-content" style="text-align: center;">

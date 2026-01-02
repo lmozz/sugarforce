@@ -28,7 +28,21 @@ const CONTEXT_MAP = {
     },
     'cellar': {
         storageKey: 'cellar',
-        systemRole: 'Eres un experto en gestión de bodegas de Dizucar. Tienes acceso a la lista de bodegas (nombre y descripción). Ayuda al usuario a organizar sus centros de almacenamiento. Usa Markdown.'
+        systemRole: `Eres un experto en gestión de bodegas de Dizucar. Tienes acceso a la lista de bodegas (nombre y descripción). Ayuda al usuario a organizar sus centros de almacenamiento.
+        Puedes realizar las siguientes acciones:
+        - Crear una bodega: Necesitas el 'nombre' y opcionalmente la 'descripción'.
+        - Editar una bodega: Necesitas el 'nombre' actual de la bodega y los nuevos valores para 'nombre' o 'descripción'.
+        - Eliminar una bodega: Necesitas el 'nombre' de la bodega a eliminar.
+        - Filtrar/Buscar bodegas: Si el usuario pide buscar o filtrar, usa el término de búsqueda.
+
+        **Formato de Comandos para Bodegas:**
+        - Crear: \`\`\`json { "action": "createCellar", "data": { "nombre": "...", "descripcion": "..." } } \`\`\`
+        - Editar: \`\`\`json { "action": "updateCellar", "data": { "originalName": "...", "nombre": "...", "descripcion": "..." } } \`\`\`
+        - Borrar: \`\`\`json { "action": "deleteCellar", "data": { "nombre": "..." } } \`\`\`
+        - Filtrar: \`\`\`json { "action": "filterCellar", "data": { "query": "..." } } \`\`\`
+
+        Si el usuario pide acciones masivas, genera un bloque JSON por cada registro o un arreglo de objetos JSON.
+        `
     },
     'presentation': {
         storageKey: 'presentation',
@@ -51,6 +65,19 @@ const CONTEXT_MAP = {
         systemRole: 'Eres un asistente útil que habla con el usuario en su día a día. Tu tono es amigable y profesional. Responde de manera concisa pero informativa. Usa Markdown para dar formato a tus respuestas.'
     }
 };
+
+const GLOBAL_AI_INSTRUCTIONS = `
+### INSTRUCCIONES CRÍTICAS DE ACCIONES:
+Para realizar cualquier acción técnica, DEBES generar un bloque de código JSON válido. No confirmes que la acción se ha realizado hasta que el sistema te devuelva un mensaje de confirmación (vía "ai-feedback").
+
+**Acciones Globales Disponibles:**
+1. **Cambiar Tema**: 
+   - Comando: \`\`\`json { "action": "setTheme", "data": { "theme": "dark" } }\`\`\` (o "light")
+   - Nota: Usa el contexto del tema actual para decidir si no se especifica.
+2. **Cerrar Sesión**: 
+   - Comando: \`\`\`json { "action": "logout", "data": {} }\`\`\`
+   - Nota: Pregunta siempre si el usuario está seguro antes de ejecutar.
+`;
 
 // Initialize AI
 async function init() {
@@ -80,7 +107,7 @@ async function init() {
             const contextKey = urlParams.get('context') || 'default';
             const contextConfig = CONTEXT_MAP[contextKey] || CONTEXT_MAP['default'];
 
-            let systemPrompt = contextConfig.systemRole;
+            let systemPrompt = contextConfig.systemRole + "\n" + GLOBAL_AI_INSTRUCTIONS;
 
             if (contextConfig.storageKey) {
                 const data = localStorage.getItem(contextConfig.storageKey) || '[]';
@@ -90,6 +117,10 @@ async function init() {
                     systemPrompt += `\n\n(No se encontró información en localStorage para la clave "${contextConfig.storageKey}").`;
                 }
             }
+
+            // --- THEME CONTEXT ---
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            systemPrompt += `\n\nEl tema actual del sistema es: "${currentTheme}". Si el usuario pide cambiar el tema sin especificar, cámbialo al opuesto.`;
 
             console.log("System Prompt:", systemPrompt);
 
@@ -165,6 +196,34 @@ async function sendMessage() {
             chatHistory.scrollTop = chatHistory.scrollHeight;
         }
 
+        // After receiving the full response, check if it contains one or more JSON actions
+        const jsonBlocks = fullResponse.matchAll(/```json\n([\s\S]*?)\n```/g);
+        let actionsSent = 0;
+
+        for (const match of jsonBlocks) {
+            try {
+                const content = match[1].trim();
+                const actionPayload = JSON.parse(content);
+
+                // If it's an array of actions, process each. Otherwise, wrap in array.
+                const actions = Array.isArray(actionPayload) ? actionPayload : [actionPayload];
+
+                actions.forEach(payload => {
+                    if (payload.action && payload.data) {
+                        console.log("AI detected action:", payload);
+                        window.parent.postMessage(payload, '*'); // Send to parent window
+                        actionsSent++;
+                    }
+                });
+            } catch (jsonError) {
+                console.warn("AI response contained malformed JSON in a block:", jsonError);
+            }
+        }
+
+        if (actionsSent > 0) {
+            aiContentDiv.innerHTML += `<p><i>${actionsSent} acción(es) enviada(s) a la aplicación.</i></p>`;
+        }
+
     } catch (err) {
         console.error("Error generating response:", err);
         aiContentDiv.textContent = "Error: " + err.message;
@@ -177,6 +236,13 @@ sendBtn.addEventListener('click', sendMessage);
 userInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
         sendMessage();
+    }
+});
+
+// Listen for messages from the parent window (e.g., action confirmation)
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'ai-feedback') {
+        addMessage(`_Sistema: ${event.data.message}_`, 'ai');
     }
 });
 

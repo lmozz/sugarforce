@@ -180,4 +180,81 @@ document.addEventListener('DOMContentLoaded', () => {
             aiChatWidget.style.display = isVisible ? 'none' : 'flex';
         });
     }
+
+    // AI CRUD Handler
+    window.addEventListener('message', (event) => {
+        const { action, data } = event.data;
+        if (!action || !data) return;
+
+        let items = getCellars();
+        let message = "";
+        console.log("hola: " + action);
+        switch (action) {
+            case 'createCellar':
+                items.push({ nombre: data.nombre, descripcion: data.descripcion || data.nombre });
+                message = `Bodega "${data.nombre}" creada satisfactoriamente.`;
+                break;
+            case 'updateCellar':
+                // Try exact match first, then case-insensitive
+                let idx = items.findIndex(i => i.nombre === data.originalName);
+                if (idx === -1) {
+                    idx = items.findIndex(i => i.nombre.toLowerCase() === data.originalName.toLowerCase());
+                }
+
+                if (idx !== -1) {
+                    const originalActualName = items[idx].nombre;
+                    items[idx] = { nombre: data.nombre, descripcion: data.descripcion || data.nombre };
+                    message = `Bodega "${originalActualName}" actualizada a "${data.nombre}".`;
+                } else {
+                    message = `Error: No se encontró la bodega "${data.originalName}".`;
+                }
+                break;
+            case 'deleteCellar':
+                // Try exact match first, then case-insensitive
+                let deleteIdx = items.findIndex(i => i.nombre === data.nombre);
+                if (deleteIdx === -1) {
+                    deleteIdx = items.findIndex(i => i.nombre.toLowerCase() === data.nombre.toLowerCase());
+                }
+
+                if (deleteIdx !== -1) {
+                    const deletedName = items[deleteIdx].nombre;
+                    items.splice(deleteIdx, 1);
+                    message = `Bodega "${deletedName}" eliminada.`;
+                } else {
+                    message = `Error: No se encontró la bodega "${data.nombre}".`;
+                }
+                break;
+            case 'filterCellar':
+                if (searchInput) {
+                    searchInput.value = data.query;
+                    renderTable(data.query);
+                    message = `Tabla filtrada por "${data.query}".`;
+                }
+                break;
+            case 'setTheme':
+                if (data.theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('theme', data.theme);
+                message = `Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}.`;
+                break;
+            case 'logout':
+                console.log('Logout action received!');
+                localStorage.removeItem('currentUser');
+                console.log('User removed from localStorage');
+                // Try direct window.location instead of window.top
+                window.location.href = '../index.html';
+                return; // Exit immediately without saving or rendering
+            default:
+                return;
+        }
+
+        saveCellars(items);
+        renderTable(searchInput.value);
+
+        // Notify AI about the result
+        event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
+    });
 });
