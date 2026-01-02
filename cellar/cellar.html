@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Bodegas</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="#" class="active">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="../cliente/cliente.html">Clientes</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="#">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Bodegas</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscador por nombre...">
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cellarTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chat AI Widget -->
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=cellar" frameborder="0"></iframe>
+            </div>
+
+            <!-- FAB Buttons -->
+            <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+            <button class="fab" id="addCellarBtn">+</button>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="cellarModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Nueva Bodega</div>
+            <form id="cellarForm">
+                <input type="hidden" id="cellarId">
+                <div class="input-group">
+                    <input type="text" id="cellarName" required placeholder=" ">
+                    <label for="cellarName">Nombre</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="cellarDesc" required placeholder=" ">
+                    <label for="cellarDesc">Descripción</label>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="cellar.js"></script>
+</body>
+
+</html>

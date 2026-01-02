@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Certificados COA</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="flatpickr.min.css">
+    <style>
+        .master-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-section {
+            margin-top: 30px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .searchable-select-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .searchable-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .searchable-select-dropdown {
+            background: #1e1e1e;
+            border-color: #444;
+        }
+
+        .select-option {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .select-option:hover {
+            background: #f5f5f5;
+        }
+
+        body.dark-mode .select-option:hover {
+            background: #333;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        body.dark-mode .detail-table th,
+        body.dark-mode .detail-table td {
+            border-color: #333;
+        }
+
+        .remove-row-btn {
+            color: #ff5252;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .coa-modal-content {
+            max-width: 900px !important;
+            width: 95% !important;
+        }
+
+        .auto-filled {
+            background-color: rgba(26, 115, 232, 0.05) !important;
+            color: #1a73e8;
+            font-weight: 500;
+        }
+
+        body.dark-mode .auto-filled {
+            background-color: rgba(26, 115, 232, 0.2) !important;
+            color: #8ab4f8;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="../cliente/cliente.html">Clientes</a></li>
+                <li><a href="#" class="active">Certificados COA</a></li>
+                <li><a href="#">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Certificados COA</div>
+                </div>
+                <div class="header-actions"
+                    style="flex: 1; margin-left: 40px; display: flex; flex-direction: column; gap: 10px; align-items: flex-end;">
+                    <div class="search-container" style="width: 100%; max-width: 600px; margin-left: 0;">
+                        <input type="text" id="searchInput" class="search-input"
+                            placeholder="Buscar por cliente, producto o lote...">
+                    </div>
+
+                    <!-- Status Filters -->
+                    <div class="status-filters" style="margin-top: 0;">
+                        <button class="filter-btn filter-nuevo" data-status="nuevo">Nuevo</button>
+                        <button class="filter-btn filter-iniciado" data-status="iniciado">Iniciado</button>
+                        <button class="filter-btn filter-finalizado" data-status="finalizado">Finalizado</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Producto</th>
+                            <th>Lote</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coaTableBody">
+                        <!-- Loaded via JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chat AI Widget -->
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=coas" frameborder="0"></iframe>
+            </div>
+
+            <!-- FAB Buttons -->
+            <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+            <button class="fab" id="addCoaBtn">+</button>
+        </main>
+    </div>
+
+    <!-- Modal Form -->
+    <div class="modal-overlay" id="coaModal">
+        <div class="modal-content coa-modal-content">
+            <div class="modal-header" id="modalTitle">Nuevo Certificado COA</div>
+            <form id="coaForm">
+                <input type="hidden" id="coaId">
+
+                <div class="master-form-grid">
+                    <!-- Cliente & Dirección -->
+                    <div class="input-group">
+                        <input type="text" id="coaClientSelect" required readonly placeholder=" "
+                            style="cursor: pointer;">
+                        <label for="coaClientSelect">Cliente</label>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <input type="text" id="coaClientAddress" readonly class="auto-filled" placeholder=" ">
+                        <label for="coaClientAddress">Dirección del Cliente</label>
+                    </div>
+
+                    <!-- Fechas -->
+                    <div class="input-group">
+                        <input type="text" id="dateAnalysis" required placeholder="Seleccionar fecha...">
+                        <label for="dateAnalysis">Fecha de Análisis</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="dateEmission" required placeholder="Seleccionar fecha...">
+                        <label for="dateEmission">Fecha de Emisión</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="dateProduction" required placeholder="Seleccionar fecha...">
+                        <label for="dateProduction">Fecha de Producción</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="dateExpiry" required placeholder="Seleccionar fecha...">
+                        <label for="dateExpiry">Fecha de Vencimiento</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="lotNumber" required placeholder=" ">
+                        <label for="lotNumber">Lote</label>
+                    </div>
+
+                    <!-- Producto Details -->
+                    <div class="input-group">
+                        <input type="text" id="coaProductSelect" required readonly placeholder=" "
+                            style="cursor: pointer;">
+                        <label for="coaProductSelect">Producto</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="coaPresentation" readonly class="auto-filled" placeholder=" ">
+                        <label for="coaPresentation">Presentación</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="coaDescription" readonly class="auto-filled" placeholder=" ">
+                        <label for="coaDescription">Descripción</label>
+                    </div>
+
+                    <!-- Bodega & Quantity -->
+                    <div class="input-group">
+                        <input type="text" id="coaCellarSelect" required readonly placeholder=" "
+                            style="cursor: pointer;">
+                        <label for="coaCellarSelect">Bodega</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" step="0.01" id="coaQuantity" required placeholder=" ">
+                        <label for="coaQuantity">Cantidad</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="number" step="0.01" id="coaTarimas" required placeholder=" ">
+                        <label for="coaTarimas">Tarimas</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="coaMarchamo" required placeholder=" ">
+                        <label for="coaMarchamo">Marchamo</label>
+                    </div>
+                </div>
+
+                <!-- Detalle Table -->
+                <div class="detail-section">
+                    <div class="detail-header">
+                        <h3>Parámetros y Resultados</h3>
+                        <button type="button" class="action-btn" id="addDetailRowBtn"
+                            style="background: #1a73e8; color: white;">+ Agregar Parámetro</button>
+                    </div>
+                    <table class="detail-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60%;">Parámetro (Definición + Método)</th>
+                                <th>Resultado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailTableBody">
+                            <!-- Detail rows added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Request COA Modal (Phase 1) -->
+    <div class="modal-overlay" id="requestCoaModal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="modal-header">Solicitar Nuevo Certificado COA</div>
+            <form id="requestCoaForm">
+                <div class="input-group">
+                    <input type="text" id="reqClientSelect" required readonly placeholder=" " style="cursor: pointer;">
+                    <label for="reqClientSelect">Cliente</label>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="reqDate" required placeholder="Seleccionar fecha...">
+                    <label for="reqDate">Fecha de Requerimiento</label>
+                </div>
+                <div class="modal-actions" style="margin-top: 20px;">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelRequestBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save" style="background: #28a745;">Solicitar
+                        Certificado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Movement History Modal -->
+    <div class="modal-overlay" id="historyModal">
+        <div class="modal-content" style="max-width: 500px; max-height: 80vh; display: flex; flex-direction: column;">
+            <div class="modal-header">Historial de Movimientos</div>
+            <div id="historyContent" style="flex: 1; overflow-y: auto; padding: 20px;">
+                <!-- Timeline/List injected here -->
+            </div>
+            <div class="modal-actions" style="padding: 15px; border-top: 1px solid rgba(0,0,0,0.1);">
+                <button type="button" class="modal-btn btn-cancel" id="closeHistoryBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic COA Search Modal -->
+    <div class="modal-overlay" id="coaSearchModal" style="z-index: 2100;">
+        <div class="modal-content"
+            style="max-width: 500px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="modal-header" id="coaSearchModalTitle">Buscar...</div>
+
+            <div class="search-container" style="padding: 10px; margin-bottom: 0;">
+                <input type="text" id="coaSearchModalInput" class="search-input" placeholder="Escriba para filtrar..."
+                    style="width: 100%;">
+            </div>
+
+            <div id="coaSearchModalResults" class="search-results-list"
+                style="flex: 1; overflow-y: auto; padding: 10px;">
+                <!-- Dynamically populated results -->
+            </div>
+
+            <div class="modal-actions" style="border-top: 1px solid rgba(0,0,0,0.1); padding: 10px;">
+                <button type="button" class="modal-btn btn-cancel" id="closeCoaSearchBtn">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="flatpickr.js"></script>
+    <script src="es.js"></script>
+    <script src="coa.js"></script>
+</body>
+
+</html>

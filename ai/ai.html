@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - Chat IA</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="ai.css">
+    <script src="marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Background is handled by body in style.css -->
+
+    <div class="chat-wrapper">
+        <div class="glass-chat-container">
+            <div class="chat-header">
+                <h2>Asistente Dizucar</h2>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div id="statusIndicator" class="status-indicator">Iniciando...</div>
+                    <button onclick="window.location.reload()" class="clear-btn">Limpiar</button>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatHistory">
+                <!-- Messages will appear here -->
+                <div class="message ai">
+                    <div class="message-content">
+                        ¡Hola! Soy tu asistente virtual. ¿En qué puedo ayudarte hoy?
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="userInput" placeholder="Escribe tu mensaje..." autocomplete="off">
+                <button id="sendBtn">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="ai.js"></script>
+    <script>
+        // Theme applicator matching the rest of the app
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+
+</html>

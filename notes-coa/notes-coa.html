@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Notas COA</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        .drag-handle {
+            cursor: grab;
+            margin-right: 10px;
+            color: #888;
+            font-size: 18px;
+            user-select: none;
+        }
+
+        .dragging {
+            opacity: 0.5;
+            background: rgba(26, 115, 232, 0.1) !important;
+        }
+
+        .drop-target {
+            border-top: 2px dashed #1a73e8;
+        }
+
+        textarea.form-control {
+            width: 100%;
+            padding: 15px 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        body.dark-mode textarea.form-control {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .description-cell {
+            white-space: pre-wrap;
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="#" class="active">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="../cliente/cliente.html">Clientes</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="#">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Notas COA</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscador...">
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Orden</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="notesTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chat AI Widget -->
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=notes" frameborder="0"></iframe>
+            </div>
+
+            <!-- FAB Buttons -->
+            <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+            <button class="fab" id="addNoteBtn">+</button>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="noteModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Nueva Nota</div>
+            <form id="noteForm">
+                <input type="hidden" id="noteId">
+                <div class="input-group">
+                    <input type="text" id="noteName" required placeholder=" ">
+                    <label for="noteName">Nombre</label>
+                </div>
+                <div class="input-group">
+                    <input type="number" step="0.1" id="noteOrder" required placeholder=" ">
+                    <label for="noteOrder">Orden</label>
+                </div>
+                <div class="input-group">
+                    <textarea id="noteDesc" class="form-control" placeholder="Descripción detallada..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="notes-coa.js"></script>
+</body>
+
+</html>

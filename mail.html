@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Correo</title>
+    <link rel="icon" href="imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <h2>Sesión Validada</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 16px;">
+                Su sesión ha sido validada correctamente.
+            </p>
+            <p style="color: #666; margin-bottom: 30px; font-size: 16px;">
+                Por favor, regrese a la pestaña anterior (donde se logeo).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Apply Theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+
+            // Validate TFA
+            localStorage.setItem('tfa', 'true');
+            console.log('TFA validated: true');
+        });
+    </script>
+</body>
+
+</html>

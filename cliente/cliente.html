@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Clientes</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Specific styles for select mapping the iOS/Glass look */
+        select.form-select {
+            width: 100%;
+            padding: 15px 10px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        body.dark-mode select.form-select {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .input-group select:focus {
+            border-color: #1a73e8;
+            background: white;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        body.dark-mode .input-group select:focus {
+            background: rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="#" class="active">Clientes</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="#">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Clientes</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Buscador por nombre o clasificación...">
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Ubicación</th>
+                            <th>Clasificación</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Chat AI Widget -->
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=customer" frameborder="0"></iframe>
+            </div>
+
+            <!-- FAB Buttons -->
+            <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+            <button class="fab" id="addClientBtn">+</button>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="clientModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header" id="modalTitle">Nuevo Cliente</div>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+
+                <div class="input-group">
+                    <input type="text" id="clientName" required placeholder=" ">
+                    <label for="clientName">Nombre Completo</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="clientAddress" required placeholder=" ">
+                    <label for="clientAddress">Dirección</label>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="input-group">
+                        <input type="text" id="clientDept" required placeholder=" ">
+                        <label for="clientDept">Departamento</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="clientMun" required placeholder=" ">
+                        <label for="clientMun">Municipio</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <select id="clientClass" class="form-select" required>
+                        <option value="" disabled selected>Seleccione Clasificación</option>
+                        <option value="Pequeño contribuyente">Pequeño contribuyente</option>
+                        <option value="Medio contribuyente">Medio contribuyente</option>
+                        <option value="Gran contribuyente">Gran contribuyente</option>
+                    </select>
+                </div>
+
+                <div class="emails-section" style="margin-top: 20px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="font-weight: 500; font-size: 14px; color: var(--text-color);">Correos
+                            Electrónicos</span>
+                        <button type="button" class="action-btn" id="addEmailBtn"
+                            style="padding: 5px 10px; font-size: 12px; background: transparent; color: #007aff; border: none; font-weight: 500;">+
+                            Agregar</button>
+                    </div>
+                    <div id="emailListContainer" class="email-list-container">
+                        <!-- Email rows will be added here -->
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save" id="saveBtn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="cliente.js"></script>
+</body>
+
+</html>

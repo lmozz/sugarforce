@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - Iniciar Sesion</title>
+    <link rel="icon" href="imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-wrapper">
+        <div class="login-container">
+            <h2>Iniciar sesión</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <input type="text" id="username" required>
+                    <label for="username">Usuario/Email</label>
+                </div>
+                <button type="submit" class="login-btn">Iniciar</button>
+                <button type="button" id="themeToggle" class="theme-btn">Cambiar Tema</button>
+            </form>
+        </div>
+    </div>
+    <!-- TFA Modal -->
+    <div class="modal-overlay" id="tfaModal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">Autenticación requerida</div>
+            <p id="tfaMessage" style="margin-bottom: 20px;">Por favor apruebe el inicio de sesión desde tu correo.</p>
+            <div class="spinner"></div>
+            <button class="modal-btn btn-cancel" id="cancelTfaBtn"
+                style="width: 100%; margin-top: 20px;">Cancelar</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
