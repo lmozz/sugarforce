@@ -255,4 +255,80 @@ document.addEventListener('DOMContentLoaded', () => {
             aiChatWidget.style.display = 'none';
         });
     }
+
+    // AI CRUD Handler
+    window.addEventListener('message', (event) => {
+        const { action, data } = event.data;
+        if (!action || !data) return;
+
+        let steps = getSteps();
+        let message = "";
+
+        switch (action) {
+            case 'createStep':
+                steps.push({ nombre: data.nombre, descripcion: data.descripcion || data.nombre });
+                message = `Paso "${data.nombre}" creado satisfactoriamente.`;
+                break;
+            case 'updateStep':
+                // Try exact match first, then case-insensitive
+                let idx = steps.findIndex(i => i.nombre === data.originalName);
+                if (idx === -1) {
+                    idx = steps.findIndex(i => i.nombre.toLowerCase() === data.originalName.toLowerCase());
+                }
+
+                if (idx !== -1) {
+                    const originalActualName = steps[idx].nombre;
+                    steps[idx] = { nombre: data.nombre, descripcion: data.descripcion || data.nombre };
+                    message = `Paso "${originalActualName}" actualizado a "${data.nombre}".`;
+                } else {
+                    message = `Error: No se encontró el paso "${data.originalName}".`;
+                }
+                break;
+            case 'deleteStep':
+                // Try exact match first, then case-insensitive
+                let deleteIdx = steps.findIndex(i => i.nombre === data.nombre);
+                if (deleteIdx === -1) {
+                    deleteIdx = steps.findIndex(i => i.nombre.toLowerCase() === data.nombre.toLowerCase());
+                }
+
+                if (deleteIdx !== -1) {
+                    const deletedName = steps[deleteIdx].nombre;
+                    steps.splice(deleteIdx, 1);
+                    message = `Paso "${deletedName}" eliminado.`;
+                } else {
+                    message = `Error: No se encontró el paso "${data.nombre}".`;
+                }
+                break;
+            case 'filterStep':
+                if (searchInput) {
+                    searchInput.value = data.query;
+                    renderTable(data.query);
+                    message = `Tabla filtrada por "${data.query}".`;
+                }
+                break;
+            case 'setTheme':
+                if (data.theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('theme', data.theme);
+                message = `Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}.`;
+                break;
+            case 'logout':
+                localStorage.removeItem('currentUser');
+                window.location.href = '../index.html';
+                return; // Exit immediately without saving or rendering
+            default:
+                return;
+        }
+
+        saveSteps(steps);
+        renderTable(searchInput.value);
+
+        // Notify AI about the result
+        if (event.source) {
+            event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
+        }
+    });
 });

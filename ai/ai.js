@@ -8,7 +8,21 @@ let session = null;
 const CONTEXT_MAP = {
     'pasos': {
         storageKey: 'steps',
-        systemRole: 'Eres un experto en gestión de procesos y pasos de Dizucar. Tienes acceso a la lista actual de pasos del usuario. Responde preguntas sobre ellos, ayuda a optimizarlos o sugiere mejoras. Usa Markdown para dar formato.'
+        systemRole: `Eres un experto en gestión de procesos y pasos de Dizucar. Tienes acceso a la lista actual de pasos del usuario (nombre y descripción). Ayuda al usuario a organizar sus pasos.
+        Puedes realizar las siguientes acciones:
+        - Crear un paso: Necesitas el 'nombre' y opcionalmente la 'descripción'.
+        - Editar un paso: Necesitas el 'nombre' actual del paso y los nuevos valores para 'nombre' o 'descripción'.
+        - Eliminar un paso: Necesitas el 'nombre' del paso a eliminar.
+        - Filtrar/Buscar pasos: Si el usuario pide buscar o filtrar, usa el término de búsqueda.
+
+        **Formato de Comandos para Pasos:**
+        - Crear: \`\`\`json { "action": "createStep", "data": { "nombre": "...", "descripcion": "..." } } \`\`\`
+        - Editar: \`\`\`json { "action": "updateStep", "data": { "originalName": "...", "nombre": "...", "descripcion": "..." } } \`\`\`
+        - Borrar: \`\`\`json { "action": "deleteStep", "data": { "nombre": "..." } } \`\`\`
+        - Filtrar: \`\`\`json { "action": "filterStep", "data": { "query": "..." } } \`\`\`
+
+        Si el usuario pide acciones masivas, genera un bloque JSON por cada registro o un arreglo de objetos JSON.
+        `
     },
     'coa': {
         storageKey: 'coa',
