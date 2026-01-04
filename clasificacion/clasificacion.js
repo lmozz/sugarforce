@@ -256,209 +256,414 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // AI CRUD Handler
+    // AI CRUD Handler - MEJORADO PARA CLASIFICACIONES (maestro-detalle)
     window.addEventListener('message', (event) => {
+        // Validar que sea un mensaje válido
+        if (!event.data || typeof event.data !== 'object') {
+            console.warn('Mensaje AI inválido recibido');
+            return;
+        }
+
         const { action, data } = event.data;
-        console.log(action);
-        console.log(data);
-        if (!action || !data) return;
+
+        // Validaciones básicas
+        if (!action || !data || typeof data !== 'object') {
+            console.warn('Mensaje AI con formato inválido:', event.data);
+            return;
+        }
 
         let classifications = getData('classification');
         let message = "";
+        let success = true;
+        let actionPerformed = false;
+        let messages = [];
+        let dataChanged = false;
+
+        console.log(`Procesando acción en clasificaciones: ${action}`, data);
 
         switch (action) {
             case 'createClassification':
-                const newId = Date.now().toString();
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: El nombre de la clasificación es requerido";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
 
-                // Validate all steps if provided
-                let validatedSteps = [];
-                if (data.steps && data.steps.length > 0) {
+                const nombreClasif = data.nombre.trim();
+                const descripcionClasif = (data.descripcion || nombreClasif).trim();
+
+                // Verificar que no exista (case insensitive)
+                const existeClasif = classifications.some(c =>
+                    c.nombre.toLowerCase() === nombreClasif.toLowerCase()
+                );
+                if (existeClasif) {
+                    message = `❌ Error: Ya existe una clasificación llamada "${nombreClasif}"`;
+                    success = false;
+                    messages.push(message);
+                } else {
+                    // Validar pasos si se proporcionan
                     const availableSteps = getData('steps');
-                    const invalidSteps = [];
+                    let validatedSteps = [];
+                    let invalidSteps = [];
 
-                    data.steps.forEach(stepName => {
-                        const stepExists = availableSteps.some(s => s.nombre === stepName);
-                        if (stepExists) {
-                            validatedSteps.push(stepName);
-                        } else {
-                            invalidSteps.push(stepName);
-                        }
-                    });
+                    if (data.steps && Array.isArray(data.steps)) {
+                        data.steps.forEach(stepName => {
+                            const stepExists = availableSteps.some(s =>
+                                s.nombre.toLowerCase() === stepName.trim().toLowerCase()
+                            );
+                            if (stepExists) {
+                                // Usar el nombre exacto del catálogo
+                                const exactName = availableSteps.find(s =>
+                                    s.nombre.toLowerCase() === stepName.trim().toLowerCase()
+                                ).nombre;
+                                validatedSteps.push(exactName);
+                            } else {
+                                invalidSteps.push(stepName.trim());
+                            }
+                        });
+                    }
+
+                    // Crear nueva clasificación
+                    const newClassification = {
+                        id: Date.now().toString(),
+                        nombre: nombreClasif,
+                        descripcion: descripcionClasif,
+                        steps: validatedSteps
+                    };
+
+                    classifications.push(newClassification);
 
                     if (invalidSteps.length > 0) {
                         const stepNames = availableSteps.map(s => s.nombre).join(', ');
-                        message = `Advertencia: Los siguientes pasos no existen y fueron omitidos: ${invalidSteps.join(', ')}. ` +
-                            `Pasos disponibles: ${stepNames || 'ninguno'}. ` +
-                            `Clasificación "${data.nombre}" creada con ${validatedSteps.length} paso(s) válido(s).`;
+                        message = `✅ Clasificación "${nombreClasif}" creada. ` +
+                            `⚠️ Pasos omitidos (no existen): ${invalidSteps.join(', ')}. ` +
+                            `Pasos válidos agregados: ${validatedSteps.length}`;
+                    } else {
+                        message = `✅ Clasificación "${nombreClasif}" creada con ${validatedSteps.length} paso(s)`;
                     }
-                }
 
-                const newClassification = {
-                    id: newId,
-                    nombre: data.nombre,
-                    descripcion: data.descripcion || data.nombre,
-                    steps: validatedSteps
-                };
-                classifications.push(newClassification);
-
-                if (!message) {
-                    message = `Clasificación "${data.nombre}" creada satisfactoriamente con ${validatedSteps.length} paso(s).`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
                 }
                 break;
 
             case 'updateClassification':
-                let updateIdx = classifications.findIndex(c => c.id === data.id || c.nombre === data.originalName || c.nombre === data.nombre);
-                if (updateIdx === -1) {
-                    updateIdx = classifications.findIndex(c =>
-                        c.nombre.toLowerCase() === (data.originalName || data.nombre || '').toLowerCase()
-                    );
+                // Validar datos requeridos
+                if (!data.originalName || data.originalName.trim() === '' ||
+                    !data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: Se necesitan ambos nombres (original y nuevo)";
+                    success = false;
+                    messages.push(message);
+                    break;
                 }
 
-                if (updateIdx !== -1) {
-                    const original = classifications[updateIdx];
+                const originalName = data.originalName.trim();
+                const nuevoNombre = data.nombre.trim();
+                const nuevaDesc = (data.descripcion || nuevoNombre).trim();
 
-                    // Validate steps if provided
-                    let validatedSteps = original.steps;
-                    if (data.steps !== undefined) {
-                        const availableSteps = getData('steps');
-                        validatedSteps = [];
-                        const invalidSteps = [];
+                // Buscar clasificación (case insensitive)
+                const indexUpdate = classifications.findIndex(c =>
+                    c.nombre.toLowerCase() === originalName.toLowerCase()
+                );
 
-                        data.steps.forEach(stepName => {
-                            const matchedStep = availableSteps.find(s =>
-                                s.nombre.toLowerCase() === stepName.toLowerCase()
-                            );
-                            if (matchedStep) {
-                                validatedSteps.push(matchedStep.nombre);
-                            } else {
-                                invalidSteps.push(stepName);
-                            }
-                        });
-
-                        if (invalidSteps.length > 0) {
-                            const stepNames = availableSteps.map(s => s.nombre).join(', ');
-                            message = `Advertencia: Los siguientes pasos no existen y fueron omitidos: ${invalidSteps.join(', ')}. ` +
-                                `Pasos disponibles: ${stepNames || 'ninguno'}. ` +
-                                `Clasificación "${original.nombre}" actualizada con ${validatedSteps.length} paso(s) válido(s).`;
-                        }
-                    }
-
-                    classifications[updateIdx] = {
-                        id: original.id,
-                        nombre: data.nombre || original.nombre,
-                        descripcion: data.descripcion || original.descripcion,
-                        steps: validatedSteps
-                    };
-
-                    if (!message) {
-                        message = `Clasificación "${original.nombre}" actualizada.`;
-                    }
+                if (indexUpdate === -1) {
+                    message = `❌ Error: No se encontró la clasificación "${originalName}"`;
+                    success = false;
+                    messages.push(message);
                 } else {
-                    message = `Error: No se encontró la clasificación.`;
+                    // Verificar si el nuevo nombre ya existe (excluyendo el actual)
+                    const nombreYaExiste = classifications.some((c, idx) =>
+                        idx !== indexUpdate && c.nombre.toLowerCase() === nuevoNombre.toLowerCase()
+                    );
+
+                    if (nombreYaExiste) {
+                        message = `❌ Error: Ya existe otra clasificación llamada "${nuevoNombre}"`;
+                        success = false;
+                        messages.push(message);
+                    } else {
+                        // Validar pasos si se proporcionan
+                        const availableSteps = getData('steps');
+                        let validatedSteps = classifications[indexUpdate].steps;
+
+                        if (data.steps !== undefined) {
+                            validatedSteps = [];
+                            let invalidSteps = [];
+
+                            if (Array.isArray(data.steps)) {
+                                data.steps.forEach(stepName => {
+                                    const stepExists = availableSteps.some(s =>
+                                        s.nombre.toLowerCase() === stepName.trim().toLowerCase()
+                                    );
+                                    if (stepExists) {
+                                        // Usar el nombre exacto del catálogo
+                                        const exactName = availableSteps.find(s =>
+                                            s.nombre.toLowerCase() === stepName.trim().toLowerCase()
+                                        ).nombre;
+                                        validatedSteps.push(exactName);
+                                    } else {
+                                        invalidSteps.push(stepName.trim());
+                                    }
+                                });
+                            }
+
+                            if (invalidSteps.length > 0) {
+                                const stepNames = availableSteps.map(s => s.nombre).join(', ');
+                                messages.push(`⚠️ Pasos omitidos (no existen): ${invalidSteps.join(', ')}`);
+                            }
+                        }
+
+                        const nombreAnterior = classifications[indexUpdate].nombre;
+                        classifications[indexUpdate] = {
+                            ...classifications[indexUpdate],
+                            nombre: nuevoNombre,
+                            descripcion: nuevaDesc,
+                            steps: validatedSteps
+                        };
+
+                        message = `✅ Clasificación "${nombreAnterior}" actualizada a "${nuevoNombre}"`;
+                        actionPerformed = true;
+                        dataChanged = true;
+                        messages.push(message);
+                    }
                 }
                 break;
 
             case 'deleteClassification':
-                const deleteIdx = classifications.findIndex(c =>
-                    c.id === data.id ||
-                    c.nombre === data.id || // Allow nombre in id field
-                    c.nombre === data.nombre ||
-                    c.nombre.toLowerCase() === (data.nombre || data.id || '').toLowerCase()
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: Se necesita el nombre de la clasificación";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const nombreEliminar = data.nombre.trim();
+
+                // Buscar clasificación (case insensitive)
+                const deleteIndex = classifications.findIndex(c =>
+                    c.nombre.toLowerCase() === nombreEliminar.toLowerCase()
                 );
 
-                if (deleteIdx !== -1) {
-                    const deletedName = classifications[deleteIdx].nombre;
-                    classifications.splice(deleteIdx, 1);
-                    message = `Clasificación "${deletedName}" eliminada.`;
+                if (deleteIndex === -1) {
+                    message = `❌ Error: No se encontró la clasificación "${nombreEliminar}"`;
+                    success = false;
+                    messages.push(message);
                 } else {
-                    message = `Error: No se encontró la clasificación "${data.id || data.nombre}".`;
+                    const eliminada = classifications[deleteIndex].nombre;
+                    classifications.splice(deleteIndex, 1);
+                    message = `✅ Clasificación "${eliminada}" eliminada correctamente`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
                 }
                 break;
 
             case 'addStepToClassification':
+                // Validar datos requeridos
+                if (!data.classificationName || data.classificationName.trim() === '' ||
+                    !data.stepName || data.stepName.trim() === '') {
+                    message = "❌ Error: Se necesita nombre de clasificación y paso";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const className = data.classificationName.trim();
+                const stepToAdd = data.stepName.trim();
+
+                // Buscar clasificación
                 const addIdx = classifications.findIndex(c =>
-                    c.id === data.classificationId || c.nombre === data.classificationName ||
-                    c.nombre.toLowerCase() === (data.classificationName || '').toLowerCase()
+                    c.nombre.toLowerCase() === className.toLowerCase()
                 );
 
-                if (addIdx !== -1) {
-                    // Validate that the step exists in the steps catalog (case-insensitive)
-                    const availableSteps = getData('steps');
-                    const matchedStep = availableSteps.find(s =>
-                        s.nombre.toLowerCase() === data.stepName.toLowerCase()
-                    );
+                if (addIdx === -1) {
+                    message = `❌ Error: No se encontró la clasificación "${className}"`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
 
-                    if (!matchedStep) {
-                        // Step doesn't exist, inform AI with available steps
-                        const stepNames = availableSteps.map(s => s.nombre).join(', ');
-                        message = `Error: El paso "${data.stepName}" no existe en el catálogo de pasos. ` +
-                            `Pasos disponibles: ${stepNames || 'ninguno (debes crear pasos primero)'}`;
-                    } else if (!classifications[addIdx].steps.includes(matchedStep.nombre)) {
-                        classifications[addIdx].steps.push(matchedStep.nombre);
-                        message = `Paso "${matchedStep.nombre}" agregado a "${classifications[addIdx].nombre}".`;
-                    } else {
-                        message = `El paso "${matchedStep.nombre}" ya existe en esta clasificación.`;
-                    }
+                // Verificar que el paso exista en el catálogo
+                const availableSteps = getData('steps');
+                const matchedStep = availableSteps.find(s =>
+                    s.nombre.toLowerCase() === stepToAdd.toLowerCase()
+                );
+
+                if (!matchedStep) {
+                    const stepNames = availableSteps.map(s => s.nombre).join(', ');
+                    message = `❌ Error: El paso "${stepToAdd}" no existe. ` +
+                        `Pasos disponibles: ${stepNames || 'ninguno'}`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Usar el nombre exacto del catálogo
+                const exactStepName = matchedStep.nombre;
+
+                // Verificar que no esté ya agregado
+                if (classifications[addIdx].steps.includes(exactStepName)) {
+                    message = `⚠️ El paso "${exactStepName}" ya existe en "${classifications[addIdx].nombre}"`;
+                    success = false;
+                    messages.push(message);
                 } else {
-                    message = `Error: No se encontró la clasificación.`;
+                    classifications[addIdx].steps.push(exactStepName);
+                    message = `✅ Paso "${exactStepName}" agregado a "${classifications[addIdx].nombre}"`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
                 }
                 break;
 
             case 'editStepFromClassification':
+                // Validar datos requeridos
+                if (!data.classificationName || data.classificationName.trim() === '' ||
+                    !data.oldStepName || data.oldStepName.trim() === '' ||
+                    !data.newStepName || data.newStepName.trim() === '') {
+                    message = "❌ Error: Se necesita clasificación, paso actual y paso nuevo";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const editClassName = data.classificationName.trim();
+                const oldStep = data.oldStepName.trim();
+                const newStep = data.newStepName.trim();
+
+                // Buscar clasificación
                 const editIdx = classifications.findIndex(c =>
-                    c.id === data.classificationId || c.nombre === data.classificationName ||
-                    c.nombre.toLowerCase() === (data.classificationName || '').toLowerCase()
+                    c.nombre.toLowerCase() === editClassName.toLowerCase()
                 );
 
-                if (editIdx !== -1) {
-                    const stepIdx = classifications[editIdx].steps.indexOf(data.oldStepName);
-                    if (stepIdx !== -1) {
-                        // Validate that the new step name exists in the steps catalog
-                        const availableSteps = getData('steps');
-                        const newStepExists = availableSteps.some(s => s.nombre === data.newStepName);
-
-                        if (!newStepExists) {
-                            const stepNames = availableSteps.map(s => s.nombre).join(', ');
-                            message = `Error: El paso "${data.newStepName}" no existe en el catálogo de pasos. ` +
-                                `Pasos disponibles: ${stepNames || 'ninguno'}`;
-                        } else if (!classifications[editIdx].steps.includes(data.newStepName)) {
-                            classifications[editIdx].steps[stepIdx] = data.newStepName;
-                            message = `Paso "${data.oldStepName}" renombrado a "${data.newStepName}" en "${classifications[editIdx].nombre}".`;
-                        } else {
-                            message = `Error: El paso "${data.newStepName}" ya existe en esta clasificación.`;
-                        }
-                    } else {
-                        message = `El paso "${data.oldStepName}" no existe en esta clasificación.`;
-                    }
-                } else {
-                    message = `Error: No se encontró la clasificación.`;
+                if (editIdx === -1) {
+                    message = `❌ Error: No se encontró la clasificación "${editClassName}"`;
+                    success = false;
+                    messages.push(message);
+                    break;
                 }
+
+                // Verificar que el paso viejo exista en la clasificación
+                const stepIndex = classifications[editIdx].steps.indexOf(oldStep);
+                if (stepIndex === -1) {
+                    // Intentar case insensitive
+                    const stepInsensitive = classifications[editIdx].steps.find(s =>
+                        s.toLowerCase() === oldStep.toLowerCase()
+                    );
+                    if (stepInsensitive) {
+                        message = `⚠️ El paso existe pero con diferente capitalización: "${stepInsensitive}"`;
+                        success = false;
+                        messages.push(message);
+                        break;
+                    } else {
+                        message = `❌ Error: El paso "${oldStep}" no existe en "${classifications[editIdx].nombre}"`;
+                        success = false;
+                        messages.push(message);
+                        break;
+                    }
+                }
+
+                // Verificar que el nuevo paso exista en el catálogo
+                const newStepExists = availableSteps.some(s =>
+                    s.nombre.toLowerCase() === newStep.toLowerCase()
+                );
+
+                if (!newStepExists) {
+                    const stepNames = availableSteps.map(s => s.nombre).join(', ');
+                    message = `❌ Error: El paso "${newStep}" no existe en el catálogo. ` +
+                        `Pasos disponibles: ${stepNames || 'ninguno'}`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Usar nombre exacto del catálogo
+                const exactNewStepName = availableSteps.find(s =>
+                    s.nombre.toLowerCase() === newStep.toLowerCase()
+                ).nombre;
+
+                // Verificar que no esté duplicado
+                if (classifications[editIdx].steps.includes(exactNewStepName)) {
+                    message = `❌ Error: El paso "${exactNewStepName}" ya existe en esta clasificación`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                classifications[editIdx].steps[stepIndex] = exactNewStepName;
+                message = `✅ Paso "${oldStep}" actualizado a "${exactNewStepName}" en "${classifications[editIdx].nombre}"`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
                 break;
 
             case 'removeStepFromClassification':
+                // Validar datos requeridos
+                if (!data.classificationName || data.classificationName.trim() === '' ||
+                    !data.stepName || data.stepName.trim() === '') {
+                    message = "❌ Error: Se necesita nombre de clasificación y paso";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const removeClassName = data.classificationName.trim();
+                const stepToRemove = data.stepName.trim();
+
+                // Buscar clasificación
                 const removeIdx = classifications.findIndex(c =>
-                    c.id === data.classificationId || c.nombre === data.classificationName ||
-                    c.nombre.toLowerCase() === (data.classificationName || '').toLowerCase()
+                    c.nombre.toLowerCase() === removeClassName.toLowerCase()
                 );
 
-                if (removeIdx !== -1) {
-                    const stepIdx = classifications[removeIdx].steps.indexOf(data.stepName);
-                    if (stepIdx !== -1) {
-                        classifications[removeIdx].steps.splice(stepIdx, 1);
-                        message = `Paso "${data.stepName}" eliminado de "${classifications[removeIdx].nombre}".`;
-                    } else {
-                        message = `El paso "${data.stepName}" no existe en esta clasificación.`;
-                    }
-                } else {
-                    message = `Error: No se encontró la clasificación.`;
+                if (removeIdx === -1) {
+                    message = `❌ Error: No se encontró la clasificación "${removeClassName}"`;
+                    success = false;
+                    messages.push(message);
+                    break;
                 }
+
+                // Buscar paso (case insensitive)
+                const stepToRemoveIndex = classifications[removeIdx].steps.findIndex(s =>
+                    s.toLowerCase() === stepToRemove.toLowerCase()
+                );
+
+                if (stepToRemoveIndex === -1) {
+                    message = `❌ Error: El paso "${stepToRemove}" no existe en "${classifications[removeIdx].nombre}"`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const removedStep = classifications[removeIdx].steps[stepToRemoveIndex];
+                classifications[removeIdx].steps.splice(stepToRemoveIndex, 1);
+                message = `✅ Paso "${removedStep}" eliminado de "${classifications[removeIdx].nombre}"`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
                 break;
 
             case 'filterClassification':
+                // Validar datos
+                const query = data.query ? data.query.trim() : '';
                 const searchInput = document.getElementById('searchInput');
+
                 if (searchInput) {
-                    searchInput.value = data.query;
-                    renderTable(data.query);
-                    message = `Tabla filtrada por "${data.query}".`;
+                    searchInput.value = query;
+                    renderTable(query);
+
+                    if (query === '') {
+                        message = "🗑️ Filtro removido - Mostrando todas las clasificaciones";
+                    } else {
+                        message = `🔍 Clasificaciones filtradas por: "${query}"`;
+                    }
+                    actionPerformed = true;
+                    messages.push(message);
+                } else {
+                    message = "❌ Error: Elemento de búsqueda no encontrado";
+                    success = false;
+                    messages.push(message);
                 }
                 break;
 
@@ -469,24 +674,102 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.classList.remove('dark-mode');
                 }
                 localStorage.setItem('theme', data.theme);
-                message = `Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}.`;
+                message = `🎨 Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}`;
+                actionPerformed = true;
+                messages.push(message);
                 break;
 
             case 'logout':
-                localStorage.removeItem('currentUser');
-                window.location.href = '../index.html';
-                return; // Exit immediately
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../index.html';
+                }
+                return;
 
             default:
-                return;
+                console.log('Acción no reconocida en clasificaciones:', action);
+                message = `⚠️ Acción "${action}" no reconocida`;
+                success = false;
+                messages.push(message);
+                break;
         }
 
-        saveData('classification', classifications);
-        renderTable(document.getElementById('searchInput').value);
+        // Guardar cambios si se modificaron los datos
+        if (dataChanged) {
+            saveData('classification', classifications);
+        }
 
-        // Notify AI about the result
+        // Re-renderizar tabla si fue una acción relacionada con datos
+        if (actionPerformed && ['createClassification', 'updateClassification', 'deleteClassification',
+            'addStepToClassification', 'editStepFromClassification', 'removeStepFromClassification',
+            'filterClassification'].includes(action)) {
+            setTimeout(() => {
+                const searchInput = document.getElementById('searchInput');
+                renderTable(searchInput ? searchInput.value : '');
+            }, 100);
+        }
+
+        // Enviar retroalimentación a la IA
         if (event.source) {
-            event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
+            // Enviar cada mensaje individualmente
+            messages.forEach(msg => {
+                event.source.postMessage({
+                    type: 'ai-feedback',
+                    message: msg,
+                    success: success,
+                    action: action
+                }, event.origin);
+            });
+        }
+
+        // Mostrar notificación visual si hay error
+        if (!success && messages.some(m => m.includes('❌'))) {
+            const errorMessages = messages.filter(m => m.includes('❌'));
+            if (errorMessages.length > 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-notification';
+                errorMsg.textContent = errorMessages[0].replace('❌ ', '');
+                errorMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff6b6b;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+                document.body.appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 3000);
+            }
+        }
+
+        // Mostrar notificación de éxito
+        if (success && actionPerformed && messages.some(m => m.includes('✅'))) {
+            const successMessages = messages.filter(m => m.includes('✅'));
+            if (successMessages.length > 0) {
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-notification';
+                successMsg.textContent = successMessages[0].replace('✅ ', '');
+                successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 2000);
+            }
         }
     });
 
