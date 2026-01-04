@@ -469,6 +469,7 @@ body.dark-mode .search-input:focus {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
 }
 
 body.dark-mode .table-container {
