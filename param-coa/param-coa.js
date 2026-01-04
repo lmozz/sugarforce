@@ -268,4 +268,278 @@ document.addEventListener('DOMContentLoaded', () => {
             aiChatWidget.style.display = 'none';
         });
     }
+
+    // AI CRUD Handler - COMPLETO PARA PARÁMETROS COA
+    window.addEventListener('message', (event) => {
+        // Validar que sea un mensaje válido
+        if (!event.data || typeof event.data !== 'object') {
+            console.warn('Mensaje AI inválido recibido');
+            return;
+        }
+
+        const { action, data } = event.data;
+
+        // Validaciones básicas
+        if (!action || !data || typeof data !== 'object') {
+            console.warn('Mensaje AI con formato inválido:', event.data);
+            return;
+        }
+
+        let coaParams = getCoaParams();
+        let message = "";
+        let success = true;
+        let actionPerformed = false;
+        let messages = [];
+        let dataChanged = false;
+
+        console.log(`Procesando acción en parámetros COA: ${action}`, data);
+
+        switch (action) {
+            case 'createCoa':
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: El nombre del parámetro es requerido";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const nombreParam = data.nombre.trim();
+
+                // Verificar que no exista (case insensitive)
+                const existeParam = coaParams.some(p =>
+                    p.nombre.toLowerCase() === nombreParam.toLowerCase()
+                );
+                if (existeParam) {
+                    message = `❌ Error: Ya existe un parámetro llamado "${nombreParam}"`;
+                    success = false;
+                    messages.push(message);
+                } else {
+                    // Crear nuevo parámetro con valores por defecto
+                    const nuevoParam = {
+                        nombre: nombreParam,
+                        descripcion: data.descripcion || nombreParam,
+                        metodo: data.metodo || "",
+                        unidades: data.unidades || ""
+                    };
+
+                    coaParams.push(nuevoParam);
+                    message = `✅ Parámetro "${nombreParam}" creado exitosamente`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
+                }
+                break;
+
+            case 'updateCoa':
+                // Validar datos requeridos
+                if (!data.originalName || data.originalName.trim() === '') {
+                    message = "❌ Error: Se necesita el nombre original del parámetro";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const originalName = data.originalName.trim();
+
+                // Buscar parámetro (case insensitive)
+                const indexUpdate = coaParams.findIndex(p =>
+                    p.nombre.toLowerCase() === originalName.toLowerCase()
+                );
+
+                if (indexUpdate === -1) {
+                    message = `❌ Error: No se encontró el parámetro "${originalName}"`;
+                    success = false;
+                    messages.push(message);
+                } else {
+                    // Verificar si se está cambiando el nombre y si ya existe
+                    if (data.nombre && data.nombre.trim() !== '') {
+                        const nuevoNombre = data.nombre.trim();
+                        if (nuevoNombre.toLowerCase() !== originalName.toLowerCase()) {
+                            const nombreYaExiste = coaParams.some((p, idx) =>
+                                idx !== indexUpdate && p.nombre.toLowerCase() === nuevoNombre.toLowerCase()
+                            );
+
+                            if (nombreYaExiste) {
+                                message = `❌ Error: Ya existe otro parámetro llamado "${nuevoNombre}"`;
+                                success = false;
+                                messages.push(message);
+                                break;
+                            }
+                        }
+                    }
+
+                    // Actualizar campos
+                    const paramActual = coaParams[indexUpdate];
+                    const nombreAnterior = paramActual.nombre;
+
+                    coaParams[indexUpdate] = {
+                        ...paramActual,
+                        nombre: data.nombre ? data.nombre.trim() : paramActual.nombre,
+                        descripcion: data.descripcion !== undefined ? data.descripcion : paramActual.descripcion,
+                        metodo: data.metodo !== undefined ? data.metodo : paramActual.metodo,
+                        unidades: data.unidades !== undefined ? data.unidades : paramActual.unidades
+                    };
+
+                    message = `✅ Parámetro "${nombreAnterior}" actualizado`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
+                }
+                break;
+
+            case 'deleteCoa':
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: Se necesita el nombre del parámetro";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const nombreEliminar = data.nombre.trim();
+
+                // Buscar parámetro (case insensitive)
+                const deleteIndex = coaParams.findIndex(p =>
+                    p.nombre.toLowerCase() === nombreEliminar.toLowerCase()
+                );
+
+                if (deleteIndex === -1) {
+                    message = `❌ Error: No se encontró el parámetro "${nombreEliminar}"`;
+                    success = false;
+                    messages.push(message);
+                } else {
+                    const eliminado = coaParams[deleteIndex].nombre;
+                    coaParams.splice(deleteIndex, 1);
+                    message = `✅ Parámetro "${eliminado}" eliminado correctamente`;
+                    actionPerformed = true;
+                    dataChanged = true;
+                    messages.push(message);
+                }
+                break;
+
+            case 'filterCoa':
+                // Validar datos
+                const query = data.query ? data.query.trim() : '';
+
+                if (searchInput) {
+                    searchInput.value = query;
+                    renderTable(query);
+
+                    if (query === '') {
+                        message = "🗑️ Filtro removido - Mostrando todos los parámetros";
+                    } else {
+                        message = `🔍 Parámetros filtrados por: "${query}"`;
+                    }
+                    actionPerformed = true;
+                    messages.push(message);
+                } else {
+                    message = "❌ Error: Elemento de búsqueda no encontrado";
+                    success = false;
+                    messages.push(message);
+                }
+                break;
+
+            case 'setTheme':
+                if (data.theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('theme', data.theme);
+                message = `🎨 Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}`;
+                actionPerformed = true;
+                messages.push(message);
+                break;
+
+            case 'logout':
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../index.html';
+                }
+                return;
+
+            default:
+                console.log('Acción no reconocida en parámetros COA:', action);
+                message = `⚠️ Acción "${action}" no reconocida`;
+                success = false;
+                messages.push(message);
+                break;
+        }
+
+        // Guardar cambios si se modificaron los datos
+        if (dataChanged) {
+            saveCoaParams(coaParams);
+        }
+
+        // Re-renderizar tabla si fue una acción relacionada con datos
+        if (actionPerformed && ['createCoa', 'updateCoa', 'deleteCoa', 'filterCoa'].includes(action)) {
+            setTimeout(() => {
+                renderTable(searchInput ? searchInput.value : '');
+            }, 100);
+        }
+
+        // Enviar retroalimentación a la IA
+        if (event.source) {
+            // Enviar cada mensaje individualmente
+            messages.forEach(msg => {
+                event.source.postMessage({
+                    type: 'ai-feedback',
+                    message: msg,
+                    success: success,
+                    action: action
+                }, event.origin);
+            });
+        }
+
+        // Mostrar notificación visual si hay error
+        if (!success && messages.some(m => m.includes('❌'))) {
+            const errorMessages = messages.filter(m => m.includes('❌'));
+            if (errorMessages.length > 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-notification';
+                errorMsg.textContent = errorMessages[0].replace('❌ ', '');
+                errorMsg.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #ff6b6b;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                document.body.appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 3000);
+            }
+        }
+
+        // Mostrar notificación de éxito
+        if (success && actionPerformed && messages.some(m => m.includes('✅'))) {
+            const successMessages = messages.filter(m => m.includes('✅'));
+            if (successMessages.length > 0) {
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-notification';
+                successMsg.textContent = successMessages[0].replace('✅ ', '');
+                successMsg.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4caf50;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 2000);
+            }
+        }
+    });
 });
