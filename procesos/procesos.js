@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Sidebar & User Info ---
     const sidebar = document.getElementById('sidebar');
-    document.getElementById('openMenuBtn')?.addEventListener('click', () => sidebar.classList.add('open'));
-    document.getElementById('closeMenuBtn')?.addEventListener('click', () => sidebar.classList.remove('open'));
+    document.getElementById('openMenuBtn')?.addEventListener('click', () => sidebar.classList.add('active'));
+    document.getElementById('closeMenuBtn')?.addEventListener('click', () => sidebar.classList.remove('active'));
     document.getElementById('userInfo').textContent = "Usuario: " + currentUser;
 
     // --- Table Rendering ---

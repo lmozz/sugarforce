@@ -8,7 +8,8 @@ let session = null;
 const CONTEXT_MAP = {
     'pasos': {
         storageKey: 'steps',
-        systemRole: `Eres un experto en gestión de procesos y pasos de Dizucar. Tienes acceso a la lista actual de pasos del usuario (nombre y descripción). Ayuda al usuario a organizar sus pasos.
+        systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre.
+        Eres un experto en gestión de procesos y pasos de Dizucar. Tienes acceso a la lista actual de pasos del usuario (nombre y descripción). Ayuda al usuario a organizar sus pasos.
         Puedes realizar las siguientes acciones:
         - Crear un paso: Necesitas el 'nombre' y opcionalmente la 'descripción'.
         - Editar un paso: Necesitas el 'nombre' actual del paso y los nuevos valores para 'nombre' o 'descripción'.
@@ -26,23 +27,32 @@ const CONTEXT_MAP = {
     },
     'coa': {
         storageKey: 'coa',
-        systemRole: 'Eres un experto en Certificados de Análisis (COA) de Dizucar. Tienes acceso a la lista de parámetros COA actual, incluyendo nombre, descripción, método de análisis y unidades. Ayuda al usuario a entender estos parámetros o a gestionarlos. Usa Markdown.'
+        systemRole: `Eres un experto en Certificados de Análisis (COA) de Dizucar. Tienes acceso a la lista de parámetros COA actual, 
+        incluyendo nombre, descripción, método de análisis y unidades. Ayuda al usuario a entender estos parámetros o a gestionarlos. 
+        Usa Markdown.`
     },
     'customer': {
         storageKey: 'customer',
-        systemRole: 'Eres un experto en gestión de clientes de Dizucar. Tienes acceso a la lista actual de clientes (nombre, dirección, departamento, municipio, clasificación y correos electrónicos). Toma en cuenta que un cliente puede tener múltiples correos registrados. Ayuda al usuario a analizar su cartera de clientes o a buscar información específica. Usa Markdown.'
+        systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre.
+        Eres un experto en gestion de clientes de dizucar. Tienes acceso a la lista actual de los clientes (nombre, direccion, departamento, municipio, clasificacion y correos electrónicos).
+        Puedes realizar las siguientes acciones:
+        - Crear un cliente: necesitas el nombre, direccion, departamento, municipio, clasificacion y si te dan `
     },
     'notes': {
         storageKey: 'notes',
-        systemRole: 'Eres un experto en notas de Certificados de Análisis (COA) de Dizucar. Tienes acceso a la lista de notas aclaratorias del COA (orden y descripción). Ayuda al usuario a gestionar estas notas o a ordenarlas correctamente. Usa Markdown.'
+        systemRole: `Eres un experto en notas de Certificados de Análisis (COA) de Dizucar. Tienes acceso a la lista de notas aclaratorias del COA (orden y descripción). 
+        Ayuda al usuario a gestionar estas notas o a ordenarlas correctamente. Usa Markdown.`
     },
     'product': {
         storageKey: 'product',
-        systemRole: 'Eres un experto en productos de Dizucar. Tienes acceso al catálogo actual (nombre, descripción y presentación). Ayuda al usuario a buscar productos o a gestionar la lista. Usa Markdown.'
+        systemRole: `Eres un experto en productos de Dizucar. Tienes acceso al catálogo actual (nombre, descripción y presentación). 
+        Ayuda al usuario a buscar productos o a gestionar la lista. Usa Markdown.`
     },
     'cellar': {
         storageKey: 'cellar',
-        systemRole: `Eres un experto en gestión de bodegas de Dizucar. Tienes acceso a la lista de bodegas (nombre y descripción). Ayuda al usuario a organizar sus centros de almacenamiento.
+        systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre.
+        Eres un experto en gestión de bodegas de Dizucar. Tienes acceso a la lista de bodegas (nombre y descripción). 
+        Ayuda al usuario a organizar sus centros de almacenamiento.
         Puedes realizar las siguientes acciones:
         - Crear una bodega: Necesitas el 'nombre' y opcionalmente la 'descripción'.
         - Editar una bodega: Necesitas el 'nombre' actual de la bodega y los nuevos valores para 'nombre' o 'descripción'.
@@ -60,15 +70,21 @@ const CONTEXT_MAP = {
     },
     'presentation': {
         storageKey: 'presentation',
-        systemRole: 'Eres un experto en presentaciones de productos de Dizucar. Tienes acceso a la lista de presentaciones (nombre y descripción). Ayuda al usuario a gestionar cómo se ofrecen los productos. Usa Markdown.'
+        systemRole: `Eres un experto en presentaciones de productos de Dizucar. Tienes acceso a la lista de presentaciones (nombre y descripción). 
+        Ayuda al usuario a gestionar cómo se ofrecen los productos. Usa Markdown.`
     },
     'coas': {
         storageKey: 'coas',
-        systemRole: 'Eres un experto en Certificados de Análisis (COA) de Dizucar. Tienes acceso a los certificados emitidos (maestro-detalle). El maestro incluye cliente, dirección, fechas, producto, bodega, etc. El detalle incluye parámetros y resultados. Ayuda al usuario a analizar certificados o a buscar datos específicos. Tienes acceso a los campos: cliente, producto, fecha de revision, emision, vencimiento, lote, etc. Usa Markdown.'
+        systemRole: `Eres un experto en Certificados de Análisis (COA) de Dizucar. Tienes acceso a los certificados emitidos (maestro-detalle). 
+        El maestro incluye cliente, dirección, fechas, producto, bodega, etc. El detalle incluye parámetros y resultados. 
+        Ayuda al usuario a analizar certificados o a buscar datos específicos. Tienes acceso a los campos: cliente, producto, fecha de revision, 
+        emision, vencimiento, lote, etc. Usa Markdown.`
     },
     'clasificacion': {
         storageKey: 'classification',
-        systemRole: `Eres un experto en clasificaciones de Dizucar. Tienes acceso a la lista de clasificaciones (maestro-detalle) donde cada clasificación tiene un nombre, descripción y una lista de pasos asociados. Ayuda al usuario a gestionar sus tipos de procesos.
+        systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre.
+        Eres un experto en clasificaciones de Dizucar. Tienes acceso a la lista de clasificaciones (maestro-detalle) 
+        donde cada clasificación tiene un nombre, descripción y una lista de pasos asociados. Ayuda al usuario a gestionar sus tipos de procesos.
         
         Puedes realizar las siguientes acciones:
         **Operaciones de Clasificación (Maestro):**
@@ -100,17 +116,21 @@ const CONTEXT_MAP = {
     },
     'procesos': {
         storageKey: 'procesos',
-        systemRole: 'Eres un experto en gestión de procesos operativos de Dizucar. Tienes acceso a la base de datos de procesos que incluye: Entidad, Tipo (de clasificación), Estatus, Creador, UUID, Responsables, Contactos, Notas y Alertas. Ayuda al usuario a rastrear el estado de sus procesos, entender el historial de seguimientos (tracking) o gestionar los detalles del proceso. Usa Markdown.'
+        systemRole: `Eres un experto en gestión de procesos operativos de Dizucar. Tienes acceso a la base de datos de procesos que incluye: 
+        Entidad, Tipo (de clasificación), Estatus, Creador, UUID, Responsables, Contactos, Notas y Alertas. Ayuda al usuario a rastrear el 
+        estado de sus procesos, entender el historial de seguimientos (tracking) o gestionar los detalles del proceso. Usa Markdown.`
     },
     'default': {
         storageKey: null,
-        systemRole: 'Eres un asistente útil que habla con el usuario en su día a día. Tu tono es amigable y profesional. Responde de manera concisa pero informativa. Usa Markdown para dar formato a tus respuestas.'
+        systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre. Eres un asistente útil que habla con el usuario en su día a día. 
+        Tu tono es amigable y profesional. Responde de manera concisa pero informativa. Usa Markdown para dar formato a tus respuestas.`
     }
 };
 
 const GLOBAL_AI_INSTRUCTIONS = `
 ### INSTRUCCIONES CRÍTICAS DE ACCIONES:
-Para realizar cualquier acción técnica, DEBES generar un bloque de código JSON válido. No confirmes que la acción se ha realizado hasta que el sistema te devuelva un mensaje de confirmación (vía "ai-feedback").
+Para realizar cualquier acción técnica, DEBES generar un bloque de código JSON válido. No confirmes que la acción se ha realizado 
+hasta que el sistema te devuelva un mensaje de confirmación (vía "ai-feedback").
 
 **Acciones Globales Disponibles:**
 1. **Cambiar Tema**: 
@@ -276,7 +296,7 @@ async function sendMessage() {
 sendBtn.addEventListener('click', sendMessage);
 
 userInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && e.ctrlKey) {
         sendMessage();
     }
 });

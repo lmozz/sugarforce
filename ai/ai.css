@@ -10,6 +10,8 @@
     /* Removed padding */
 }
 
+
+
 .glass-chat-container {
     width: 100%;
     max-width: none;
@@ -53,6 +55,21 @@ body.dark-mode .glass-chat-container {
 body.dark-mode .chat-header {
     background: rgba(0, 0, 0, 0.2);
     border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+textarea {
+    width: 100%;
+    border-radius: 10px;
+    padding: 5px;
+    max-height: 80px;
+    min-height: 45px;
+    font-size: 15px;
+    background: rgba(0, 0, 0, 0);
+}
+
+body.dark-mode textarea {
+    backdrop-filter: blur(5px);
+    color: #fff;
 }
 
 .chat-header h2 {
