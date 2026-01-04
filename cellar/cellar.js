@@ -182,55 +182,151 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // AI CRUD Handler
+    // AI CRUD Handler - MEJORADO (igual que pasos.js)
     window.addEventListener('message', (event) => {
+        // Validar que sea un mensaje válido
+        if (!event.data || typeof event.data !== 'object') {
+            console.warn('Mensaje AI inválido recibido');
+            return;
+        }
+
         const { action, data } = event.data;
-        if (!action || !data) return;
+
+        // Validaciones básicas
+        if (!action || !data || typeof data !== 'object') {
+            console.warn('Mensaje AI con formato inválido:', event.data);
+            return;
+        }
 
         let items = getCellars();
         let message = "";
-        console.log("hola: " + action);
+        let success = true;
+        let actionPerformed = false;
+        let messages = [];
+        let itemsChanged = false;
+
+        console.log(`Procesando acción en bodegas: ${action}`, data);
+
         switch (action) {
             case 'createCellar':
-                items.push({ nombre: data.nombre, descripcion: data.descripcion || data.nombre });
-                message = `Bodega "${data.nombre}" creada satisfactoriamente.`;
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: El nombre de la bodega es requerido";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const nombreCrear = data.nombre.trim();
+                const descripcionCrear = (data.descripcion || nombreCrear).trim();
+
+                // Verificar que no exista (case insensitive)
+                const existeCrear = items.some(i => i.nombre.toLowerCase() === nombreCrear.toLowerCase());
+                if (existeCrear) {
+                    message = `❌ Error: Ya existe una bodega llamada "${nombreCrear}"`;
+                    success = false;
+                    messages.push(message);
+                } else {
+                    items.push({ nombre: nombreCrear, descripcion: descripcionCrear });
+                    message = `✅ Bodega "${nombreCrear}" creada exitosamente`;
+                    actionPerformed = true;
+                    itemsChanged = true;
+                    messages.push(message);
+                }
                 break;
+
             case 'updateCellar':
-                // Try exact match first, then case-insensitive
-                let idx = items.findIndex(i => i.nombre === data.originalName);
-                if (idx === -1) {
-                    idx = items.findIndex(i => i.nombre.toLowerCase() === data.originalName.toLowerCase());
+                // Validar datos requeridos
+                if (!data.originalName || data.originalName.trim() === '' ||
+                    !data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: Se necesitan ambos nombres (original y nuevo)";
+                    success = false;
+                    messages.push(message);
+                    break;
                 }
 
-                if (idx !== -1) {
-                    const originalActualName = items[idx].nombre;
-                    items[idx] = { nombre: data.nombre, descripcion: data.descripcion || data.nombre };
-                    message = `Bodega "${originalActualName}" actualizada a "${data.nombre}".`;
+                const originalName = data.originalName.trim();
+                const nuevoNombre = data.nombre.trim();
+                const nuevaDesc = (data.descripcion || nuevoNombre).trim();
+
+                // Buscar bodega (case insensitive)
+                const indexUpdate = items.findIndex(i => i.nombre.toLowerCase() === originalName.toLowerCase());
+
+                if (indexUpdate === -1) {
+                    message = `❌ Error: No se encontró la bodega "${originalName}"`;
+                    success = false;
+                    messages.push(message);
                 } else {
-                    message = `Error: No se encontró la bodega "${data.originalName}".`;
+                    // Verificar si el nuevo nombre ya existe (excluyendo el actual)
+                    const nombreYaExiste = items.some((i, idx) =>
+                        idx !== indexUpdate && i.nombre.toLowerCase() === nuevoNombre.toLowerCase()
+                    );
+
+                    if (nombreYaExiste) {
+                        message = `❌ Error: Ya existe otra bodega llamada "${nuevoNombre}"`;
+                        success = false;
+                        messages.push(message);
+                    } else {
+                        const nombreAnterior = items[indexUpdate].nombre;
+                        items[indexUpdate] = { nombre: nuevoNombre, descripcion: nuevaDesc };
+                        message = `✅ Bodega "${nombreAnterior}" actualizada a "${nuevoNombre}"`;
+                        actionPerformed = true;
+                        itemsChanged = true;
+                        messages.push(message);
+                    }
                 }
                 break;
+
             case 'deleteCellar':
-                // Try exact match first, then case-insensitive
-                let deleteIdx = items.findIndex(i => i.nombre === data.nombre);
-                if (deleteIdx === -1) {
-                    deleteIdx = items.findIndex(i => i.nombre.toLowerCase() === data.nombre.toLowerCase());
+                // Validar datos requeridos
+                if (!data.nombre || data.nombre.trim() === '') {
+                    message = "❌ Error: Se necesita el nombre de la bodega";
+                    success = false;
+                    messages.push(message);
+                    break;
                 }
 
-                if (deleteIdx !== -1) {
-                    const deletedName = items[deleteIdx].nombre;
-                    items.splice(deleteIdx, 1);
-                    message = `Bodega "${deletedName}" eliminada.`;
+                const nombreEliminar = data.nombre.trim();
+
+                // Buscar bodega (case insensitive)
+                const deleteIndex = items.findIndex(i => i.nombre.toLowerCase() === nombreEliminar.toLowerCase());
+
+                if (deleteIndex === -1) {
+                    message = `❌ Error: No se encontró la bodega "${nombreEliminar}"`;
+                    success = false;
+                    messages.push(message);
                 } else {
-                    message = `Error: No se encontró la bodega "${data.nombre}".`;
+                    const eliminado = items[deleteIndex].nombre;
+                    items.splice(deleteIndex, 1);
+                    message = `✅ Bodega "${eliminado}" eliminada correctamente`;
+                    actionPerformed = true;
+                    itemsChanged = true;
+                    messages.push(message);
                 }
                 break;
+
             case 'filterCellar':
+                // Validar datos
+                const query = data.query ? data.query.trim() : '';
+
                 if (searchInput) {
-                    searchInput.value = data.query;
-                    renderTable(data.query);
-                    message = `Tabla filtrada por "${data.query}".`;
+                    searchInput.value = query;
+                    renderTable(query);
+
+                    if (query === '') {
+                        message = "🗑️ Filtro removido - Mostrando todas las bodegas";
+                    } else {
+                        message = `🔍 Bodegas filtradas por: "${query}"`;
+                    }
+                    actionPerformed = true;
+                    messages.push(message);
+                } else {
+                    message = "❌ Error: Elemento de búsqueda no encontrado";
+                    success = false;
+                    messages.push(message);
                 }
                 break;
+
             case 'setTheme':
                 if (data.theme === 'dark') {
                     document.body.classList.add('dark-mode');
@@ -238,23 +334,99 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.classList.remove('dark-mode');
                 }
                 localStorage.setItem('theme', data.theme);
-                message = `Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}.`;
+                message = `🎨 Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}`;
+                actionPerformed = true;
+                messages.push(message);
                 break;
+
             case 'logout':
-                console.log('Logout action received!');
-                localStorage.removeItem('currentUser');
-                console.log('User removed from localStorage');
-                // Try direct window.location instead of window.top
-                window.location.href = '../index.html';
-                return; // Exit immediately without saving or rendering
-            default:
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../index.html';
+                }
                 return;
+
+            default:
+                console.log('Acción no reconocida en bodegas:', action);
+                message = `⚠️ Acción "${action}" no reconocida`;
+                success = false;
+                messages.push(message);
+                break;
         }
 
-        saveCellars(items);
-        renderTable(searchInput.value);
+        // Guardar cambios si se modificaron las bodegas
+        if (itemsChanged) {
+            saveCellars(items);
+        }
 
-        // Notify AI about the result
-        event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
+        // Re-renderizar tabla si fue una acción relacionada con datos
+        if (actionPerformed && ['createCellar', 'updateCellar', 'deleteCellar', 'filterCellar'].includes(action)) {
+            setTimeout(() => {
+                renderTable(searchInput ? searchInput.value : '');
+            }, 100);
+        }
+
+        // Enviar retroalimentación a la IA
+        if (event.source) {
+            // Enviar cada mensaje individualmente
+            messages.forEach(msg => {
+                event.source.postMessage({
+                    type: 'ai-feedback',
+                    message: msg,
+                    success: success,
+                    action: action
+                }, event.origin);
+            });
+        }
+
+        // Mostrar notificación visual si hay error
+        if (!success && messages.some(m => m.includes('❌'))) {
+            const errorMessages = messages.filter(m => m.includes('❌'));
+            if (errorMessages.length > 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-notification';
+                errorMsg.textContent = errorMessages[0].replace('❌ ', '');
+                errorMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff6b6b;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+                document.body.appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 3000);
+            }
+        }
+
+        // Mostrar notificación de éxito
+        if (success && actionPerformed && messages.some(m => m.includes('✅'))) {
+            const successMessages = messages.filter(m => m.includes('✅'));
+            if (successMessages.length > 0) {
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-notification';
+                successMsg.textContent = successMessages[0].replace('✅ ', '');
+                successMsg.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4caf50;
+                color: white;
+                padding: 10px 15px;
+                border-radius: 5px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 300px;
+                word-wrap: break-word;
+            `;
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 2000);
+            }
+        }
     });
 });
