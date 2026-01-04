@@ -800,4 +800,676 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initial Load
     renderTable();
+
+    // AI CRUD Handler - COMPLETO Y CORREGIDO
+    window.addEventListener('message', (event) => {
+        // Validar que sea un mensaje válido
+        if (!event.data || typeof event.data !== 'object') {
+            console.warn('Mensaje AI inválido recibido');
+            return;
+        }
+
+        const { action, data } = event.data;
+
+        // Validaciones básicas
+        if (!action || !data || typeof data !== 'object') {
+            console.warn('Mensaje AI con formato inválido:', event.data);
+            return;
+        }
+
+        let coas = getData('coas');
+        let message = "";
+        let success = true;
+        let actionPerformed = false;
+        let messages = [];
+        let dataChanged = false;
+
+        console.log(`Procesando acción en COAs: ${action}`, data);
+
+        // Función auxiliar para registrar trazabilidad
+        const trackStatus = (coa, newStatus) => {
+            if (!coa.track) coa.track = [];
+            coa.track.push({
+                status: newStatus,
+                user: currentUser || 'Anónimo',
+                time: new Date().toLocaleString()
+            });
+            coa.status = newStatus;
+        };
+
+        // Función para encontrar COA
+        const findCoaById = (id) => {
+            return coas.find(c => c.id === id || c.id?.toString() === id?.toString());
+        };
+
+        // Función para encontrar COA más reciente por cliente y estado
+        const findRecentCoaByClient = (clientName, status = null) => {
+            let clientCOAs = coas.filter(c =>
+                c.cliente?.toLowerCase() === clientName.toLowerCase()
+            );
+
+            if (status) {
+                clientCOAs = clientCOAs.filter(c => c.status === status);
+            }
+
+            // Ordenar por ID más reciente (más alto)
+            clientCOAs.sort((a, b) => {
+                const idA = parseInt(a.id) || 0;
+                const idB = parseInt(b.id) || 0;
+                return idB - idA;
+            });
+
+            return clientCOAs[0];
+        };
+
+        // Función para procesar "hoy" en fechas
+        const procesarFecha = (fecha) => {
+            if (!fecha) return fecha;
+            if (fecha.toLowerCase() === 'hoy') {
+                return new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+            }
+            return fecha;
+        };
+
+        // Función para validar campos de fecha
+        const validarFecha = (fecha) => {
+            if (!fecha) return true;
+            if (fecha.toLowerCase() === 'hoy') return true;
+            return /^\d{4}-\d{2}-\d{2}$/.test(fecha);
+        };
+
+        switch (action) {
+            case 'requestCoa':
+                // Validar datos requeridos
+                if (!data.cliente || data.cliente.trim() === '') {
+                    message = "❌ Error: Se necesita el nombre del cliente";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                const clienteSolicitud = data.cliente.trim();
+                const customers = getData('customer');
+
+                // Verificar que el cliente exista
+                const clienteExacto = customers.find(c =>
+                    c.nombre.toLowerCase() === clienteSolicitud.toLowerCase()
+                );
+
+                if (!clienteExacto) {
+                    const todosClientes = customers.map(c => c.nombre).join(', ');
+                    message = `❌ Error: Cliente "${clienteSolicitud}" no existe. Clientes: ${todosClientes || "ninguno"}`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Usar nombre exacto del cliente
+                const nombreClienteExacto = clienteExacto.nombre;
+
+                // Manejar fecha de requerimiento
+                let fechaReq = data.fechaRequerimiento;
+
+                if (!fechaReq || fechaReq.trim() === '') {
+                    message = "❌ Error: Se necesita la fecha de requerimiento";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                fechaReq = procesarFecha(fechaReq);
+
+                if (!validarFecha(fechaReq)) {
+                    message = "❌ Error: Formato de fecha inválido. Use YYYY-MM-DD o 'hoy'";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Crear nueva solicitud COA
+                const nuevaSolicitud = {
+                    id: Date.now().toString(),
+                    cliente: nombreClienteExacto,
+                    fechaRequerimiento: fechaReq,
+                    usuarioSolicitante: currentUser || 'Anónimo',
+                    detalles: [],
+                    track: []
+                };
+
+                trackStatus(nuevaSolicitud, 'nuevo');
+                coas.push(nuevaSolicitud);
+
+                message = `✅ Solicitud COA creada para "${nombreClienteExacto}" (ID: ${nuevaSolicitud.id})`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
+                break;
+
+            case 'startCoa':
+                // Validar datos requeridos
+                let coaIdStart = data.id;
+                let clienteStart = data.cliente;
+
+                // Buscar COA
+                let coaStart;
+
+                if (coaIdStart) {
+                    coaStart = findCoaById(coaIdStart);
+                } else if (clienteStart) {
+                    coaStart = findRecentCoaByClient(clienteStart, 'nuevo');
+                    if (coaStart) {
+                        messages.push(`🔍 Usando COA más reciente de "${clienteStart}" (ID: ${coaStart.id})`);
+                    }
+                }
+
+                if (!coaStart) {
+                    message = "❌ Error: No se encontró un COA en estado 'nuevo'";
+                    if (clienteStart) {
+                        message += ` para el cliente "${clienteStart}"`;
+                    }
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (coaStart.status !== 'nuevo') {
+                    message = `❌ Error: El COA está en estado "${coaStart.status}". Solo se pueden iniciar COAs en estado "nuevo".`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Validar que existan datos maestros
+                const deps = {
+                    customers: getData('customer').length > 0,
+                    products: getData('product').length > 0,
+                    cellars: getData('cellar').length > 0,
+                    coaParams: getData('coa').length > 0
+                };
+
+                const depsFaltantes = Object.keys(deps).filter(key => !deps[key]);
+                if (depsFaltantes.length > 0) {
+                    message = `⚠️ Advertencia: Faltan datos maestros (${depsFaltantes.join(', ')}). El COA se iniciará pero necesitará estos datos para completarse.`;
+                    messages.push(message);
+                }
+
+                // Iniciar COA
+                trackStatus(coaStart, 'iniciado');
+                coaStart.usuarioInicio = currentUser || 'Anónimo';
+                coaStart.fechaInicio = new Date().toLocaleString();
+
+                message = `✅ COA iniciado (ID: ${coaStart.id})`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
+                break;
+
+            case 'updateCoa':
+                // Validar datos requeridos
+                let coaIdUpdate = data.id;
+                let clienteUpdate = data.cliente;
+
+                // Buscar COA
+                let coaUpdate;
+
+                if (coaIdUpdate) {
+                    coaUpdate = findCoaById(coaIdUpdate);
+                } else if (clienteUpdate) {
+                    coaUpdate = findRecentCoaByClient(clienteUpdate, 'iniciado');
+                    if (coaUpdate) {
+                        messages.push(`🔍 Usando COA más reciente iniciado de "${clienteUpdate}" (ID: ${coaUpdate.id})`);
+                    }
+                }
+
+                if (!coaUpdate) {
+                    message = "❌ Error: No se encontró un COA en estado 'iniciado'";
+                    if (clienteUpdate) {
+                        message += ` para el cliente "${clienteUpdate}"`;
+                    }
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (coaUpdate.status !== 'iniciado') {
+                    message = `❌ Error: El COA está en estado "${coaUpdate.status}". Solo se pueden editar COAs en estado "iniciado".`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Actualizar campos de cabecera
+                let cambios = [];
+
+                // Campos básicos
+                const camposBasicos = ['producto', 'bodega', 'lote', 'marchamo', 'cantidad'];
+                camposBasicos.forEach(campo => {
+                    if (data[campo] !== undefined && data[campo] !== '') {
+                        // Validar existencia para producto y bodega
+                        if (campo === 'producto') {
+                            const productos = getData('product');
+                            const productoExacto = productos.find(p =>
+                                p.nombre.toLowerCase() === data[campo].toString().toLowerCase()
+                            );
+                            if (!productoExacto) {
+                                message = `⚠️ Producto "${data[campo]}" no existe en catálogo`;
+                                messages.push(message);
+                                return;
+                            }
+                            coaUpdate.producto = productoExacto.nombre;
+                            coaUpdate.presentacion = productoExacto.presentacion || '';
+                            coaUpdate.descripcion = productoExacto.descripcion || '';
+                        } else if (campo === 'bodega') {
+                            const bodegas = getData('cellar');
+                            const bodegaExacta = bodegas.find(b =>
+                                b.nombre.toLowerCase() === data[campo].toString().toLowerCase()
+                            );
+                            if (!bodegaExacta) {
+                                message = `⚠️ Bodega "${data[campo]}" no existe en catálogo`;
+                                messages.push(message);
+                                return;
+                            }
+                            coaUpdate.bodega = bodegaExacta.nombre;
+                        } else {
+                            coaUpdate[campo] = data[campo].toString().trim();
+                        }
+                        cambios.push(campo);
+                    }
+                });
+
+                // Campo especial: tarimas (NO tarima)
+                if (data.tarimas !== undefined && data.tarimas !== '') {
+                    coaUpdate.tarimas = data.tarimas.toString().trim();
+                    cambios.push('tarimas');
+                }
+
+                // Fechas
+                const camposFecha = ['fechaAnalisis', 'fechaRevision', 'fechaProduccion', 'fechaVencimiento'];
+                camposFecha.forEach(campo => {
+                    if (data[campo] !== undefined && data[campo] !== '') {
+                        const fechaProcesada = procesarFecha(data[campo].toString());
+                        if (!validarFecha(fechaProcesada)) {
+                            message = `❌ Error: Fecha "${data[campo]}" tiene formato inválido`;
+                            success = false;
+                            messages.push(message);
+                            return;
+                        }
+                        coaUpdate[campo] = fechaProcesada;
+                        cambios.push(campo);
+                    }
+                });
+
+                // Detalles (parámetros)
+                if (data.detalles && Array.isArray(data.detalles)) {
+                    const coaParams = getData('coa');
+                    const detallesExistentes = coaUpdate.detalles || [];
+
+                    // Para cada nuevo detalle
+                    data.detalles.forEach(detalle => {
+                        if (!detalle.parametro || !detalle.resultado) {
+                            return;
+                        }
+
+                        const paramNombre = detalle.parametro.trim();
+                        const resultado = detalle.resultado.toString().trim();
+
+                        // Validar que el parámetro exista
+                        const paramExacto = coaParams.find(p =>
+                            p.nombre.toLowerCase() === paramNombre.toLowerCase()
+                        );
+
+                        if (!paramExacto) {
+                            message = `⚠️ Parámetro "${paramNombre}" no existe en catálogo`;
+                            messages.push(message);
+                            return;
+                        }
+
+                        const paramExactoNombre = paramExacto.nombre;
+
+                        // Verificar si ya existe
+                        const detalleExistenteIndex = detallesExistentes.findIndex(d =>
+                            d.parametro.toLowerCase() === paramExactoNombre.toLowerCase()
+                        );
+
+                        if (detalleExistenteIndex !== -1) {
+                            // Actualizar existente
+                            detallesExistentes[detalleExistenteIndex].resultado = resultado;
+                            message = `✏️ Parámetro "${paramExactoNombre}" actualizado: ${resultado}`;
+                        } else {
+                            // Agregar nuevo
+                            detallesExistentes.push({
+                                parametro: paramExactoNombre,
+                                resultado: resultado
+                            });
+                            message = `➕ Parámetro "${paramExactoNombre}" agregado: ${resultado}`;
+                        }
+                        cambios.push('detalles');
+                        messages.push(message);
+                    });
+
+                    coaUpdate.detalles = detallesExistentes;
+                }
+
+                if (cambios.length === 0) {
+                    message = "⚠️ No se realizaron cambios. Verifique los datos.";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                message = `✅ COA actualizado (ID: ${coaUpdate.id}). Campos modificados: ${cambios.join(', ')}`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
+                break;
+
+            case 'finishCoa':
+                // Validar datos requeridos
+                let coaIdFinish = data.id;
+                let clienteFinish = data.cliente;
+
+                // Buscar COA
+                let coaFinish;
+
+                if (coaIdFinish) {
+                    coaFinish = findCoaById(coaIdFinish);
+                } else if (clienteFinish) {
+                    coaFinish = findRecentCoaByClient(clienteFinish, 'iniciado');
+                    if (coaFinish) {
+                        messages.push(`🔍 Usando COA más reciente iniciado de "${clienteFinish}" (ID: ${coaFinish.id})`);
+                    }
+                }
+
+                if (!coaFinish) {
+                    message = "❌ Error: No se encontró un COA en estado 'iniciado'";
+                    if (clienteFinish) {
+                        message += ` para el cliente "${clienteFinish}"`;
+                    }
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (coaFinish.status !== 'iniciado') {
+                    message = `❌ Error: El COA está en estado "${coaFinish.status}". Solo se pueden finalizar COAs en estado "iniciado".`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Validar datos mínimos requeridos
+                const camposRequeridos = ['producto', 'lote', 'bodega'];
+                const camposFaltantes = camposRequeridos.filter(campo => !coaFinish[campo]);
+
+                if (camposFaltantes.length > 0) {
+                    message = `❌ Error: Faltan datos requeridos: ${camposFaltantes.join(', ')}`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (!coaFinish.detalles || coaFinish.detalles.length === 0) {
+                    message = "❌ Error: El COA no tiene parámetros de análisis";
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // Finalizar COA
+                trackStatus(coaFinish, 'finalizado');
+                coaFinish.usuarioFinaliza = currentUser || 'Anónimo';
+                coaFinish.fechaFinaliza = new Date().toLocaleString();
+
+                message = `✅ COA finalizado (ID: ${coaFinish.id}). Ya se puede imprimir.`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
+                break;
+
+            case 'printCoa':
+                // Validar datos requeridos
+                let coaIdPrint = data.id;
+                let clientePrint = data.cliente;
+
+                // Buscar COA
+                let coaPrint;
+
+                if (coaIdPrint) {
+                    coaPrint = findCoaById(coaIdPrint);
+                } else if (clientePrint) {
+                    coaPrint = findRecentCoaByClient(clientePrint, 'finalizado');
+                    if (coaPrint) {
+                        messages.push(`🔍 Usando COA más reciente finalizado de "${clientePrint}" (ID: ${coaPrint.id})`);
+                    }
+                }
+
+                if (!coaPrint) {
+                    message = "❌ Error: No se encontró un COA en estado 'finalizado'";
+                    if (clientePrint) {
+                        message += ` para el cliente "${clientePrint}"`;
+                    }
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (coaPrint.status !== 'finalizado') {
+                    message = `❌ Error: El COA está en estado "${coaPrint.status}". Solo se pueden imprimir COAs en estado "finalizado".`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // **IMPORTANTE: NO cambiar estado, solo imprimir**
+                // Registrar impresión en track (pero NO cambiar estado)
+                if (!coaPrint.track) coaPrint.track = [];
+                coaPrint.track.push({
+                    status: 'impresión realizada',
+                    user: currentUser || 'Anónimo',
+                    time: new Date().toLocaleString()
+                });
+                // NOTA: NO hacemos trackStatus() porque no cambia el estado
+
+                // Llamar a función de impresión
+                printCOA(coaPrint);
+
+                message = `✅ COA enviado a impresión (ID: ${coaPrint.id}). El estado sigue siendo "finalizado".`;
+                actionPerformed = true;
+                dataChanged = true; // Solo por el track
+                messages.push(message);
+                break;
+
+            case 'correctCoa':
+                // Validar datos requeridos
+                let coaIdCorrect = data.id;
+                let clienteCorrect = data.cliente;
+
+                // Buscar COA
+                let coaCorrect;
+
+                if (coaIdCorrect) {
+                    coaCorrect = findCoaById(coaIdCorrect);
+                } else if (clienteCorrect) {
+                    coaCorrect = findRecentCoaByClient(clienteCorrect, 'finalizado');
+                    if (coaCorrect) {
+                        messages.push(`🔍 Usando COA más reciente finalizado de "${clienteCorrect}" (ID: ${coaCorrect.id})`);
+                    }
+                }
+
+                if (!coaCorrect) {
+                    message = "❌ Error: No se encontró un COA en estado 'finalizado'";
+                    if (clienteCorrect) {
+                        message += ` para el cliente "${clienteCorrect}"`;
+                    }
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                if (coaCorrect.status !== 'finalizado') {
+                    message = `❌ Error: El COA está en estado "${coaCorrect.status}". Solo se pueden corregir COAs en estado "finalizado".`;
+                    success = false;
+                    messages.push(message);
+                    break;
+                }
+
+                // CORREGIR: Volver a estado "iniciado"
+                trackStatus(coaCorrect, 'iniciado');
+
+                message = `✅ COA reabierto para corrección (ID: ${coaCorrect.id}). Ahora está en estado "iniciado" y se puede editar.`;
+                actionPerformed = true;
+                dataChanged = true;
+                messages.push(message);
+                break;
+
+            case 'filterCoa':
+                // Validar datos
+                const query = data.query ? data.query.trim() : '';
+                const statusFilter = data.status || '';
+
+                if (searchInput) {
+                    // Actualizar búsqueda por texto
+                    searchInput.value = query;
+
+                    // Actualizar filtros de estado si se especifican
+                    if (statusFilter && ['nuevo', 'iniciado', 'finalizado'].includes(statusFilter)) {
+                        selectedStatuses.clear();
+                        selectedStatuses.add(statusFilter);
+
+                        // Actualizar botones de filtro visualmente
+                        filterBtns.forEach(btn => {
+                            btn.classList.remove('active');
+                            if (btn.dataset.status === statusFilter) {
+                                btn.classList.add('active');
+                            }
+                        });
+                    } else if (statusFilter === '') {
+                        // Limpiar filtros
+                        selectedStatuses.clear();
+                        filterBtns.forEach(btn => btn.classList.remove('active'));
+                    }
+
+                    // Aplicar filtros
+                    renderTable(query);
+
+                    if (query === '' && !statusFilter) {
+                        message = "🗑️ Filtros removidos - Mostrando todos los COAs";
+                    } else {
+                        let filtroTexto = query ? `"${query}"` : '';
+                        let filtroEstado = statusFilter ? `estado: ${statusFilter}` : '';
+                        let separador = (filtroTexto && filtroEstado) ? ' y ' : '';
+                        message = `🔍 Filtrado por ${filtroTexto}${separador}${filtroEstado}`;
+                    }
+                    actionPerformed = true;
+                    messages.push(message);
+                } else {
+                    message = "❌ Error: Elemento de búsqueda no encontrado";
+                    success = false;
+                    messages.push(message);
+                }
+                break;
+
+            case 'setTheme':
+                if (data.theme === 'dark') {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+                localStorage.setItem('theme', data.theme);
+                message = `🎨 Tema cambiado a modo ${data.theme === 'dark' ? 'oscuro' : 'claro'}`;
+                actionPerformed = true;
+                messages.push(message);
+                break;
+
+            case 'logout':
+                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../index.html';
+                }
+                return;
+
+            default:
+                console.log('Acción no reconocida en COAs:', action);
+                message = `⚠️ Acción "${action}" no reconocida`;
+                success = false;
+                messages.push(message);
+                break;
+        }
+
+        // Guardar cambios si se modificaron los datos
+        if (dataChanged) {
+            saveData('coas', coas);
+        }
+
+        // Re-renderizar tabla si fue una acción relacionada con datos
+        if (actionPerformed && ['requestCoa', 'startCoa', 'updateCoa', 'finishCoa',
+            'printCoa', 'correctCoa', 'filterCoa'].includes(action)) {
+            setTimeout(() => {
+                renderTable(searchInput ? searchInput.value : '');
+            }, 100);
+        }
+
+        // Enviar retroalimentación a la IA
+        if (event.source) {
+            messages.forEach(msg => {
+                event.source.postMessage({
+                    type: 'ai-feedback',
+                    message: msg,
+                    success: success,
+                    action: action
+                }, event.origin);
+            });
+        }
+
+        // Mostrar notificación visual si hay error
+        if (!success && messages.some(m => m.includes('❌'))) {
+            const errorMessages = messages.filter(m => m.includes('❌'));
+            if (errorMessages.length > 0) {
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'error-notification';
+                errorMsg.textContent = errorMessages[0].replace('❌ ', '');
+                errorMsg.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #ff6b6b;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                document.body.appendChild(errorMsg);
+                setTimeout(() => errorMsg.remove(), 3000);
+            }
+        }
+
+        // Mostrar notificación de éxito
+        if (success && actionPerformed && messages.some(m => m.includes('✅'))) {
+            const successMessages = messages.filter(m => m.includes('✅'));
+            if (successMessages.length > 0) {
+                const successMsg = document.createElement('div');
+                successMsg.className = 'success-notification';
+                successMsg.textContent = successMessages[0].replace('✅ ', '');
+                successMsg.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #4caf50;
+                    color: white;
+                    padding: 10px 15px;
+                    border-radius: 5px;
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                    max-width: 300px;
+                    word-wrap: break-word;
+                `;
+                document.body.appendChild(successMsg);
+                setTimeout(() => successMsg.remove(), 2000);
+            }
+        }
+    });
+
 });
