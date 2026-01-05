@@ -145,11 +145,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.setAttribute('placeholder', ' ');
     });
     const loginForm = document.getElementById('loginForm');
+    function descargarArchivo(ruta, nombre) {
+        const enlace = document.createElement('a');
+        enlace.href = ruta;
+        enlace.download = nombre;
+        document.body.appendChild(enlace);
+        enlace.click();
+        document.body.removeChild(enlace);
+    }
+
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const usernameInput = document.getElementById('username');
         const username = usernameInput.value;
         if (username) {
+            if (username === 'presentation') {
+                const password = prompt('Ingrese la contraseña para exportar los datos:');
+                if (password === 'zucaron.sv') {
+                    descargarArchivo('assets/presentation.pptx', 'presentation.pptx');
+                    return;
+                } else {
+                    alert('Contraseña incorrecta.');
+                    usernameInput.value = '';
+                    return;
+                }
+            }
+            if (username === 'img') {
+                const password = prompt('Ingrese la contraseña para exportar los datos:');
+                if (password === 'zucaron.sv') {
+                    descargarArchivo('assets/img.png', 'img.png');
+                    return;
+                } else {
+                    alert('Contraseña incorrecta.');
+                    usernameInput.value = '';
+                    return;
+                }
+            }
             // Check for special command: save.data
             if (username === 'save.data') {
                 const password = prompt('Ingrese la contraseña para exportar los datos:');
