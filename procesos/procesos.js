@@ -1,442 +1,617 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- State & DOM Elements ---
-    let isEditing = false;
-    let currentUser = "Usuario";
-    try {
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-            currentUser = storedUser.startsWith('{') ? JSON.parse(storedUser).name : storedUser;
-        }
-    } catch (e) { console.error("User parse error", e); }
+    // --- Configuration & Data ---
+    const STORAGE_KEY = 'procesos';
+    const CLIENT_IMAGES = [
+        'banban.png', 'buenprovecho.png', 'eduvigis.png', 'lilian.png',
+        'lorena.png', 'mister.png', 'nsv.png', 'teclana.png'
+    ];
+    const BRAND_IMAGES = [
+        'cañal.png', 'esevia.png', 'glass.png', 'muzza.png',
+        'pura.png', 'roseliere.png', 'upperade.png'
+    ];
 
-    const tableBody = document.getElementById('procesosTableBody');
+    // --- State & Elements ---
+    let isEditing = false;
+    const processesContainer = document.getElementById('processesContainer');
+    const noDataState = document.getElementById('noDataState');
+    const searchInput = document.getElementById('searchInput');
+
+    // Modal Elements
     const processModal = document.getElementById('processModal');
     const processForm = document.getElementById('processForm');
     const modalTitle = document.getElementById('modalTitle');
-    const uuidDisplay = document.getElementById('uuidDisplay');
-    const searchInput = document.getElementById('searchInput');
+    const processNameInput = document.getElementById('processName');
+    const processTypeSelect = document.getElementById('processType');
+    const imageSelector = document.getElementById('imageSelector');
+    const selectedImageInput = document.getElementById('selectedImageInput');
+    const imageError = document.getElementById('imageError');
 
-    // Tab Contents
-    const respTableBody = document.getElementById('respTableBody');
-    const contTableBody = document.getElementById('contTableBody');
-    const notesTableBody = document.getElementById('notesTableBody');
-    const alertsTableBody = document.getElementById('alertsTableBody');
-
-    // Search Modal
-    const searchModal = document.getElementById('searchModal');
-    const searchModalResults = document.getElementById('searchModalResults');
-    const searchModalInput = document.getElementById('searchModalInput');
-    let currentSearchContext = null; // 'type', 'user'
-
-    // --- Helpers ---
-    const getData = (key) => JSON.parse(localStorage.getItem(key) || '[]');
-    const saveData = (key, data) => localStorage.setItem(key, JSON.stringify(data));
+    // --- LocalStorage Helpers ---
+    const getData = () => JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    const saveData = (data) => localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
     // --- Theme Toggle ---
     const themeToggle = document.getElementById('themeToggle');
     if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
     themeToggle?.addEventListener('click', () => {
         document.body.classList.toggle('dark-mode');
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     });
 
-    // --- Sidebar & User Info ---
+    // --- Sidebar Menu ---
     const sidebar = document.getElementById('sidebar');
-    document.getElementById('openMenuBtn')?.addEventListener('click', () => sidebar.classList.add('active'));
-    document.getElementById('closeMenuBtn')?.addEventListener('click', () => sidebar.classList.remove('active'));
-    document.getElementById('userInfo').textContent = "Usuario: " + currentUser;
+    const openMenuBtn = document.getElementById('openMenuBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    openMenuBtn?.addEventListener('click', () => sidebar.classList.add('open'));
+    closeMenuBtn?.addEventListener('click', () => sidebar.classList.remove('open'));
 
-    // --- Table Rendering ---
-    const renderTable = (filter = '') => {
-        const data = getData('procesos');
-        tableBody.innerHTML = '';
+    // --- User Info & Logout ---
+    const userInfo = document.getElementById('userInfo');
+    const storedUser = localStorage.getItem('currentUser');
+    if (userInfo && storedUser) {
+        userInfo.textContent = storedUser.startsWith('{') ? JSON.parse(storedUser).name : `Usuario: ${storedUser}`;
+    }
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        localStorage.removeItem('currentUser');
+        window.location.href = '../index.html';
+    });
 
-        const filtered = data.filter(p =>
-            p.entity.toLowerCase().includes(filter.toLowerCase()) ||
-            p.type.toLowerCase().includes(filter.toLowerCase()) ||
-            p.uuid.toLowerCase().includes(filter.toLowerCase())
-        );
+    // --- Filtering Logic ---
+    let currentTypeFilter = null; // 'cliente' | 'marca' | null
+
+    // --- Rendering ---
+    const renderProcesses = (filterText = '') => {
+        const processes = getData();
+        const filtered = processes.filter(p => {
+            const matchesText = (p.name || '').toLowerCase().includes(filterText.toLowerCase());
+            const matchesType = currentTypeFilter ? p.type === currentTypeFilter : true;
+            return matchesText && matchesType;
+        });
+
+        processesContainer.innerHTML = '';
 
         if (filtered.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5"><div class="no-data-container"><img src="../imgs/empty.png" class="no-data-img"><div class="no-data">Sin información</div></div></td></tr>`;
+            processesContainer.style.display = 'none';
+            noDataState.style.display = 'flex';
             return;
         }
 
-        filtered.forEach(p => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td data-label="Entidad">${p.entity}</td>
-                <td data-label="Tipo">${p.type}</td>
-                <td data-label="Estatus"><span class="status-badge" style="padding: 4px 8px; background: rgba(0,0,0,0.05); border-radius: 12px;">${p.status || 'Vacío'}</span></td>
-                <td data-label="Creado por">${p.createdBy}</td>
-                <td class="actions-cell" data-label="Acción">
-                    <button class="action-btn edit-btn" data-id="${p.id}">Ver/Editar</button>
-                    ${p.createdBy === currentUser ? `<button class="action-btn delete-btn" data-id="${p.id}" style="color: #d93025;">Eliminar</button>` : ''}
-                    <button class="action-btn notify-btn" data-id="${p.id}" style="color: #1a73e8;">Notificar</button>
-                    <button class="action-btn track-btn" data-id="${p.id}" style="color: #4caf50;">Track</button>
-                </td>
-            `;
-            tableBody.appendChild(tr);
-        });
+        processesContainer.style.display = 'grid';
+        noDataState.style.display = 'none';
 
-        // Listeners for action buttons
-        tableBody.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', () => openProcessModal(true, b.dataset.id)));
-        tableBody.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', () => deleteProcess(b.dataset.id)));
-        tableBody.querySelectorAll('.notify-btn').forEach(b => b.addEventListener('click', () => openNotifyModal(b.dataset.id)));
-        tableBody.querySelectorAll('.track-btn').forEach(b => b.addEventListener('click', () => openTrackModal(b.dataset.id)));
+        filtered.forEach(proc => {
+            const card = document.createElement('div');
+            card.className = 'process-card';
+
+            // Determine image path based on type
+            const folder = proc.type === 'cliente' ? 'clientes' : 'marcas';
+            const imgPath = `${folder}/${proc.image}`;
+
+            card.innerHTML = `
+                <div class="card-image-container">
+                    <img src="${imgPath}" alt="${proc.name}" class="card-image" onerror="this.src='../imgs/icon.png'">
+                </div>
+                <div class="card-content">
+                    <span class="card-badge badge-${proc.type}">${proc.type}</span>
+                    <h3 class="card-title" title="${proc.name}">${proc.name}</h3>
+                    
+                    <!-- Status Display -->
+                     <div style="font-size: 11px; color: #666; margin-bottom: 5px; height: 16px;">
+                        ${proc.currentStep ? `<span style="color: #1a73e8;">● ${proc.currentStep}</span>` : ''}
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="action-btn manage-btn" data-id="${proc.id}" title="Gestionar">⚙️</button>
+                        <button class="action-btn timeline-btn" data-id="${proc.id}" title="Ver Seguimiento">📊</button>
+                        <button class="action-btn edit-btn" data-id="${proc.id}" title="Editar">✏️</button>
+                        <button class="action-btn delete-btn" data-id="${proc.id}" title="Eliminar">🗑️</button>
+                    </div>
+                </div>
+            `;
+
+            // Manage Action
+            card.querySelector('.manage-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openManageModal(proc);
+            });
+
+            // Timeline Action
+            card.querySelector('.timeline-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openTimelineModal(proc);
+            });
+
+            // Edit Action
+            card.querySelector('.edit-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openModal(true, proc);
+            });
+
+            // Delete Action
+            card.querySelector('.delete-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (confirm(`¿Eliminar proceso "${proc.name}"?`)) {
+                    const newData = getData().filter(p => p.id !== proc.id);
+                    saveData(newData);
+                    renderProcesses(searchInput.value);
+                }
+            });
+
+            processesContainer.appendChild(card);
+        });
     };
 
-    // --- Modal Logic (Tabs) ---
-    document.querySelectorAll('.tab-btn').forEach(btn => {
+    // Filter Buttons Event Listeners
+    document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+            const filterType = btn.dataset.filter;
+
+            if (btn.classList.contains('active')) {
+                // Deactivate filter
+                btn.classList.remove('active');
+                currentTypeFilter = null;
+            } else {
+                // Activate filter (and deactivate others)
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentTypeFilter = filterType;
+            }
+            renderProcesses(searchInput.value);
         });
     });
 
-    const createDetailRow = (type, value, canEdit) => {
-        const tr = document.createElement('tr');
-        if (type === 'notes') {
-            tr.innerHTML = `
-                <td style="font-size: 11px; color: #666;">${value.date}<br>${value.user}</td>
-                <td><textarea class="note-edit" ${value.user !== currentUser ? 'readonly' : ''} style="width: 100%; border: none; background: transparent; font-family: inherit; color: var(--text-color);">${value.text}</textarea></td>
-                <td class="detail-row-actions">
-                    ${value.user === currentUser ? '<button type="button" class="remove-detail" style="background: rgba(217, 48, 37, 0.1); border: 1px solid rgba(217, 48, 37, 0.3); color: #d93025; padding: 4px 10px; border-radius: 8px; cursor: pointer; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: all 0.3s; font-size: 14px;">Eliminar</button>' : ''}
-                </td>
-            `;
-        } else {
-            tr.innerHTML = `
-                <td><input type="text" class="detail-val" readonly value="${value}" style="width: 100%; border: none; background: transparent; color: var(--text-color);"></td>
-                <td class="detail-row-actions">${canEdit ? '<button type="button" class="remove-detail" style="background: rgba(217, 48, 37, 0.1); border: 1px solid rgba(217, 48, 37, 0.3); color: #d93025; padding: 4px 10px; border-radius: 8px; cursor: pointer; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: all 0.3s; font-size: 14px;">Eliminar</button>' : ''}</td>
-            `;
+    // --- Timeline / Tracking Logic ---
+    const timelineModal = document.getElementById('timelineModal');
+    const timelineContainer = document.getElementById('timelineContainer');
+    const timelineClassFilter = document.getElementById('timelineClassFilter');
+    const timelineDateFilter = document.getElementById('timelineDateFilter');
+    let currentTimelineProcessId = null;
+
+    // Initialize Flatpickr for Date Filter (Range Mode)
+    flatpickr(timelineDateFilter, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: (selectedDates, dateStr) => {
+            renderTimeline(currentTimelineProcessId, dateStr, timelineClassFilter.value);
         }
-        tr.querySelector('.remove-detail')?.addEventListener('click', () => tr.remove());
-        return tr;
+    });
+
+    // Store classification colors to be consistent within a session
+    const classificationColors = {};
+    const getClassificationColor = (classificationName) => {
+        if (!classificationColors[classificationName]) {
+            // Generate a random dark/vibrant color for better contrast with white text
+            const hue = Math.floor(Math.random() * 360);
+            classificationColors[classificationName] = `hsl(${hue}, 70%, 40%)`;
+        }
+        return classificationColors[classificationName];
     };
 
-    const openProcessModal = (editing, id) => {
-        isEditing = editing;
-        processForm.reset();
-        respTableBody.innerHTML = '';
-        contTableBody.innerHTML = '';
-        notesTableBody.innerHTML = '';
-        alertsTableBody.innerHTML = '';
+    const openTimelineModal = (process) => {
+        currentTimelineProcessId = process.id;
+        document.getElementById('timelineTitle').textContent = `Seguimiento Visual: ${process.name}`;
 
-        if (editing) {
-            const p = getData('procesos').find(x => x.id === id);
-            const isOwner = p.createdBy === currentUser;
+        // Populate Classification Filter based on process history
+        const uniqueClassifications = [...new Set((process.track || []).map(t => t.classification))];
+        timelineClassFilter.innerHTML = '<option value="">Todas las clasificaciones</option>';
+        uniqueClassifications.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c;
+            option.textContent = c;
+            timelineClassFilter.appendChild(option);
+        });
 
-            document.getElementById('processId').value = p.id;
-            document.getElementById('procEntity').value = p.entity;
-            document.getElementById('procType').value = p.type;
-            document.getElementById('procDesc').value = p.description;
-            uuidDisplay.textContent = p.uuid;
+        timelineClassFilter.value = '';
+        timelineDateFilter._flatpickr.clear(); // Clear flatpickr instance
 
-            // Permissions
-            document.getElementById('procEntity').readOnly = !isOwner;
-            document.getElementById('procType').style.pointerEvents = isOwner ? 'auto' : 'none';
-            document.getElementById('procDesc').readOnly = !isOwner;
-            document.getElementById('saveBtn').style.display = isOwner ? 'block' : 'none';
-            document.getElementById('addRespBtn').style.display = isOwner ? 'block' : 'none';
-            document.getElementById('addContBtn').style.display = isOwner ? 'block' : 'none';
-            document.getElementById('addAlertBtn').style.display = isOwner ? 'block' : 'none';
+        timelineModal.classList.add('open');
+        renderTimeline(process.id);
+    };
 
-            p.responsibles.forEach(r => respTableBody.appendChild(createDetailRow('resp', r, isOwner)));
-            p.contacts.forEach(c => contTableBody.appendChild(createDetailRow('cont', c, isOwner)));
-            p.notes.forEach(n => notesTableBody.appendChild(createDetailRow('notes', n, isOwner)));
-            p.alerts.forEach(a => {
-                const tr = createDetailRow('alert', `${a.days.join(', ')} @ ${a.times.join(', ')}`, isOwner);
-                tr.dataset.alertData = JSON.stringify(a);
-                alertsTableBody.appendChild(tr);
+    const renderTimeline = (processId, dateRangeStr = '', classFilter = '') => {
+        const processes = getData();
+        const process = processes.find(p => p.id === processId);
+        if (!process || !process.track || process.track.length === 0) {
+            timelineContainer.innerHTML = '<div style="flex:1; display:flex; justify-content:center; align-items:center; color:#888;">Sin historial disponible para visualizar</div>';
+            return;
+        }
+
+        let tracks = [...process.track].reverse(); // Oldest to Newest
+
+        // Parse Date Range
+        let startDate = null;
+        let endDate = null;
+        if (dateRangeStr.includes(" to ")) {
+            const parts = dateRangeStr.split(" to ");
+            startDate = new Date(parts[0]);
+            endDate = new Date(parts[1]);
+            // Set end date to end of day
+            endDate.setHours(23, 59, 59, 999);
+        } else if (dateRangeStr) {
+            // Single date selected (start of range or just one day)
+            startDate = new Date(dateRangeStr);
+            startDate.setHours(0, 0, 0, 0);
+            const singleEndDate = new Date(dateRangeStr);
+            singleEndDate.setHours(23, 59, 59, 999);
+            // If range mode might return single string while selecting
+            endDate = singleEndDate;
+        }
+
+        const filteredTracks = tracks.filter(t => {
+            // Check Class Filter
+            const classMatch = classFilter ? t.classification === classFilter : true;
+
+            // Check Date Range Filter
+            let dateMatch = true;
+            if (startDate) {
+                const trackDate = new Date(t.timestamp.split(' ')[0]); // Assuming YYYY-MM-DD format
+                // Simple string comparison often works if formats align, but Date obj is safer for ranges
+                if (endDate) {
+                    dateMatch = trackDate >= startDate && trackDate <= endDate;
+                } else {
+                    dateMatch = trackDate.getTime() === startDate.getTime();
+                }
+            }
+
+            return classMatch && dateMatch;
+        });
+
+        if (filteredTracks.length === 0) {
+            timelineContainer.innerHTML = '<div style="flex:1; display:flex; justify-content:center; align-items:center; color:#888;">No hay registros con los filtros seleccionados</div>';
+            return;
+        }
+
+        timelineContainer.innerHTML = '';
+
+        // Render blocks linearly (no grouping containers) to fix scroll issues
+        // We will add classification labels above blocks if the classification changes
+
+        filteredTracks.forEach((track, index) => {
+            const color = getClassificationColor(track.classification);
+            const prevTrack = filteredTracks[index - 1];
+
+            // Check if classification changed compared to previous displayed block
+            const isNewClass = !prevTrack || prevTrack.classification !== track.classification;
+
+            // Container for Block + optional Label
+            const itemWrapper = document.createElement('div');
+            itemWrapper.className = 'timeline-item-wrapper'; // New class for CSS if needed
+            itemWrapper.style.display = 'flex';
+            itemWrapper.style.flexDirection = 'column';
+            itemWrapper.style.flexShrink = '0'; // Crucial
+
+            if (isNewClass) {
+                const label = document.createElement('div');
+                label.textContent = track.classification;
+                label.style.color = color;
+                label.style.fontSize = '12px';
+                label.style.fontWeight = '500';
+                label.style.marginBottom = '5px';
+                label.style.whiteSpace = 'nowrap';
+                label.style.borderBottom = `2px solid ${color}`;
+                label.style.paddingBottom = '2px';
+                itemWrapper.appendChild(label);
+            } else {
+                // Spacer to keep blocks aligned
+                const spacer = document.createElement('div');
+                spacer.style.height = '23px'; // Approx height of label
+                itemWrapper.appendChild(spacer);
+            }
+
+            // Block
+            const block = document.createElement('div');
+            block.className = 'timeline-block';
+            block.style.backgroundColor = color;
+            block.innerHTML = `
+                <div class="timeline-block-status" title="${track.step}">${track.step}</div>
+                <div class="timeline-block-info">
+                    <div>${track.timestamp.split(' ')[0]}</div>
+                    <div>${track.timestamp.split(' ')[1]}</div>
+                    <div style="margin-top:2px; font-weight:500;">${track.user}</div>
+                </div>
+            `;
+
+            itemWrapper.appendChild(block);
+            timelineContainer.appendChild(itemWrapper);
+        });
+    };
+
+    timelineClassFilter.addEventListener('change', (e) => {
+        renderTimeline(currentTimelineProcessId, timelineDateFilter.value, e.target.value);
+    });
+
+    document.getElementById('closeTimelineBtn').addEventListener('click', () => {
+        timelineModal.classList.remove('open');
+    });
+
+    // Add Timeline Button to Card Actions
+    const originalRenderProcesses = renderProcesses;
+    // We need to modify the card HTML generation in renderProcesses to include the timeline button.
+    // Since I can't easily hook into the middle of the existing function with this tool without rewriting it, 
+    // I will rewrite renderProcesses to include the new button.
+
+    // ... Wait, I am replacing the file content anyway. I will just update the renderProcesses function in the previous block logic if I were rewriting everything.
+    // BUT, here I am appending logic. I need to make sure the "Timeline" button exists.
+    // I previously edited renderProcesses. I should update it again to include the button.
+
+
+
+    // --- Modal Logic ---
+    const renderImageOptions = (type, selectedImage = null) => {
+        imageSelector.innerHTML = '';
+        const images = type === 'cliente' ? CLIENT_IMAGES : BRAND_IMAGES;
+        const folder = type === 'cliente' ? 'clientes' : 'marcas';
+
+        images.forEach(img => {
+            const div = document.createElement('div');
+            div.className = `image-option ${selectedImage === img ? 'selected' : ''}`;
+            div.innerHTML = `<img src="${folder}/${img}" alt="${img}">`;
+
+            div.addEventListener('click', () => {
+                document.querySelectorAll('.image-option').forEach(el => el.classList.remove('selected'));
+                div.classList.add('selected');
+                selectedImageInput.value = img;
+                imageError.style.display = 'none';
             });
 
-            modalTitle.textContent = isOwner ? "Editar Proceso" : "Ver Proceso (Solo Lectura)";
+            imageSelector.appendChild(div);
+        });
+    };
+
+    const openModal = (editing = false, process = null) => {
+        isEditing = editing;
+        processForm.reset();
+        selectedImageInput.value = '';
+        imageSelector.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #777; padding: 20px; font-size: 13px;">Seleccione un tipo primero</div>';
+        imageError.style.display = 'none';
+
+        if (editing && process) {
+            document.getElementById('processId').value = process.id;
+            processNameInput.value = process.name;
+            processTypeSelect.value = process.type;
+            modalTitle.textContent = 'Editar Proceso';
+            renderImageOptions(process.type, process.image);
+            selectedImageInput.value = process.image;
         } else {
             document.getElementById('processId').value = '';
-            uuidDisplay.textContent = "UUID se generará al guardar";
-            modalTitle.textContent = "Nuevo Proceso";
-            // Set fields to editable since it's new
-            document.getElementById('procEntity').readOnly = false;
-            document.getElementById('procType').style.pointerEvents = 'auto';
-            document.getElementById('procDesc').readOnly = false;
-            document.getElementById('saveBtn').style.display = 'block';
-            document.getElementById('addRespBtn').style.display = 'block';
-            document.getElementById('addContBtn').style.display = 'block';
-            document.getElementById('addAlertBtn').style.display = 'block';
+            processTypeSelect.value = '';
+            modalTitle.textContent = 'Nuevo Proceso';
         }
         processModal.classList.add('open');
     };
 
-    // --- Search Modal (Unified) ---
-    const openSearch = (context, title) => {
-        currentSearchContext = context;
-        document.getElementById('searchModalTitle').textContent = title;
-        searchModalInput.value = '';
-        renderSearchResults('');
-        searchModal.classList.add('open');
+    // --- Management Modal Logic ---
+    const manageModal = document.getElementById('manageModal');
+    const manageForm = document.getElementById('manageForm');
+    const manageTitle = document.getElementById('manageTitle');
+    const classificationSelect = document.getElementById('classificationSelect');
+    const stepSelect = document.getElementById('stepSelect');
+    const trackHistoryContainer = document.getElementById('trackHistory');
+    let currentManagingProcessId = null;
+
+    const openManageModal = (process) => {
+        currentManagingProcessId = process.id;
+        manageTitle.textContent = `Gestionar: ${process.name}`;
+        manageModal.classList.add('open');
+
+        // Load Classifications
+        const classifications = JSON.parse(localStorage.getItem('classification') || '[]');
+        classificationSelect.innerHTML = '<option value="" disabled selected>Seleccione Clasificación</option>';
+
+        classifications.forEach(c => {
+            const option = document.createElement('option');
+            option.value = c.nombre; // Storing name as per request, but ID is safer. User said "manage selection"
+            option.dataset.steps = JSON.stringify(c.steps || []);
+            option.textContent = c.nombre;
+            if (process.currentClassification === c.nombre) option.selected = true;
+            classificationSelect.appendChild(option);
+        });
+
+        // Load Steps based on current selection or reset
+        updateStepOptions(process.currentStep);
+
+        // Render History
+        renderTrackHistory(process.track || []);
     };
 
-    const renderSearchResults = (q) => {
-        searchModalResults.innerHTML = '';
-        let items = [];
-        if (currentSearchContext === 'type') {
-            items = getData('classification').map(c => ({ id: c.id, name: c.nombre, desc: c.descripcion }));
-        } else if (currentSearchContext === 'user') {
-            items = getData('login').map(u => ({ name: u.usuario || u.name, desc: 'Usuario de sistema' }));
-            if (items.length === 0) items = [{ name: 'admin', desc: 'Predefinido' }]; // Fallback
+    const updateStepOptions = (selectedStep = null) => {
+        stepSelect.innerHTML = '<option value="" disabled selected>Seleccione Paso</option>';
+        const selectedOption = classificationSelect.options[classificationSelect.selectedIndex];
+
+        if (selectedOption && selectedOption.dataset.steps) {
+            const steps = JSON.parse(selectedOption.dataset.steps);
+            steps.forEach(step => {
+                const option = document.createElement('option');
+                option.value = step;
+                option.textContent = step;
+                if (step === selectedStep) option.selected = true;
+                stepSelect.appendChild(option);
+            });
+        }
+    };
+
+    classificationSelect.addEventListener('change', () => updateStepOptions());
+
+    document.getElementById('closeManageBtn').addEventListener('click', () => {
+        manageModal.classList.remove('open');
+    });
+
+    manageForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const processes = getData();
+        const processIdx = processes.findIndex(p => p.id === currentManagingProcessId);
+        if (processIdx === -1) return;
+
+        const process = processes[processIdx];
+        const newClassification = classificationSelect.value;
+        const newStep = stepSelect.value;
+
+        // Get Current User
+        let currentUser = "Desconocido";
+        try {
+            const userStr = localStorage.getItem('currentUser');
+            if (userStr) {
+                currentUser = userStr.startsWith('{') ? JSON.parse(userStr).name : userStr;
+            }
+        } catch (e) { }
+
+        const now = new Date();
+        // Format: YYYY-MM-DD HH:MM:SS
+        const timestamp = now.getFullYear() + "-" +
+            String(now.getMonth() + 1).padStart(2, '0') + "-" +
+            String(now.getDate()).padStart(2, '0') + " " +
+            String(now.getHours()).padStart(2, '0') + ":" +
+            String(now.getMinutes()).padStart(2, '0') + ":" +
+            String(now.getSeconds()).padStart(2, '0');
+
+        const trackEntry = {
+            classification: newClassification,
+            step: newStep,
+            previousStep: process.currentStep || 'Inicio',
+            user: currentUser,
+            timestamp: timestamp
+        };
+
+        // Update Process
+        process.currentClassification = newClassification;
+        process.currentStep = newStep;
+        if (!process.track) process.track = [];
+        process.track.unshift(trackEntry); // Add to beginning
+
+        saveData(processes);
+        renderProcesses(searchInput.value);
+        openManageModal(process); // Re-render modal to show new history
+    });
+
+    const renderTrackHistory = (track) => {
+        trackHistoryContainer.innerHTML = '';
+        if (track.length === 0) {
+            trackHistoryContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">Sin historial de movimientos</div>';
+            return;
         }
 
-        const filtered = items.filter(i => i.name.toLowerCase().includes(q.toLowerCase()));
-        filtered.forEach(i => {
-            const div = document.createElement('div');
-            div.className = 'search-item';
-            div.style.padding = '10px';
-            div.style.cursor = 'pointer';
-            div.innerHTML = `<strong>${i.name}</strong><br><small>${i.desc}</small>`;
-            div.addEventListener('click', () => selectSearchItem(i));
-            searchModalResults.appendChild(div);
+        track.forEach(t => {
+            const item = document.createElement('div');
+            item.style.borderBottom = '1px solid rgba(0,0,0,0.05)';
+            item.style.padding = '8px 0';
+            item.style.fontSize = '12px';
+            item.style.color = '#555';
+
+            item.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                    <strong style="color: #1a73e8;">${t.step}</strong>
+                    <span style="font-size: 11px; opacity: 0.7;">${t.timestamp}</span>
+                </div>
+                <div>Clasif: ${t.classification}</div>
+                <div style="margin-top: 2px; font-style: italic;">Por: ${t.user}</div>
+            `;
+            trackHistoryContainer.appendChild(item);
         });
     };
 
-    const selectSearchItem = (item) => {
-        if (currentSearchContext === 'type') {
-            document.getElementById('procType').value = item.name;
-        } else if (currentSearchContext === 'user') {
-            const existing = Array.from(respTableBody.querySelectorAll('.detail-val')).map(x => x.value);
-            if (existing.includes(item.name)) return alert("Usuario ya es responsable");
-            respTableBody.appendChild(createDetailRow('resp', item.name, true));
-        }
-        searchModal.classList.remove('open');
-    };
+    // --- Event Listeners ---
+    document.getElementById('addProcessBtn').addEventListener('click', () => openModal(false));
+    document.getElementById('cancelBtn').addEventListener('click', () => processModal.classList.remove('open'));
 
-    // --- Alarms UI ---
-    let currentAlertTr = null;
-    const openAlertConfig = (tr = null) => {
-        currentAlertTr = tr;
-        document.querySelectorAll('#dayCheckboxes input').forEach(i => i.checked = false);
-        document.getElementById('alertHour').value = '';
-        document.getElementById('alertMinute').value = '';
-        document.getElementById('alertPeriod').value = 'AM';
-
-        if (tr && tr.dataset.alertData) {
-            const data = JSON.parse(tr.dataset.alertData);
-            data.days.forEach(d => {
-                const cb = Array.from(document.querySelectorAll('#dayCheckboxes input')).find(i => i.value === d);
-                if (cb) cb.checked = true;
-            });
-            if (data.times && data.times.length > 0) {
-                const timeStr = data.times[0]; // Assuming one time per alert row for simplicity in manual entry
-                const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
-                if (match) {
-                    document.getElementById('alertHour').value = match[1];
-                    document.getElementById('alertMinute').value = match[2];
-                    document.getElementById('alertPeriod').value = match[3].toUpperCase();
-                }
-            }
-        }
-        document.getElementById('alertConfigModal').classList.add('open');
-    };
-
-    document.getElementById('saveAlertConfigBtn').addEventListener('click', () => {
-        const days = Array.from(document.querySelectorAll('#dayCheckboxes input:checked')).map(i => i.value);
-        const hour = document.getElementById('alertHour').value;
-        const minute = document.getElementById('alertMinute').value;
-        const period = document.getElementById('alertPeriod').value;
-
-        if (days.length === 0) return alert("Seleccione al menos un día");
-        if (!hour || !minute) return alert("Ingrese la hora y los minutos");
-
-        const formattedMinute = minute.toString().padStart(2, '0');
-        const timeStr = `${hour}:${formattedMinute} ${period}`;
-        const alertData = { days, times: [timeStr] };
-        const label = `${days.join(', ')} @ ${timeStr}`;
-
-        if (currentAlertTr) {
-            currentAlertTr.querySelector('.detail-val').value = label;
-            currentAlertTr.dataset.alertData = JSON.stringify(alertData);
-        } else {
-            const tr = createDetailRow('alert', label, true);
-            tr.dataset.alertData = JSON.stringify(alertData);
-            alertsTableBody.appendChild(tr);
-        }
-        document.getElementById('alertConfigModal').classList.remove('open');
+    processTypeSelect.addEventListener('change', (e) => {
+        renderImageOptions(e.target.value);
+        selectedImageInput.value = ''; // Reset selection on type change
     });
 
-    // --- Notify & Track ---
-    const openNotifyModal = (id) => {
-        const p = getData('procesos').find(x => x.id === id);
-        const classification = getData('classification').find(c => c.nombre === p.type);
-        const select = document.getElementById('notifyStatus');
-        select.innerHTML = '';
-
-        if (classification && classification.steps) {
-            classification.steps.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                select.appendChild(opt);
-            });
-        } else {
-            const opt = document.createElement('option');
-            opt.textContent = "Sin pasos definidos";
-            select.appendChild(opt);
-        }
-
-        document.getElementById('notifyProcId').value = id;
-        document.getElementById('notifyDesc').value = '';
-        document.getElementById('notifyModal').classList.add('open');
-    };
-
-    document.getElementById('notifyForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = document.getElementById('notifyProcId').value;
-        const status = document.getElementById('notifyStatus').value;
-        const desc = document.getElementById('notifyDesc').value;
-
-        const data = getData('procesos');
-        const idx = data.findIndex(x => x.id === id);
-
-        const entry = {
-            user: currentUser,
-            date: new Date().toLocaleString(),
-            status: status,
-            desc: desc
-        };
-
-        data[idx].status = status;
-        data[idx].tracking = data[idx].tracking || [];
-        data[idx].tracking.push(entry);
-
-        saveData('procesos', data);
-        document.getElementById('notifyModal').classList.remove('open');
-        renderTable(searchInput.value);
-    });
-
-    const openTrackModal = (id) => {
-        const p = getData('procesos').find(x => x.id === id);
-        const content = document.getElementById('trackHistoryContent');
-        content.innerHTML = '';
-
-        if (!p.tracking || p.tracking.length === 0) {
-            content.innerHTML = '<div style="text-align: center; color: #666;">Sin historial</div>';
-        } else {
-            p.tracking.slice().reverse().forEach(t => {
-                const div = document.createElement('div');
-                div.style.padding = '10px';
-                div.style.borderLeft = '3px solid #1a73e8';
-                div.style.marginBottom = '15px';
-                div.style.background = 'rgba(0,0,0,0.02)';
-                div.innerHTML = `
-                    <div style="font-weight: 500; font-size: 13px;">${t.status}</div>
-                    <div style="font-size: 11px; color: #666;">${t.date} por ${t.user}</div>
-                    <div style="margin-top: 5px; font-size: 12px;">${t.desc}</div>
-                `;
-                content.appendChild(div);
-            });
-        }
-        document.getElementById('trackModal').classList.add('open');
-    };
-
-    // --- Form Submission ---
     processForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        const name = processNameInput.value.trim();
+        const type = processTypeSelect.value;
+        const image = selectedImageInput.value;
         const id = document.getElementById('processId').value || Date.now().toString();
-        const entity = document.getElementById('procEntity').value;
-        const type = document.getElementById('procType').value;
-        const description = document.getElementById('procDesc').value;
 
-        const resps = Array.from(respTableBody.querySelectorAll('.detail-val')).map(x => x.value);
-        const conts = Array.from(contTableBody.querySelectorAll('.detail-val')).map(x => {
-            if (!x.value.includes('@')) return null;
-            return x.value;
-        }).filter(Boolean);
+        if (!image) {
+            imageError.style.display = 'block';
+            return;
+        }
 
-        const notes = Array.from(notesTableBody.querySelectorAll('tr')).map(tr => ({
-            user: tr.cells[0].textContent.split('\n')[1] || currentUser,
-            date: tr.cells[0].textContent.split('\n')[0] || new Date().toLocaleString(),
-            text: tr.querySelector('textarea').value
-        }));
+        const processes = getData();
+        const newProcess = { id, name, type, image };
 
-        const alerts = Array.from(alertsTableBody.querySelectorAll('tr')).map(tr => JSON.parse(tr.dataset.alertData));
-
-        const database = getData('procesos');
-        let record = database.find(x => x.id === id);
-
-        if (record) {
-            if (record.createdBy !== currentUser) return alert("No tienes permisos para editar");
-            Object.assign(record, { entity, type, description, responsibles: resps, contacts: conts, notes, alerts });
+        if (isEditing) {
+            const index = processes.findIndex(p => p.id === id);
+            if (index !== -1) processes[index] = newProcess;
         } else {
-            record = {
-                id,
-                entity,
-                type,
-                description,
-                uuid: crypto.randomUUID(),
-                createdBy: currentUser,
-                createdAt: new Date().toLocaleString(),
-                status: 'Vacío',
-                responsibles: resps,
-                contacts: conts,
-                notes,
-                alerts,
-                tracking: []
-            };
-            database.push(record);
+            processes.push(newProcess);
         }
 
-        saveData('procesos', database);
+        saveData(processes);
         processModal.classList.remove('open');
-        renderTable(searchInput.value);
+        renderProcesses(searchInput.value);
     });
 
-    // --- Buttons & Event Attachments ---
-    document.getElementById('addProcesoBtn').addEventListener('click', () => openProcessModal(false));
-    document.getElementById('cancelBtn').addEventListener('click', () => processModal.classList.remove('open'));
-    document.getElementById('procType').addEventListener('click', () => openSearch('type', 'Tipo de Clasificación'));
-    document.getElementById('addRespBtn').addEventListener('click', () => openSearch('user', 'Buscar Responsable'));
-    document.getElementById('closeSearchBtn').addEventListener('click', () => searchModal.classList.remove('open'));
-    document.getElementById('closeTrackBtn').addEventListener('click', () => document.getElementById('trackModal').classList.remove('open'));
-    document.getElementById('cancelNotifyBtn').addEventListener('click', () => document.getElementById('notifyModal').classList.remove('open'));
-    document.getElementById('addAlertBtn').addEventListener('click', () => openAlertConfig());
-    document.getElementById('cancelAlertConfigBtn').addEventListener('click', () => document.getElementById('alertConfigModal').classList.remove('open'));
+    searchInput.addEventListener('keyup', (e) => renderProcesses(e.target.value));
 
-    document.getElementById('addContBtn').addEventListener('click', () => {
-        const mail = prompt("Ingrese correo:");
-        if (mail) {
-            const existing = Array.from(contTableBody.querySelectorAll('.detail-val')).map(x => x.value);
-            if (existing.includes(mail)) return alert("Correo ya duplicado");
-            contTableBody.appendChild(createDetailRow('cont', mail, true));
+    // --- AI Widget ---
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    document.getElementById('openAiBtn')?.addEventListener('click', () => {
+        aiChatWidget.style.display = aiChatWidget.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+    // AI Message Handler
+    window.addEventListener('message', (event) => {
+        const { action, data } = event.data;
+        if (!action || !data) return;
+
+        let processes = getData();
+        let message = "";
+
+        switch (action) {
+            case 'createProcess':
+                // Check if image exists in registry
+                let imgFile = data.image; // Assume AI sends exact filename or closest match logic could go here
+
+                // If AI doesn't send specific file, try to match by name or default
+                if (!imgFile) {
+                    const list = data.type === 'cliente' ? CLIENT_IMAGES : BRAND_IMAGES;
+                    // Simple heuristic: try to find substring match or pick random
+                    imgFile = list.find(f => f.toLowerCase().includes(data.name.toLowerCase())) || list[0];
+                }
+
+                processes.push({
+                    id: Date.now().toString(),
+                    name: data.name,
+                    type: data.type.toLowerCase(), // 'cliente' or 'marca'
+                    image: imgFile
+                });
+                message = `Proceso "${data.name}" creado.`;
+                break;
+
+            case 'filterProcess':
+                searchInput.value = data.query;
+                renderProcesses(data.query);
+                message = `Filtrando por "${data.query}".`;
+                break;
+
+            case 'setTheme': // Global action
+                if (data.theme === 'dark') document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', data.theme);
+                message = `Tema cambiado a ${data.theme}.`;
+                break;
+
+            case 'logout': // Global action
+                localStorage.removeItem('currentUser');
+                window.location.href = '../index.html';
+                return;
+        }
+
+        saveData(processes);
+        renderProcesses(searchInput.value);
+
+        if (event.source) {
+            event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
         }
     });
 
-    document.getElementById('addNoteBtn').addEventListener('click', () => {
-        const note = { user: currentUser, date: new Date().toLocaleString(), text: '' };
-        notesTableBody.prepend(createDetailRow('notes', note, true));
-    });
-
-    document.getElementById('copyUuidBtn').addEventListener('click', () => {
-        const txt = uuidDisplay.textContent;
-        if (txt.includes('-')) {
-            navigator.clipboard.writeText(txt).then(() => alert("Copiado al portapapeles"));
-        }
-    });
-
-    searchInput.addEventListener('keyup', (e) => renderTable(e.target.value));
-
-    // AI Toggle
-    document.getElementById('openAiBtn').addEventListener('click', () => {
-        const ai = document.getElementById('aiChatWidget');
-        ai.style.display = ai.style.display === 'flex' ? 'none' : 'flex';
-    });
-
-    const deleteProcess = (id) => {
-        if (!confirm("¿Desea eliminar?")) return;
-        const data = getData('procesos').filter(x => x.id !== id);
-        saveData('procesos', data);
-        renderTable(searchInput.value);
-    };
-
-    renderTable();
+    // Initial Render
+    renderProcesses();
 });
