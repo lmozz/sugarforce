@@ -7,8 +7,8 @@
     <title>Dizucar - GemaPTC - Procesos</title>
     <link rel="icon" href="../imgs/icon.png" type="image/png">
     <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="flatpickr.min.css">
+    <script src="flatpickr.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         /* Card Grid Layout */
@@ -285,6 +285,92 @@
         body.dark-mode .close-btn:hover {
             color: #ff6b6b;
         }
+
+        /* DARK MODE FLATPICKR OVERRIDES */
+        body.dark-mode .flatpickr-calendar {
+            background: #2a2a2a;
+            border-color: #444;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        body.dark-mode .flatpickr-day {
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .flatpickr-day.selected,
+        body.dark-mode .flatpickr-day.startRange,
+        body.dark-mode .flatpickr-day.endRange,
+        body.dark-mode .flatpickr-day.selected.inRange,
+        body.dark-mode .flatpickr-day.startRange.inRange,
+        body.dark-mode .flatpickr-day.endRange.inRange,
+        body.dark-mode .flatpickr-day.selected:focus,
+        body.dark-mode .flatpickr-day.startRange:focus,
+        body.dark-mode .flatpickr-day.endRange:focus,
+        body.dark-mode .flatpickr-day.selected:hover,
+        body.dark-mode .flatpickr-day.startRange:hover,
+        body.dark-mode .flatpickr-day.endRange:hover,
+        body.dark-mode .flatpickr-day.selected.prevMonthDay,
+        body.dark-mode .flatpickr-day.startRange.prevMonthDay,
+        body.dark-mode .flatpickr-day.endRange.prevMonthDay,
+        body.dark-mode .flatpickr-day.selected.nextMonthDay,
+        body.dark-mode .flatpickr-day.startRange.nextMonthDay,
+        body.dark-mode .flatpickr-day.endRange.nextMonthDay {
+            background: #1a73e8;
+            color: #fff;
+            border-color: #1a73e8;
+        }
+
+        body.dark-mode .flatpickr-day.inRange,
+        body.dark-mode .flatpickr-day.prevMonthDay.inRange,
+        body.dark-mode .flatpickr-day.nextMonthDay.inRange,
+        body.dark-mode .flatpickr-day.today.inRange,
+        body.dark-mode .flatpickr-day.prevMonthDay.today.inRange,
+        body.dark-mode .flatpickr-day.nextMonthDay.today.inRange,
+        body.dark-mode .flatpickr-day:hover,
+        body.dark-mode .flatpickr-day.prevMonthDay:hover,
+        body.dark-mode .flatpickr-day.nextMonthDay:hover,
+        body.dark-mode .flatpickr-day:focus,
+        body.dark-mode .flatpickr-day.prevMonthDay:focus,
+        body.dark-mode .flatpickr-day.nextMonthDay:focus {
+            background: #333;
+            border-color: #444;
+            color: #fff;
+        }
+
+        body.dark-mode .flatpickr-day.inRange {
+            box-shadow: -5px 0 0 #333, 5px 0 0 #333;
+        }
+
+        body.dark-mode span.flatpickr-weekday {
+            background: #2a2a2a;
+            color: #aaa;
+        }
+
+        body.dark-mode .flatpickr-month {
+            background: #2a2a2a;
+            color: #fff;
+            fill: #fff;
+        }
+
+        body.dark-mode .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: #2a2a2a;
+        }
+
+        body.dark-mode .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+            background: #333;
+        }
+
+        body.dark-mode .flatpickr-next-month,
+        body.dark-mode .flatpickr-prev-month {
+            color: #fff;
+            /* Ensure arrows are white */
+            fill: #fff;
+        }
+
+        body.dark-mode .flatpickr-next-month:hover svg,
+        body.dark-mode .flatpickr-prev-month:hover svg {
+            fill: #1a73e8;
+        }
     </style>
 </head>
 
@@ -472,7 +558,42 @@
         </div>
     </div>
 
+    <script src="chart.js"></script>
     <script src="procesos.js"></script>
 </body>
+
+<!-- Sales Analysis Modal -->
+<div class="modal-overlay" id="salesModal">
+    <div class="modal-content" style="max-width: 90%; width: 800px;">
+        <div class="modal-header">
+            <span id="salesTitle">Análisis de Ventas</span>
+            <button type="button" class="close-btn" id="closeSalesBtn">&times;</button>
+        </div>
+
+        <div class="timeline-filters" style="margin-bottom: 15px;">
+            <div class="input-group" style="width: 220px; margin-bottom: 0;">
+                <input type="text" id="salesDateFilter" class="form-control" placeholder="Seleccionar Fecha(s)">
+                <label for="salesDateFilter"
+                    style="top: -10px; font-size: 11px; background: white; padding: 0 4px; color: #1a73e8;">Rango o
+                    Comparación</label>
+            </div>
+            <div class="input-group" style="width: 220px; margin-bottom: 0; display: none;" id="compareDateGroup">
+                <input type="text" id="salesCompareDateFilter" class="form-control" placeholder="Comparar con...">
+                <label for="salesCompareDateFilter"
+                    style="top: -10px; font-size: 11px; background: white; padding: 0 4px; color: #1a73e8;">Fecha
+                    Comparación</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <label style="font-size: 13px; display: flex; align-items: center; cursor: pointer;">
+                    <input type="checkbox" id="enableComparison" style="margin-right: 5px;"> Comparar Periodos
+                </label>
+            </div>
+        </div>
+
+        <div style="height: 400px; position: relative;">
+            <canvas id="salesChart"></canvas>
+        </div>
+    </div>
+</div>
 
 </html>

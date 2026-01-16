@@ -104,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="card-actions">
                         <button class="action-btn manage-btn" data-id="${proc.id}" title="Gestionar">⚙️</button>
                         <button class="action-btn timeline-btn" data-id="${proc.id}" title="Ver Seguimiento">📊</button>
+                        <button class="action-btn sales-btn" data-id="${proc.id}" title="Análisis de Ventas">💰</button>
                         <button class="action-btn edit-btn" data-id="${proc.id}" title="Editar">✏️</button>
                         <button class="action-btn delete-btn" data-id="${proc.id}" title="Eliminar">🗑️</button>
                     </div>
@@ -120,6 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
             card.querySelector('.timeline-btn').addEventListener('click', (e) => {
                 e.stopPropagation();
                 openTimelineModal(proc);
+            });
+
+            // Sales Action
+            card.querySelector('.sales-btn').addEventListener('click', (e) => {
+                e.stopPropagation();
+                openSalesModal(proc);
             });
 
             // Edit Action
@@ -161,7 +168,180 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Timeline / Tracking Logic ---
+    // --- Sales Analysis Logic (Chart.js) ---
+    const salesModal = document.getElementById('salesModal');
+    const salesDateFilter = document.getElementById('salesDateFilter');
+    const salesCompareDateFilter = document.getElementById('salesCompareDateFilter');
+    const enableComparisonCheckbox = document.getElementById('enableComparison');
+    const compareDateGroup = document.getElementById('compareDateGroup');
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+
+    let salesChartInstance = null;
+    let currentSalesProcess = null;
+
+    // Initialize Flatpickr for Sales
+    const salesPicker = flatpickr(salesDateFilter, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        defaultDate: [new Date(new Date().setDate(new Date().getDate() - 7)), new Date()], // Last 7 days default
+        onChange: () => updateSalesChart()
+    });
+
+    const comparePicker = flatpickr(salesCompareDateFilter, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: () => updateSalesChart()
+    });
+
+    enableComparisonCheckbox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+            compareDateGroup.style.display = 'block';
+            salesDateFilter.placeholder = "Periodo 1";
+        } else {
+            compareDateGroup.style.display = 'none';
+            salesDateFilter.placeholder = "Seleccionar Fecha(s)";
+            comparePicker.clear();
+        }
+        updateSalesChart();
+    });
+
+    const generateRandomSalesData = (days) => {
+        // Generate random sales data with some variance
+        return Array.from({ length: days }, () => Math.floor(Math.random() * 8000) + 2000); // 2000 - 10000
+    };
+
+    const formatDateLabel = (date) => {
+        return date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
+    };
+
+    const getDatesInRange = (startDate, endDate) => {
+        const dates = [];
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
+            dates.push(new Date(currentDate));
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return dates;
+    };
+
+    const openSalesModal = (process) => {
+        currentSalesProcess = process;
+        document.getElementById('salesTitle').textContent = `Análisis de Ventas: ${process.name}`;
+        salesModal.classList.add('open');
+
+        // Reset defaults
+        enableComparisonCheckbox.checked = false;
+        compareDateGroup.style.display = 'none';
+        salesPicker.setDate([new Date(new Date().setDate(new Date().getDate() - 7)), new Date()]);
+
+        updateSalesChart();
+    };
+
+    const updateSalesChart = () => {
+        if (salesChartInstance) salesChartInstance.destroy();
+
+        const isComparison = enableComparisonCheckbox.checked;
+        const period1Dates = salesPicker.selectedDates;
+
+        if (period1Dates.length < 2 && !period1Dates[0]) return; // Need at least one date
+
+        const startDate1 = period1Dates[0];
+        const endDate1 = period1Dates[1] || period1Dates[0];
+        const daysRange1 = getDatesInRange(startDate1, endDate1);
+        const labels1 = daysRange1.map(d => formatDateLabel(d));
+        const data1 = generateRandomSalesData(daysRange1.length);
+
+        if (isComparison) {
+            // ** BAR CHART (Comparison) **
+            const period2Dates = comparePicker.selectedDates;
+            let data2 = [];
+            let labels = labels1; // Default to Period 1 labels if simple comparison
+
+            if (period2Dates.length > 0) {
+                const startDate2 = period2Dates[0];
+                const endDate2 = period2Dates[1] || period2Dates[0];
+                const daysRange2 = getDatesInRange(startDate2, endDate2);
+                data2 = generateRandomSalesData(daysRange2.length);
+
+                // If ranges differ in length, we might just compare index by index or truncate
+                // For a demo, let's just show dataset 2 alongside.
+            } else {
+                // If compare enabled but no date picked, maybe show placeholder or empty
+                data2 = Array(data1.length).fill(0);
+            }
+
+            salesChartInstance = new Chart(salesCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels1, // Simplified: Using Period 1 axis
+                    datasets: [
+                        {
+                            label: 'Periodo 1',
+                            data: data1,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Periodo 2',
+                            data: data2,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        title: { display: true, text: 'Comparativa de Ventas' }
+                    }
+                }
+            });
+
+        } else {
+            // ** PIE CHART (Single Period / Distribution) **
+            // Pie chart usually shows distribution of categories. 
+            // Since we only have "Sales dates", showing a Pie of "Daily Sales" is a bit odd (Sum of slices = Total sales).
+            // But user requested: "sin comparacion de ventas que sea un grafico de pastel"
+            // Let's implement exactly that.
+
+            salesChartInstance = new Chart(salesCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels1,
+                    datasets: [{
+                        label: 'Ventas Diarias',
+                        data: data1,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(255, 206, 86, 0.7)',
+                            'rgba(75, 192, 192, 0.7)',
+                            'rgba(153, 102, 255, 0.7)',
+                            'rgba(255, 159, 64, 0.7)',
+                            // Repeat colors if needed
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right' },
+                        title: { display: true, text: 'Distribución de Ventas por Día' }
+                    }
+                }
+            });
+        }
+    };
+
+    document.getElementById('closeSalesBtn').addEventListener('click', () => {
+        salesModal.classList.remove('open');
+    });
     const timelineModal = document.getElementById('timelineModal');
     const timelineContainer = document.getElementById('timelineContainer');
     const timelineClassFilter = document.getElementById('timelineClassFilter');
