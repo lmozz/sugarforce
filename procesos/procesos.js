@@ -517,7 +517,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // --- Modal Logic ---
+    // --- Quill Editor Init ---
+    const quill = new Quill('#editor-container', {
+        theme: 'snow',
+        placeHolder: 'Escriba su notificación aquí...',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'color': [] }, { 'background': [] }],
+                [{ 'align': [] }],
+                ['image', 'link'],
+                ['clean']
+            ]
+        }
+    });
+
+    // --- Modal Logic & State ---
+    const modalTabs = document.getElementById('modalTabs');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // Temporary State for Edit Mode
+    let tempAlerts = [];
+    let tempUsers = [];
+    let tempEmails = [];
+
+    // Tab Switching
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+    });
+
     const renderImageOptions = (type, selectedImage = null) => {
         imageSelector.innerHTML = '';
         const images = type === 'cliente' ? CLIENT_IMAGES : BRAND_IMAGES;
@@ -546,20 +582,321 @@ document.addEventListener('DOMContentLoaded', () => {
         imageSelector.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #777; padding: 20px; font-size: 13px;">Seleccione un tipo primero</div>';
         imageError.style.display = 'none';
 
+        // Reset Tabs to First
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        tabBtns[0].classList.add('active');
+        document.getElementById('tab-general').classList.add('active');
+
+        // Reset Edit States
+        editingEmailIndex = -1;
+        document.getElementById('addEmailBtn').textContent = 'Agregar';
+
+        editingAlertIndex = -1;
+        const addAlertBtn = document.getElementById('addAlertBtn');
+        if (addAlertBtn) {
+            addAlertBtn.innerHTML = '+';
+            addAlertBtn.title = 'Agregar Alerta';
+        }
+
+        // Reset Day Selection Buttons
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+
         if (editing && process) {
+            // Edit Mode Configuration
             document.getElementById('processId').value = process.id;
             processNameInput.value = process.name;
             processTypeSelect.value = process.type;
-            modalTitle.textContent = 'Editar Proceso';
+            modalTitle.textContent = 'Editar Proceso: ' + process.name;
             renderImageOptions(process.type, process.image);
             selectedImageInput.value = process.image;
+
+            // Show Tabs
+            modalTabs.style.display = 'flex';
+
+            // Load Advanced Data
+            tempAlerts = process.alerts || [];
+            tempUsers = process.encargados || [];
+            tempEmails = process.interesados || []; // Array of {name, email}
+
+            renderAlertsList();
+            renderUsersList();
+            renderEmailsList();
+
+            // Load Available Users for Select
+            loadUserOptions();
+
         } else {
+            // Create Mode Configuration
             document.getElementById('processId').value = '';
             processTypeSelect.value = '';
             modalTitle.textContent = 'Nuevo Proceso';
+            modalTabs.style.display = 'none'; // Hide advanced tabs on create
+
+            // Reset Temp Data
+            tempAlerts = [];
+            tempUsers = [];
+            tempEmails = [];
         }
         processModal.classList.add('open');
     };
+
+    // --- Advanced Features Logic (Tabs) ---
+
+    // 1. Alerts
+    const alertsList = document.getElementById('alertsList');
+    const addAlertBtn = document.getElementById('addAlertBtn');
+    let editingAlertIndex = -1;
+
+    // Day Selector Logic
+    document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.classList.toggle('selected');
+        });
+    });
+
+    addAlertBtn.addEventListener('click', () => {
+        // Gather selected days
+        const selectedDays = Array.from(document.querySelectorAll('.day-btn.selected'))
+            .map(btn => btn.dataset.day)
+            .join(', ');
+
+        const time = document.getElementById('alertTime').value;
+
+        if (!selectedDays) return alert('Seleccione al menos un día');
+        if (!time) return alert('Seleccione una hora');
+
+        if (editingAlertIndex > -1) {
+            // Update
+            tempAlerts[editingAlertIndex] = { days: selectedDays, time };
+            editingAlertIndex = -1;
+            addAlertBtn.innerHTML = '+';
+            addAlertBtn.title = 'Agregar Alerta';
+        } else {
+            // Add
+            tempAlerts.push({ days: selectedDays, time });
+        }
+
+        renderAlertsList();
+
+        // Reset Inputs
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+        document.getElementById('alertTime').value = '';
+    });
+
+    const renderAlertsList = () => {
+        alertsList.innerHTML = tempAlerts.map((a, i) => `
+            <li class="list-item">
+                <span>📅 ${a.days} ⏰ ${a.time}</span>
+                <div style="display: flex; gap: 0;">
+                    <button type="button" class="btn-small-edit" onclick="editAlert(${i})" title="Editar">✏️</button>
+                    <button type="button" class="btn-small-remove" onclick="removeAlert(${i})" title="Eliminar">×</button>
+                </div>
+            </li>
+        `).join('');
+    };
+
+    window.editAlert = (index) => {
+        const item = tempAlerts[index];
+        // Populate Time
+        document.getElementById('alertTime').value = item.time;
+
+        // Populate Days
+        const days = item.days.split(', ');
+        document.querySelectorAll('.day-btn').forEach(btn => {
+            if (days.includes(btn.dataset.day)) {
+                btn.classList.add('selected');
+            } else {
+                btn.classList.remove('selected');
+            }
+        });
+
+        editingAlertIndex = index;
+        addAlertBtn.innerHTML = '✓'; // Using checkmark for update
+        addAlertBtn.title = 'Actualizar Alerta';
+    };
+
+    window.removeAlert = (index) => {
+        if (index === editingAlertIndex) {
+            editingAlertIndex = -1;
+            addAlertBtn.innerHTML = '+';
+            addAlertBtn.title = 'Agregar Alerta';
+            document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('alertTime').value = '';
+        } else if (index < editingAlertIndex) {
+            editingAlertIndex--;
+        }
+        tempAlerts.splice(index, 1);
+        renderAlertsList();
+    };
+
+    // 2. Encargados (Users)
+    const userSelect = document.getElementById('userSelect');
+    const usersList = document.getElementById('usersList');
+
+    const loadUserOptions = () => {
+        userSelect.innerHTML = '<option value="">Seleccione Usuario</option>';
+        try {
+            const logins = JSON.parse(localStorage.getItem('login') || '[]');
+            logins.forEach(l => {
+                const user = l.usuario; // Structure: [{"usuario":"lmoz"}, ...]
+                const option = document.createElement('option');
+                option.value = user;
+                option.textContent = user;
+                userSelect.appendChild(option);
+            });
+        } catch (e) { console.error("Error loading users", e); }
+    };
+
+    document.getElementById('addUserBtn').addEventListener('click', () => {
+        const user = userSelect.value;
+        if (!user) return;
+        if (tempUsers.includes(user)) return alert('Usuario ya agregado');
+
+        tempUsers.push(user);
+        renderUsersList();
+        userSelect.value = '';
+    });
+
+    const renderUsersList = () => {
+        usersList.innerHTML = tempUsers.map((u, i) => `
+            <li class="list-item">
+                <span>👤 ${u}</span>
+                <button type="button" class="btn-small-remove" onclick="removeUser(${i})">×</button>
+            </li>
+        `).join('');
+    };
+
+    window.removeUser = (index) => {
+        tempUsers.splice(index, 1);
+        renderUsersList();
+    };
+
+    // 3. Interesados (Emails)
+    // 3. Interesados (Emails)
+    const emailsList = document.getElementById('emailsList');
+    const addEmailBtn = document.getElementById('addEmailBtn');
+    let editingEmailIndex = -1;
+
+    addEmailBtn.addEventListener('click', () => {
+        const name = document.getElementById('interestedName').value.trim();
+        const email = document.getElementById('interestedEmail').value.trim();
+
+        if (!name || !email) return alert('Ingrese nombre y correo');
+
+        // Check duplicates (exclude current edited item)
+        if (tempEmails.some((e, i) => i !== editingEmailIndex && e.email === email)) {
+            return alert('Correo ya existe');
+        }
+
+        if (editingEmailIndex > -1) {
+            // Update mode
+            tempEmails[editingEmailIndex] = { name, email };
+            editingEmailIndex = -1;
+            addEmailBtn.textContent = 'Agregar';
+        } else {
+            // Add mode
+            tempEmails.push({ name, email });
+        }
+
+        renderEmailsList();
+        document.getElementById('interestedName').value = '';
+        document.getElementById('interestedEmail').value = '';
+    });
+
+    const renderEmailsList = () => {
+        emailsList.innerHTML = tempEmails.map((e, i) => `
+            <li class="list-item">
+                <span>📧 ${e.name} (${e.email})</span>
+                <div style="display: flex; gap: 0;">
+                    <button type="button" class="btn-small-edit" onclick="editEmail(${i})" title="Editar">✏️</button>
+                    <button type="button" class="btn-small-remove" onclick="removeEmail(${i})" title="Eliminar">×</button>
+                </div>
+            </li>
+        `).join('');
+    };
+
+    window.editEmail = (index) => {
+        const item = tempEmails[index];
+        document.getElementById('interestedName').value = item.name;
+        document.getElementById('interestedEmail').value = item.email;
+        editingEmailIndex = index;
+        addEmailBtn.textContent = 'Actualizar';
+    };
+
+    window.removeEmail = (index) => {
+        if (index === editingEmailIndex) {
+            editingEmailIndex = -1;
+            addEmailBtn.textContent = 'Agregar';
+            document.getElementById('interestedName').value = '';
+            document.getElementById('interestedEmail').value = '';
+        } else if (index < editingEmailIndex) {
+            editingEmailIndex--; // Adjust index if removing preceding item
+        }
+        tempEmails.splice(index, 1);
+        renderEmailsList();
+    };
+
+    // 4. Notificaciones
+    document.getElementById('sendNotificationBtn').addEventListener('click', () => {
+        if (quill.getText().trim().length === 0) return alert('Escriba un mensaje');
+        alert('Notificación enviada a los interesados.');
+        quill.setText('');
+    });
+
+    // --- Save Process Logic ---
+
+    // Restore Main Listeners
+    document.getElementById('addProcessBtn').addEventListener('click', () => openModal(false));
+    document.getElementById('cancelBtn').addEventListener('click', () => processModal.classList.remove('open'));
+
+    processTypeSelect.addEventListener('change', (e) => {
+        renderImageOptions(e.target.value);
+        selectedImageInput.value = ''; // Reset selection on type change
+    });
+
+    processForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const name = processNameInput.value.trim();
+        const type = processTypeSelect.value;
+        const image = selectedImageInput.value;
+        const id = document.getElementById('processId').value || Date.now().toString();
+
+        if (!image) {
+            imageError.style.display = 'block';
+            return;
+        }
+
+        const processes = getData();
+        let newProcess = { id, name, type, image };
+
+        if (isEditing) {
+            const index = processes.findIndex(p => p.id === id);
+            if (index !== -1) {
+                // Preserve existing data (like track history) and merge new/edited fields
+                // Also save the advanced tabs data
+                newProcess = {
+                    ...processes[index],
+                    name,
+                    type,
+                    image,
+                    alerts: tempAlerts,
+                    encargados: tempUsers,
+                    interesados: tempEmails
+                };
+                processes[index] = newProcess;
+            }
+        } else {
+            // New Process (Simple)
+            // Advanced fields are empty/undefined initially as tabs were hidden
+            processes.push(newProcess);
+        }
+
+        saveData(processes);
+        processModal.classList.remove('open');
+        renderProcesses(searchInput.value);
+    });
 
     // --- Management Modal Logic ---
     const manageModal = document.getElementById('manageModal');
@@ -581,7 +918,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         classifications.forEach(c => {
             const option = document.createElement('option');
-            option.value = c.nombre; // Storing name as per request, but ID is safer. User said "manage selection"
+            option.value = c.nombre; // Storing name as per request
             option.dataset.steps = JSON.stringify(c.steps || []);
             option.textContent = c.nombre;
             if (process.currentClassification === c.nombre) option.selected = true;
@@ -638,7 +975,6 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) { }
 
         const now = new Date();
-        // Format: YYYY-MM-DD HH:MM:SS
         const timestamp = now.getFullYear() + "-" +
             String(now.getMonth() + 1).padStart(2, '0') + "-" +
             String(now.getDate()).padStart(2, '0') + " " +
@@ -690,43 +1026,6 @@ document.addEventListener('DOMContentLoaded', () => {
             trackHistoryContainer.appendChild(item);
         });
     };
-
-    // --- Event Listeners ---
-    document.getElementById('addProcessBtn').addEventListener('click', () => openModal(false));
-    document.getElementById('cancelBtn').addEventListener('click', () => processModal.classList.remove('open'));
-
-    processTypeSelect.addEventListener('change', (e) => {
-        renderImageOptions(e.target.value);
-        selectedImageInput.value = ''; // Reset selection on type change
-    });
-
-    processForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const name = processNameInput.value.trim();
-        const type = processTypeSelect.value;
-        const image = selectedImageInput.value;
-        const id = document.getElementById('processId').value || Date.now().toString();
-
-        if (!image) {
-            imageError.style.display = 'block';
-            return;
-        }
-
-        const processes = getData();
-        const newProcess = { id, name, type, image };
-
-        if (isEditing) {
-            const index = processes.findIndex(p => p.id === id);
-            if (index !== -1) processes[index] = newProcess;
-        } else {
-            processes.push(newProcess);
-        }
-
-        saveData(processes);
-        processModal.classList.remove('open');
-        renderProcesses(searchInput.value);
-    });
 
     searchInput.addEventListener('keyup', (e) => renderProcesses(e.target.value));
 

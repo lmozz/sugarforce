@@ -126,10 +126,47 @@
         .card-actions {
             margin-top: auto;
             display: flex;
-            justify-content: flex-end;
-            gap: 5px;
+            justify-content: space-between;
+            /* Distribute space evenly */
+            gap: 2px;
+            /* Minimal gap */
             opacity: 0;
             transition: opacity 0.2s;
+            flex-wrap: wrap;
+            /* Allow wrapping if needed, though we try to fit */
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            /* Circular buttons */
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+            color: #333;
+        }
+
+        .action-btn:hover {
+            background: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        body.dark-mode .action-btn {
+            background: rgba(50, 50, 50, 0.8);
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #eee;
+        }
+
+        body.dark-mode .action-btn:hover {
+            background: #444;
         }
 
         .process-card:hover .card-actions {
@@ -286,6 +323,40 @@
             color: #ff6b6b;
         }
 
+        /* Responsive Mobile Styles for Timeline */
+        @media (max-width: 600px) {
+            .modal-content {
+                width: 95% !important;
+                /* Force wider max width on mobile */
+                max-width: 95% !important;
+                padding: 15px;
+            }
+
+            .timeline-container {
+                flex-direction: column;
+                /* Vertical Layout */
+                overflow-x: hidden;
+                overflow-y: auto;
+                max-height: 60vh;
+                /* Allow vertical scroll */
+                padding: 10px 5px;
+            }
+
+            .timeline-item-wrapper {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .timeline-block {
+                width: 100%;
+                /* Full width blocks */
+                height: auto;
+                /* Auto height */
+                min-height: 80px;
+                margin-bottom: 10px;
+            }
+        }
+
         /* DARK MODE FLATPICKR OVERRIDES */
         body.dark-mode .flatpickr-calendar {
             background: #2a2a2a;
@@ -372,6 +443,192 @@
             fill: #1a73e8;
         }
     </style>
+    <!-- Quill CSS -->
+    <link href="quill.snow.css" rel="stylesheet">
+    <script src="quill.js"></script>
+    <style>
+        /* Modal Tabs */
+        .modal-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+            gap: 10px;
+            overflow-x: auto;
+            /* Allow Scroll on mobile */
+        }
+
+        body.dark-mode .modal-tabs {
+            border-bottom-color: #444;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+        }
+
+        body.dark-mode .tab-btn {
+            color: #aaa;
+        }
+
+        .tab-btn.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+            font-weight: 500;
+        }
+
+        body.dark-mode .tab-btn.active {
+            color: #4cabff;
+            border-bottom-color: #4cabff;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.2s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Lists Styles (Alerts, Users, Emails) */
+        .item-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        body.dark-mode .item-list {
+            border-color: #444;
+        }
+
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+
+        body.dark-mode .list-item {
+            border-bottom-color: #444;
+            color: #ddd;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-small-remove {
+            background: none;
+            border: none;
+            color: #d93025;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .btn-small-edit {
+            background: none;
+            border: none;
+            color: #1a73e8;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Quill Editor Overrides for Dark Mode */
+        body.dark-mode .ql-toolbar {
+            background: #333;
+            border-color: #444;
+        }
+
+        body.dark-mode .ql-container {
+            border-color: #444;
+            background: #2a2a2a;
+            color: #eee;
+        }
+
+        body.dark-mode .ql-stroke {
+            stroke: #ccc;
+        }
+
+        body.dark-mode .ql-fill {
+            fill: #ccc;
+        }
+
+        body.dark-mode .ql-picker {
+            color: #ccc;
+        }
+
+        /* Day Selector Styles */
+        .days-selector {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 5px;
+            justify-content: space-between;
+        }
+
+        .day-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background: white;
+            color: #555;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .day-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .day-btn.selected {
+            background: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        body.dark-mode .day-btn {
+            background: #333;
+            border-color: #555;
+            color: #ddd;
+        }
+
+        body.dark-mode .day-btn:hover {
+            background: #444;
+        }
+
+        body.dark-mode .day-btn.selected {
+            background: #4cabff;
+            color: #000;
+            border-color: #4cabff;
+        }
+    </style>
 </head>
 
 <body>
@@ -447,45 +704,122 @@
 
     <!-- Process Modal -->
     <div class="modal-overlay" id="processModal">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px; width: 95%;">
             <div class="modal-header" id="modalTitle">Nuevo Proceso</div>
+
+            <!-- Tabs Container (Hidden on Create) -->
+            <div class="modal-tabs" id="modalTabs" style="display: none;">
+                <button type="button" class="tab-btn active" data-tab="tab-general">General</button>
+                <button type="button" class="tab-btn" data-tab="tab-alertas">Alertas</button>
+                <button type="button" class="tab-btn" data-tab="tab-encargados">Encargados</button>
+                <button type="button" class="tab-btn" data-tab="tab-interesados">Interesados</button>
+                <button type="button" class="tab-btn" data-tab="tab-notificaciones">Notificaciones</button>
+            </div>
+
             <form id="processForm">
                 <input type="hidden" id="processId">
 
-                <div class="input-group">
-                    <input type="text" id="processName" required placeholder=" ">
-                    <label for="processName">Nombre</label>
+                <!-- TAB 1: GENERAL -->
+                <div id="tab-general" class="tab-content active">
+                    <div class="input-group">
+                        <input type="text" id="processName" required placeholder=" ">
+                        <label for="processName">Nombre</label>
+                    </div>
+
+                    <div class="input-group">
+                        <select id="processType" required class="form-control">
+                            <option value="" disabled selected>Seleccione Tipo</option>
+                            <option value="cliente">Cliente</option>
+                            <option value="marca">Marca</option>
+                        </select>
+                        <label for="processType"
+                            style="top: -10px; font-size: 12px; color: #1a73e8; background: white; padding: 0 4px;">Tipo</label>
+                    </div>
+
+                    <div class="input-group" style="margin-bottom: 0;">
+                        <label
+                            style="position: static; transform: none; font-size: 14px; margin-bottom: 8px; display: block;">Seleccionar
+                            Imagen</label>
+                        <div class="image-selector-grid" id="imageSelector">
+                            <!-- Images will be populated based on type -->
+                            <div
+                                style="grid-column: 1/-1; text-align: center; color: #777; padding: 20px; font-size: 13px;">
+                                Seleccione un tipo primero
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedImageInput" required>
+                    </div>
+                    <div id="imageError" style="color: #d93025; font-size: 12px; margin-top: 5px; display: none;">Debe
+                        seleccionar una imagen</div>
                 </div>
 
-                <div class="input-group">
-                    <select id="processType" required class="form-control">
-                        <option value="" disabled selected>Seleccione Tipo</option>
-                        <option value="cliente">Cliente</option>
-                        <option value="marca">Marca</option>
-                    </select>
-                    <label for="processType"
-                        style="top: -10px; font-size: 12px; color: #1a73e8; background: white; padding: 0 4px;">Tipo</label>
-                </div>
-
-                <div class="input-group" style="margin-bottom: 0;">
-                    <label
-                        style="position: static; transform: none; font-size: 14px; margin-bottom: 8px; display: block;">Seleccionar
-                        Imagen</label>
-                    <div class="image-selector-grid" id="imageSelector">
-                        <!-- Images will be populated based on type -->
-                        <div
-                            style="grid-column: 1/-1; text-align: center; color: #777; padding: 20px; font-size: 13px;">
-                            Seleccione un tipo primero
+                <!-- TAB 2: ALERTAS -->
+                <div id="tab-alertas" class="tab-content">
+                    <div style="margin-bottom: 10px;">
+                        <label style="font-size: 14px; color: #666; display: block; margin-bottom: 5px;">Seleccionar
+                            Días</label>
+                        <div class="days-selector">
+                            <button type="button" class="day-btn" data-day="Lun">L</button>
+                            <button type="button" class="day-btn" data-day="Mar">M</button>
+                            <button type="button" class="day-btn" data-day="Mié">M</button>
+                            <button type="button" class="day-btn" data-day="Jue">J</button>
+                            <button type="button" class="day-btn" data-day="Vie">V</button>
+                            <button type="button" class="day-btn" data-day="Sáb">S</button>
+                            <button type="button" class="day-btn" data-day="Dom">D</button>
                         </div>
                     </div>
-                    <input type="hidden" id="selectedImageInput" required>
-                </div>
-                <div id="imageError" style="color: #d93025; font-size: 12px; margin-top: 5px; display: none;">Debe
-                    seleccionar una imagen</div>
 
-                <div class="modal-actions">
+                    <div class="input-group" style="display: flex; gap: 10px; align-items: flex-end;">
+                        <div style="flex: 1;">
+                            <input type="time" id="alertTime" class="form-control">
+                            <label>Hora</label>
+                        </div>
+                        <button type="button" id="addAlertBtn" class="modal-btn btn-save"
+                            style="width: auto; padding: 8px 12px; margin-bottom: 2px;">+</button>
+                    </div>
+                    <ul class="item-list" id="alertsList"></ul>
+                </div>
+
+                <!-- TAB 3: ENCARGADOS -->
+                <div id="tab-encargados" class="tab-content">
+                    <div class="input-group" style="display: flex; gap: 10px; align-items: center;">
+                        <select id="userSelect" class="form-control" style="flex:1;">
+                            <option value="">Seleccione Usuario</option>
+                            <!-- Loaded from LS -->
+                        </select>
+                        <button type="button" id="addUserBtn" class="modal-btn btn-save"
+                            style="width: auto; padding: 8px 12px;">Agregar</button>
+                    </div>
+                    <ul class="item-list" id="usersList"></ul>
+                </div>
+
+                <!-- TAB 4: INTERESADOS -->
+                <div id="tab-interesados" class="tab-content">
+                    <div class="input-group">
+                        <input type="text" id="interestedName" placeholder=" " class="form-control">
+                        <label>Nombre Interesado</label>
+                    </div>
+                    <div class="input-group" style="display: flex; gap: 10px;">
+                        <input type="email" id="interestedEmail" placeholder="Correo" class="form-control"
+                            style="flex: 1;">
+                        <button type="button" id="addEmailBtn" class="modal-btn btn-save"
+                            style="width: auto; padding: 8px 12px;">Agregar</button>
+                    </div>
+                    <ul class="item-list" id="emailsList"></ul>
+                </div>
+
+                <!-- TAB 5: NOTIFICACIONES (Editor) -->
+                <div id="tab-notificaciones" class="tab-content">
+                    <div id="editor-container" style="height: 200px; background: white; color: black;"></div>
+                    <div style="margin-top: 15px; text-align: right;">
+                        <button type="button" id="sendNotificationBtn" class="modal-btn btn-save">Enviar
+                            Notificación</button>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 20px;">
                     <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>
-                    <button type="submit" class="modal-btn btn-save">Guardar</button>
+                    <button type="submit" class="modal-btn btn-save">Guardar Proceso</button>
                 </div>
             </form>
         </div>
