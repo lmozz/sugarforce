@@ -182,18 +182,20 @@
                     </div>
                 </div>
                 <div id="screen-multimedia" class="tab-pane">
-                    <div class="detail-header">
-                        <h4>Multimedia</h4>
-                        <button type="button" class="btn-create" id="addScreenMediaBtn">Agregar</button>
+                    <div class="detail-header"
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h4 style="margin:0;">Multimedia</h4>
+                        <button type="button" class="edit-btn" id="addScreenMediaBtn">+ Agregar Recurso</button>
                     </div>
                     <div id="screenMediaList" class="detail-list"></div>
                 </div>
                 <div id="screen-classes" class="tab-pane">
-                    <div class="detail-header">
-                        <h4>Clasificaciones</h4>
-                        <div class="add-row">
-                            <select id="screenClassSelect"></select>
-                            <button type="button" class="btn-create" id="addScreenClassBtn">Vincular</button>
+                    <div class="detail-header"
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h4 style="margin:0;">Clasificaciones</h4>
+                        <div class="add-row" style="display:flex; gap:10px;">
+                            <select id="screenClassSelect" style="flex:1;"></select>
+                            <button type="button" class="edit-btn" id="addScreenClassBtn">Vincular</button>
                         </div>
                     </div>
                     <div id="screenClassList" class="detail-list"></div>

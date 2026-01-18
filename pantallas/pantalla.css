@@ -159,41 +159,43 @@ body:not(.dark-mode) .data-table tr td {
 
 .edit-btn,
 .delete-btn {
-    padding: 10px 20px !important;
-    /* Más grandes y legibles */
+    padding: 8px 16px !important;
     border-radius: 10px !important;
     font-size: 13px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    border: none !important;
+    border: 1px solid transparent !important;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    outline: none !important;
 }
 
 .edit-btn {
-    background: rgba(0, 122, 255, 0.15) !important;
+    background: rgba(0, 122, 255, 0.12) !important;
     color: var(--accent-blue) !important;
+    border: 1px solid rgba(0, 122, 255, 0.25) !important;
 }
 
 .edit-btn:hover {
     background: var(--accent-blue) !important;
     color: #fff !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25);
 }
 
 .delete-btn {
-    background: rgba(255, 59, 48, 0.15) !important;
+    background: rgba(255, 59, 48, 0.12) !important;
     color: var(--accent-red) !important;
+    border: 1px solid rgba(255, 59, 48, 0.25) !important;
 }
 
 .delete-btn:hover {
     background: var(--accent-red) !important;
     color: #fff !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.25);
 }
 
 /* MODALS */
