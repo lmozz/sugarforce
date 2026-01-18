@@ -268,14 +268,29 @@
     <!-- Overlay de Presentación Full Screen -->
     <div id="presentationOverlay" class="presentation-overlay">
         <button class="close-presentation" onclick="stopPresentation()" style="opacity: 0;">&times;</button>
-        <div id="slideContainer" class="slide-container">
-            <!-- Background blurred -->
-            <div id="slideBg" class="slide-bg"></div>
-            <!-- Current Slide Content -->
-            <div class="slide-content-wrapper">
-                <img id="slideImg" src="" alt="Presentación">
-                <div class="marquee-container">
-                    <p id="slideText" class="marquee-text"></p>
+
+        <div class="presentation-layout">
+            <div id="adsSection" class="ads-section">
+                <div id="slideContainer" class="slide-container">
+                    <div id="slideBg" class="slide-bg"></div>
+                    <div class="slide-content-wrapper">
+                        <img id="slideImg" src="" alt="Presentación">
+                        <div class="marquee-container">
+                            <p id="slideText" class="marquee-text"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="commentsSidebar" class="comments-sidebar">
+                <div class="qr-container">
+                    <img id="qrCode"
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https://lmozz.github.io/sugarforce/comentarios/comentarios.html"
+                        alt="QR Comentarios">
+                    <span>Escanea y comenta</span>
+                </div>
+                <div class="messages-container">
+                    <p id="positiveMessage"></p>
                 </div>
             </div>
         </div>

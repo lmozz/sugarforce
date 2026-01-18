@@ -434,8 +434,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- MODO PRESENTACIÓN ---
     let presentationTimer = null;
+    let messageTimer = null;
     let presentationMedia = [];
     let currentSlideIdx = 0;
+
+    const positiveMessages = [
+        "¡Tu sonrisa ilumina el día!",
+        "La perseverancia es la clave del éxito.",
+        "Cada pequeño paso cuenta para tu meta.",
+        "Hoy es un gran día para aprender algo nuevo.",
+        "Eres capaz de lograr cosas increíbles si te lo propones.",
+        "La amabilidad es un lenguaje que todos entienden.",
+        "Tu esfuerzo de hoy dará sus frutos mañana.",
+        "Cree en ti mismo y todo será posible.",
+        "El éxito no es el final, sino el camino que recorres."
+    ];
+    let currentMsgIdx = 0;
+
+    const startMessageRotation = () => {
+        rotateMessage();
+        messageTimer = setInterval(rotateMessage, 20000);
+    };
+
+    const rotateMessage = () => {
+        const p = document.getElementById('positiveMessage');
+        if (!p) return;
+        const msg = positiveMessages[currentMsgIdx];
+        p.textContent = msg;
+
+        // Adaptar tamaño: Corto (< 40) -> Grande, Largo -> Pequeño
+        p.className = msg.length < 40 ? 'msg-large' : 'msg-small';
+
+        currentMsgIdx = (currentMsgIdx + 1) % positiveMessages.length;
+    };
 
     window.startPresentation = (id) => {
         const screen = getPantallas().find(p => p.id == id);
@@ -484,7 +515,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         presentationMedia = media;
         currentSlideIdx = 0;
-        document.getElementById('presentationOverlay').classList.add('active');
+        const overlay = document.getElementById('presentationOverlay');
+        overlay.classList.add('active');
+
+        // Lógica de Comentarios (S/N)
+        if (screen.comentarios === 'S') {
+            overlay.classList.add('with-comments');
+            startMessageRotation();
+        } else {
+            overlay.classList.remove('with-comments');
+        }
+
         renderSlide();
     };
 
@@ -526,7 +567,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.stopPresentation = () => {
         clearTimeout(presentationTimer);
+        clearInterval(messageTimer);
         document.getElementById('presentationOverlay').classList.remove('active');
+        document.getElementById('presentationOverlay').classList.remove('with-comments');
     };
 
     // --- Init ---

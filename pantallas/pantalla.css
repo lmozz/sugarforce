@@ -903,3 +903,109 @@ body:not(.dark-mode) .img-choice {
         opacity: 0;
     }
 }
+
+/* =========================================
+   NUEVO LAYOUT CON COMENTARIOS (85/15)
+   ========================================= */
+.presentation-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.ads-section {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.presentation-overlay.with-comments .ads-section {
+    flex: 0 0 85%;
+}
+
+.comments-sidebar {
+    display: none;
+    flex: 0 0 15%;
+    height: 100%;
+    background: rgba(0, 50, 150, 0.3) !important;
+    backdrop-filter: blur(15px);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 5;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px;
+    box-sizing: border-box;
+}
+
+.presentation-overlay.with-comments .comments-sidebar {
+    display: flex;
+}
+
+.qr-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.qr-container img {
+    width: 100%;
+    max-width: 180px;
+    aspect-ratio: 1/1;
+    border-radius: 35px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.qr-container span {
+    display: block;
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+.messages-container {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 80px;
+    width: 100%;
+}
+
+#positiveMessage {
+    text-align: center;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 100%;
+    line-height: 1.3;
+    animation: fadeInMsg 0.5s ease;
+}
+
+@keyframes fadeInMsg {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.msg-large {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.msg-small {
+    font-size: 18px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
