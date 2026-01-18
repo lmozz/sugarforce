@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantallas | GemaPTC</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="pantalla.css">
+    <!-- Flatpickr for Periods -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                <li><a href="../product/product.html">Productos</a></li>
+                <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                <li><a href="../cliente/cliente.html">Clientes</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="../procesos/procesos.html">Procesos</a></li>
+                <li><a href="../pasos/pasos.html">Pasos</a></li>
+                <li><a href="../clasificacion/clasificacion.html">Clasificación</a></li>
+                <li><a href="pantallas.html" class="active">Pantallas</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-top">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Pantallas y Clasificaciones</div>
+                    <div class="search-container">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Buscar...">
+                    </div>
+                </div>
+                <div class="filter-actions">
+                    <button class="filter-btn" data-type="pantalla">Pantallas</button>
+                    <button class="filter-btn" data-type="clasificacion">Clasificaciones</button>
+                </div>
+            </header>
+
+            <!-- Grid/Table Area -->
+            <div class="content-view">
+                <div id="tableView" class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr id="tableHeader">
+                                <!-- Dynamic headers -->
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Card View for mobile injected here -->
+                <div id="cardView" class="cards-grid" style="display: none;"></div>
+
+                <div id="noDataState" class="no-data-container" style="display: none;">
+                    <img src="../imgs/empty.png" class="no-data-img">
+                    <div class="no-data">Sin registros para mostrar</div>
+                </div>
+            </div>
+
+            <!-- AI Widget -->
+            <div class="ai-chat-widget" id="aiChatWidget">
+                <iframe src="../ai/ai.html?context=pantallas" frameborder="0"></iframe>
+            </div>
+
+            <!-- FAB Buttons -->
+            <button class="fab fab-ai" id="openAiBtn">IA</button>
+            <div class="fab-group">
+                <button class="fab fab-sub" id="addClassBtn" title="Nueva Clasificación">C</button>
+                <button class="fab fab-sub" id="addScreenBtn" title="Nueva Pantalla">P</button>
+                <button class="fab" id="mainFab">+</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for Clasificaciones -->
+    <div class="modal-overlay" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="classModalTitle">Nueva Clasificación</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="class-general">General</button>
+                <button class="tab-btn" data-tab="class-multimedia">Multimedia</button>
+            </div>
+            <form id="classForm">
+                <input type="hidden" id="classId">
+                <div id="class-general" class="tab-pane active">
+                    <div class="input-group">
+                        <input type="text" id="className" required placeholder=" ">
+                        <label>Nombre</label>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="classDesc" placeholder=" "></textarea>
+                        <label>Descripción</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="classPeriod" placeholder="Seleccionar Periodo">
+                        <label>Periodo (Fecha/Rango)</label>
+                    </div>
+                </div>
+                <div id="class-multimedia" class="tab-pane">
+                    <div class="detail-header">
+                        <h4>Multimedia</h4>
+                        <button type="button" class="btn-add-detail" id="addClassMedia">Agregar Multimedia</button>
+                    </div>
+                    <div id="classMediaList" class="detail-list"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel close-modal">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Pantallas -->
+    <div class="modal-overlay" id="screenModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="screenModalTitle">Nueva Pantalla</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-tabs">
+                <button class="tab-btn active" data-tab="screen-general">General</button>
+                <button class="tab-btn" data-tab="screen-multimedia">Multimedia</button>
+                <button class="tab-btn" data-tab="screen-classes">Clasificaciones</button>
+            </div>
+            <form id="screenForm">
+                <input type="hidden" id="screenId">
+                <div id="screen-general" class="tab-pane active">
+                    <div class="input-group">
+                        <input type="text" id="screenName" required placeholder=" ">
+                        <label>Nombre</label>
+                    </div>
+                    <div class="input-group">
+                        <textarea id="screenDesc" placeholder=" "></textarea>
+                        <label>Descripción</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" id="screenLocation" placeholder=" ">
+                        <label>Ubicación</label>
+                    </div>
+                    <div class="toggle-group">
+                        <label>¿Reproducción Aleatoria?</label>
+                        <div class="radio-buttons">
+                            <label><input type="radio" name="screenRandom" value="true"> Sí</label>
+                            <label><input type="radio" name="screenRandom" value="false" checked> No</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="screen-multimedia" class="tab-pane">
+                    <div class="detail-header">
+                        <h4>Multimedia</h4>
+                        <button type="button" class="btn-add-detail" id="addScreenMedia">Agregar Multimedia</button>
+                    </div>
+                    <div id="screenMediaList" class="detail-list"></div>
+                </div>
+                <div id="screen-classes" class="tab-pane">
+                    <div class="detail-header">
+                        <h4>Clasificaciones Asociadas</h4>
+                        <div class="add-detail-row">
+                            <select id="screenClassSelect"></select>
+                            <button type="button" class="btn-add-detail" id="addScreenClass">Vincular</button>
+                        </div>
+                    </div>
+                    <div id="screenClassList" class="detail-list"></div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel close-modal">Cancelar</button>
+                    <button type="submit" class="btn-save">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Multimedia Item (Shared) -->
+    <div class="modal-overlay" id="mediaItemModal">
+        <div class="modal-content sub-modal">
+            <div class="modal-header">
+                <h3>Detalle Multimedia</h3>
+                <button class="close-sub-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="image-grid-selector" id="imageGrid">
+                    <!-- Images 1-9 -->
+                </div>
+                <div class="input-group">
+                    <input type="number" id="mediaDuration" min="1" value="10" required placeholder=" ">
+                    <label>Duración (segundos)</label>
+                </div>
+                <div class="type-selector">
+                    <label>Tipo</label>
+                    <div class="selection-btns">
+                        <button type="button" class="sel-btn" data-value="CD">CD</button>
+                        <button type="button" class="sel-btn" data-value="SD">SD</button>
+                    </div>
+                    <input type="hidden" id="selectedMediaType" value="CD">
+                </div>
+                <div class="input-group">
+                    <textarea id="mediaSentence" placeholder=" "></textarea>
+                    <label>Oración</label>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel close-sub-modal">Cancelar</button>
+                <button type="button" id="saveMediaItem" class="btn-save">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="pantallas.js"></script>
+</body>
+
+</html>
