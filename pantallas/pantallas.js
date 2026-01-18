@@ -146,10 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
         head.innerHTML = `<tr><th>Nombre</th><th>Tipo</th><th>Multimedia</th><th>Acciones</th></tr>`;
         body.innerHTML = data.map(d => `
             <tr class="row-${d._kind}">
-                <td style="font-weight:600; color: var(--accent-blue);">${d.nombre}</td>
-                <td><span class="badge ${d._kind}">${d._kind.toUpperCase()}</span></td>
-                <td><span style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:10px; font-size:12px;">${(d.multimedia || []).length} Recursos</span></td>
-                <td>
+                <td data-label="Nombre" style="font-weight:600; color: var(--accent-blue);">${d.nombre}</td>
+                <td data-label="Tipo"><span class="badge ${d._kind}">${d._kind.toUpperCase()}</span></td>
+                <td data-label="Multimedia"><span style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:10px; font-size:12px;">${(d.multimedia || []).length} Recursos</span></td>
+                <td data-label="Acciones">
                     <div class="action-btn-group">
                         <button class="edit-btn" onclick="openEdit('${d._kind}', '${d.id}')">Editar</button>
                         <button class="delete-btn" onclick="deleteRecord('${d._kind}', '${d.id}')">Borrar</button>
@@ -345,8 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
     };
 
-    document.getElementById('openMenuBtn').onclick = () => document.getElementById('sidebar').classList.add('open');
-    document.getElementById('closeMenuBtn').onclick = () => document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('openMenuBtn').onclick = () => document.getElementById('sidebar').classList.add('active');
+    document.getElementById('closeMenuBtn').onclick = () => document.getElementById('sidebar').classList.remove('active');
     document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.href = '../index.html'; };
 
     // --- Global Controls ---
