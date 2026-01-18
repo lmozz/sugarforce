@@ -5,11 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pantallas | GemaPTC</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- CSS -->
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="pantalla.css">
-    <!-- Flatpickr for Periods -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
@@ -38,7 +37,8 @@
                 <li><a href="pantallas.html" class="active">Pantallas</a></li>
             </ul>
             <div class="sidebar-footer">
-                <button type="button" id="themeToggle" class="theme-btn">Cambiar Tema</button>
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
                 <div class="user-info" id="userInfo"></div>
                 <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
             </div>
@@ -47,22 +47,23 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="header-bar">
-                <div class="header-top">
+                <div class="header-left">
                     <button class="menu-btn" id="openMenuBtn">☰</button>
                     <div class="header-title">Pantallas y Clasificaciones</div>
-                    <div class="search-container">
-                        <input type="text" id="searchInput" class="search-input" placeholder="Buscar...">
-                    </div>
                 </div>
-                <div class="filter-actions">
-                    <button class="filter-btn" data-type="pantalla">Pantallas</button>
-                    <button class="filter-btn" data-type="clasificacion">Clasificaciones</button>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscador...">
                 </div>
             </header>
 
-            <!-- Grid/Table Area -->
-            <div class="content-view">
-                <div id="tableView" class="table-wrapper">
+            <div class="filter-actions">
+                <button class="filter-btn" data-type="pantalla">Pantallas</button>
+                <button class="filter-btn" data-type="clasificacion">Clasificaciones</button>
+            </div>
+
+            <!-- Table Container -->
+            <div class="table-wrapper">
+                <div id="tableView">
                     <table class="data-table">
                         <thead>
                             <tr id="tableHeader">
@@ -74,31 +75,31 @@
                         </tbody>
                     </table>
                 </div>
-                <!-- Card View for mobile injected here -->
+
                 <div id="cardView" class="cards-grid" style="display: none;"></div>
 
                 <div id="noDataState" class="no-data-container" style="display: none;">
-                    <img src="../imgs/empty.png" class="no-data-img">
-                    <div class="no-data">Sin registros para mostrar</div>
+                    <img src="../imgs/empty.png" style="width: 150px;">
+                    <div style="margin-top: 15px;">Sin registros para mostrar</div>
                 </div>
             </div>
 
-            <!-- AI Widget -->
+            <!-- Chat AI Widget -->
             <div class="ai-chat-widget" id="aiChatWidget">
                 <iframe src="../ai/ai.html?context=pantallas" frameborder="0"></iframe>
             </div>
 
-            <!-- FAB Buttons -->
-            <button class="fab fab-ai" id="openAiBtn">IA</button>
-            <div class="fab-group">
-                <button class="fab fab-sub" id="addClassBtn" title="Nueva Clasificación">C</button>
-                <button class="fab fab-sub" id="addScreenBtn" title="Nueva Pantalla">P</button>
-                <button class="fab" id="mainFab">+</button>
+            <!-- Simplified FAB Buttons (Separate for reliability) -->
+            <div class="fixed-actions">
+                <button class="fab fab-ai" id="openAiBtn" title="Asistente IA">IA</button>
+                <button class="fab" id="addScreenBtn" title="Crear Pantalla" style="background: #007aff;">+P</button>
+                <button class="fab" id="addClassBtn" title="Crear Clasificación"
+                    style="background: #ff3b30;">+C</button>
             </div>
         </main>
     </div>
 
-    <!-- Modal for Clasificaciones -->
+    <!-- Modal Clasificación -->
     <div class="modal-overlay" id="classModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -112,35 +113,37 @@
             <form id="classForm">
                 <input type="hidden" id="classId">
                 <div id="class-general" class="tab-pane active">
-                    <div class="input-group">
-                        <input type="text" id="className" required placeholder=" ">
-                        <label>Nombre</label>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <input type="text" id="className" required placeholder=" ">
+                            <label>Nombre</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="classPeriod" placeholder=" ">
+                            <label>Periodo (Fecha/Rango)</label>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <textarea id="classDesc" placeholder=" "></textarea>
+                    <div class="input-group" style="margin-top: 20px;">
+                        <textarea id="classDesc" style="height: 100px;" placeholder=" "></textarea>
                         <label>Descripción</label>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="classPeriod" placeholder="Seleccionar Periodo">
-                        <label>Periodo (Fecha/Rango)</label>
                     </div>
                 </div>
                 <div id="class-multimedia" class="tab-pane">
                     <div class="detail-header">
                         <h4>Multimedia</h4>
-                        <button type="button" class="btn-add-detail" id="addClassMedia">Agregar Multimedia</button>
+                        <button type="button" class="btn-create" id="addClassMediaBtn">Agregar</button>
                     </div>
                     <div id="classMediaList" class="detail-list"></div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel close-modal">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="submit" class="btn-save">Guardar Clasificación</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal for Pantallas -->
+    <!-- Modal Pantalla -->
     <div class="modal-overlay" id="screenModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -155,21 +158,23 @@
             <form id="screenForm">
                 <input type="hidden" id="screenId">
                 <div id="screen-general" class="tab-pane active">
-                    <div class="input-group">
-                        <input type="text" id="screenName" required placeholder=" ">
-                        <label>Nombre</label>
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <input type="text" id="screenName" required placeholder=" ">
+                            <label>Nombre</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="screenLocation" placeholder=" ">
+                            <label>Ubicación</label>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <textarea id="screenDesc" placeholder=" "></textarea>
+                    <div class="input-group" style="margin-top: 20px;">
+                        <textarea id="screenDesc" style="height: 80px;" placeholder=" "></textarea>
                         <label>Descripción</label>
                     </div>
-                    <div class="input-group">
-                        <input type="text" id="screenLocation" placeholder=" ">
-                        <label>Ubicación</label>
-                    </div>
-                    <div class="toggle-group">
-                        <label>¿Reproducción Aleatoria?</label>
-                        <div class="radio-buttons">
+                    <div class="toggle-control">
+                        <span>¿Reproducción Aleatoria?</span>
+                        <div class="radio-box">
                             <label><input type="radio" name="screenRandom" value="true"> Sí</label>
                             <label><input type="radio" name="screenRandom" value="false" checked> No</label>
                         </div>
@@ -178,59 +183,63 @@
                 <div id="screen-multimedia" class="tab-pane">
                     <div class="detail-header">
                         <h4>Multimedia</h4>
-                        <button type="button" class="btn-add-detail" id="addScreenMedia">Agregar Multimedia</button>
+                        <button type="button" class="btn-create" id="addScreenMediaBtn">Agregar</button>
                     </div>
                     <div id="screenMediaList" class="detail-list"></div>
                 </div>
                 <div id="screen-classes" class="tab-pane">
                     <div class="detail-header">
-                        <h4>Clasificaciones Asociadas</h4>
-                        <div class="add-detail-row">
+                        <h4>Clasificaciones</h4>
+                        <div class="add-row">
                             <select id="screenClassSelect"></select>
-                            <button type="button" class="btn-add-detail" id="addScreenClass">Vincular</button>
+                            <button type="button" class="btn-create" id="addScreenClassBtn">Vincular</button>
                         </div>
                     </div>
                     <div id="screenClassList" class="detail-list"></div>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="btn-cancel close-modal">Cancelar</button>
-                    <button type="submit" class="btn-save">Guardar</button>
+                    <button type="submit" class="btn-save">Guardar Pantalla</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Modal for Multimedia Item (Shared) -->
-    <div class="modal-overlay" id="mediaItemModal">
-        <div class="modal-content sub-modal">
+    <!-- Sub-modal Detalle Multimedia -->
+    <div class="modal-overlay" id="mediaItemModal" style="z-index: 3000;">
+        <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
                 <h3>Detalle Multimedia</h3>
                 <button class="close-sub-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="image-grid-selector" id="imageGrid">
-                    <!-- Images 1-9 -->
-                </div>
-                <div class="input-group">
+                <label style="font-size: 13px; opacity: 0.7; display: block; margin-bottom: 10px;">Seleccionar
+                    Imagen:</label>
+                <div class="image-selector-grid" id="imageGrid"></div>
+
+                <div class="input-group" style="margin-top: 20px;">
                     <input type="number" id="mediaDuration" min="1" value="10" required placeholder=" ">
                     <label>Duración (segundos)</label>
                 </div>
-                <div class="type-selector">
-                    <label>Tipo</label>
-                    <div class="selection-btns">
-                        <button type="button" class="sel-btn" data-value="CD">CD</button>
-                        <button type="button" class="sel-btn" data-value="SD">SD</button>
+
+                <div class="option-selector" style="margin-top: 20px;">
+                    <label>Tipo de Recurso:</label>
+                    <div class="btn-toggle-group">
+                        <button type="button" class="toggle-opt active" data-value="CD">CD</button>
+                        <button type="button" class="toggle-opt" data-value="SD">SD</button>
                     </div>
                     <input type="hidden" id="selectedMediaType" value="CD">
                 </div>
-                <div class="input-group">
-                    <textarea id="mediaSentence" placeholder=" "></textarea>
-                    <label>Oración</label>
+
+                <div class="input-group" style="margin-top: 20px;">
+                    <textarea id="mediaSentence" style="height: 80px;" placeholder=" "></textarea>
+                    <label>Oración / Texto</label>
                 </div>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn-cancel close-sub-modal">Cancelar</button>
-                <button type="button" id="saveMediaItem" class="btn-save">Confirmar</button>
+                <button type="button" id="saveMediaItemBtn" class="btn-save" style="background: #4caf50;">Confirmar
+                    Detalle</button>
             </div>
         </div>
     </div>

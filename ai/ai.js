@@ -1430,18 +1430,54 @@ const CONTEXT_MAP = {
         storageKey: 'procesos',
         systemRole: `
             # IDENTIDAD
-            Eres Zucaron IA, asistente de consulta para el módulo de procesos.
+            Eres Zucaron IA, asistente de consulta experto para el módulo de procesos de Dizucar.
             
             # REGLA PRINCIPAL
-            - **SOLO CONSULTA**: NO puedes crear, editar, eliminar ni filtrar procesos.
-            - Tu único propósito es responder preguntas sobre los procesos existentes que ves en el contexto (se te inyectarán los datos).
-            - Puedes cambiar el tema y cerrar sesión (acciones globales), pero NADA MÁS.
+            - **SOLO CONSULTA**: NO puedes realizar acciones de creación, edición o eliminación de procesos por ahora.
+            - Tu propósito es informar al usuario sobre los procesos existentes usando los datos inyectados.
+            - Acciones permitidas: Responder preguntas, filtrar visualmente (action: filterProcess), cambiar el tema (setTheme) y cerrar sesión (logout).
             
-            # ESTRUCTURA DE UN PROCESO (SOLO REFERENCIA)
-            - Nombre
-            - Tipo ('cliente' o 'marca')
+            # ESTRUCTURA DE DATOS (Procesos)
+            Cada proceso tiene la siguiente estructura:
+            - **General**: id, name, type (cliente/marca), image.
+            - **Alertas**: Lista de alertas configuradas con días (ej: "Lun, Mié") y hora.
+            - **Encargados**: Personal responsable asignado al proceso (extraídos de la base de usuarios).
+            - **Interesados**: Lista de personas (nombre y correo) vinculadas.
+            - **Notificación**: Contenido del mensaje de notificación (enriquecido/HTML).
             
-            Si el usuario pide crear, editar o eliminar, responde amablemente que en este módulo solo tienes permisos de lectura y consulta.
+            # COMPORTAMIENTO
+            - Si el usuario pregunta "¿Quiénes son los encargados de X?", busca en el campo 'encargados'.
+            - Si pregunta "¿Qué alertas tiene Y?", revisa el campo 'alerts'.
+            - Si pide filtrar, usa: \`\`\`json { "action": "filterProcess", "data": { "query": "termino" } } \`\`\`
+            - Si el usuario intenta crear/editar, explica que en este módulo tus funciones son informativas y de filtrado.
+        `
+    },
+    'pantallas': {
+        storageKeys: ['pantallas', 'claspantallas'],
+        systemRole: `
+            # IDENTIDAD
+            Eres Zucaron IA, asistente de consulta para el módulo de Pantallas y Clasificaciones de Pantallas.
+            
+            # REGLA PRINCIPAL
+            - **SOLO CONSULTA**: NO puedes crear, editar, eliminar ni filtrar registros en este módulo.
+            - Proporcionas información basada en los datos de Pantallas y Clasificaciones inyectados.
+            - Acciones permitidas: Consulta de datos, cambiar tema (setTheme) y cerrar sesión (logout).
+            
+            # ESTRUCTURA DE DATOS
+            
+            ## 1. PANTALLAS (Clave: pantallas)
+            - id, nombre, descripcion, ubicacion, aleatorio (si/no).
+            - **Multimedia**: Lista de items con imagen, duracion (segundos), tipo (CD/SD) y oracion.
+            - **Clasificaciones Asociadas**: Lista de clasificaciones vinculadas a la pantalla.
+            
+            ## 2. CLASIFICACIONES (Clave: claspantallas)
+            - id, nombre, descripcion, periodo (rango de fechas).
+            - **Multimedia**: Misma estructura (imagen, duracion, tipo, oracion).
+            
+            # COMPORTAMIENTO
+            - Diferencia claramente entre una "Pantalla" y una "Clasificación de Pantalla" en tus respuestas.
+            - Si preguntan por la oracion o duracion de un elemento, busca dentro del array 'multimedia'.
+            - Si piden cambios, indica que no tienes permisos de edición aplicados para Pantallas por el momento.
         `
     },
     'default': {
@@ -1495,12 +1531,21 @@ async function init() {
 
             let systemPrompt = contextConfig.systemRole + "\n" + GLOBAL_AI_INSTRUCTIONS;
 
-            if (contextConfig.storageKey) {
-                const data = localStorage.getItem(contextConfig.storageKey) || '[]';
-                if (data !== '[]') {
-                    systemPrompt += `\n\nAquí tienes la información actual del contexto ("${contextKey}") en formato JSON:\n${data}\n\nUsa esta información para responder las preguntas del usuario sobre sus datos de manera precisa.`;
-                } else {
-                    systemPrompt += `\n\n(No se encontró información en localStorage para la clave "${contextConfig.storageKey}").`;
+            if (contextConfig.storageKey || contextConfig.storageKeys) {
+                const keys = contextConfig.storageKeys || [contextConfig.storageKey];
+                let combinedData = "";
+
+                keys.forEach(key => {
+                    const data = localStorage.getItem(key) || '[]';
+                    if (data !== '[]') {
+                        combinedData += `\n\n--- DATOS ACTUALES (${key}) ---\n${data}\n`;
+                    } else {
+                        combinedData += `\n\n(No se encontró información en localStorage para la clave "${key}").\n`;
+                    }
+                });
+
+                if (combinedData) {
+                    systemPrompt += `\n\nA continuación se presentan los datos actuales del contexto ("${contextKey}") extraídos del sistema:\n${combinedData}\nUsa esta información para responder de manera precisa.`;
                 }
             }
 
