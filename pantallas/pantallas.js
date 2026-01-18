@@ -30,19 +30,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderMediaList = (containerId) => {
         const list = document.getElementById(containerId);
         if (!list) return;
+
+        list.style.display = 'grid';
+        list.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        list.style.gap = '12px';
+        list.style.marginTop = '15px';
+
         list.innerHTML = currentMultimediaItems.map((item, i) => `
-            <div class="item-row" style="display:flex; align-items:center; gap:12px; padding:12px; background:rgba(255,255,255,0.05); border-radius:12px; margin-bottom:8px;">
-                <img src="../imgs/${item.imagen}" style="width:45px; height:28px; object-fit:contain; background:rgba(0,0,0,0.2); border-radius:6px; padding:4px;">
-                <div style="flex:1; font-size:13px; color: var(--text-primary);">
-                    <b style="color: var(--accent-blue);">${item.tipo}</b> - ${item.duracion}s<br>
-                    <small style="opacity:0.7;">${(item.oracion || '').slice(0, 30)}${(item.oracion || '').length > 30 ? '...' : ''}</small>
+            <div class="media-card" style="background:rgba(255,255,255,0.05); border-radius:14px; padding:12px; border:1px solid rgba(255,255,255,0.1); display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center;">
+                <img src="imgs/${item.imagen}" style="width:100%; aspect-ratio:16/9; object-fit:contain; background:rgba(0,0,0,0.2); border-radius:8px;">
+                <div style="font-size:12px; color: var(--text-primary); line-height:1.4;">
+                    <b style="color: var(--accent-blue);">${item.tipo}</b><br>${item.duracion} segundos
                 </div>
-                <div style="display:flex; gap:8px;">
-                    <button type="button" class="edit-btn" style="padding:4px 10px;" onclick="editMediaItem(${i})">✏️</button>
-                    <button type="button" class="delete-btn" style="padding:4px 10px;" onclick="deleteMediaItem(${i}, '${containerId}')">🗑️</button>
+                <div style="display:flex; gap:6px; width:100%;">
+                    <button type="button" class="edit-btn" style="flex:1; padding:6px !important;" onclick="editMediaItem(${i})">✏️</button>
+                    <button type="button" class="delete-btn" style="flex:1; padding:6px !important;" onclick="deleteMediaItem(${i}, '${containerId}')">🗑️</button>
                 </div>
             </div>
-        `).join('') || '<div style="text-align:center; padding:20px; opacity:0.5;">Sin recursos cargados</div>';
+        `).join('') || '<div style="grid-column:1/-1; text-align:center; padding:30px; opacity:0.5;">Sin recursos cargados</div>';
     };
 
     const openMediaModal = (idx = null) => {
@@ -55,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const name = `${i}.png`;
             const div = document.createElement('div');
             div.className = `img-choice ${idx !== null && currentMultimediaItems[idx].imagen === name ? 'selected' : (idx === null && i === 1 ? 'selected' : '')}`;
-            div.innerHTML = `<img src="../imgs/${name}">`;
+            div.innerHTML = `<img src="imgs/${name}">`;
             div.onclick = () => {
                 grid.querySelectorAll('.img-choice').forEach(d => d.classList.remove('selected'));
                 div.classList.add('selected');
@@ -323,10 +328,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('logoutBtn').onclick = () => { localStorage.removeItem('currentUser'); window.location.href = '../index.html'; };
 
     // --- Global Controls ---
-    document.querySelectorAll('.close-modal, .close-sub-modal, .btn-cancel').forEach(b => {
-        b.onclick = () => {
-            closeModal(classModal); closeModal(screenModal); closeModal(mediaItemModal);
-        };
+    document.querySelectorAll('.close-modal').forEach(b => {
+        b.onclick = () => { closeModal(classModal); closeModal(screenModal); };
+    });
+
+    document.querySelectorAll('.close-sub-modal').forEach(b => {
+        b.onclick = () => { closeModal(mediaItemModal); };
     });
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
