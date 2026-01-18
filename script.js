@@ -314,11 +314,53 @@ document.addEventListener('DOMContentLoaded', async () => {
                     fileInput.click();
                     document.body.removeChild(fileInput);
                     return;
-                } else {
-                    alert('Contraseña incorrecta.');
-                    usernameInput.value = '';
-                    return;
                 }
+            }
+
+            // Check for special command: zucaritos (Magic Login for Prototype)
+            if (username.toLowerCase() === 'zucaritos') {
+                fetch('test-info.json')
+                    .then(response => response.json())
+                    .then(importData => {
+                        // Import all data to localStorage
+                        Object.keys(importData).forEach(key => {
+                            localStorage.setItem(key, JSON.stringify(importData[key]));
+                        });
+
+                        // Finalize Login without TFA
+                        localStorage.setItem('currentUser', 'zucaritos');
+                        localStorage.removeItem('tfa');
+
+                        console.log('Prototype data loaded from test-info.json. Logging in as zucaritos...');
+                        window.location.href = 'pasos/pasos.html';
+                    })
+                    .catch(error => {
+                        console.error('Error loading test-info.json:', error);
+                        alert('Error al cargar la data de prueba (test-info.json). Verifique que el archivo exista en la raíz.');
+                    });
+                return;
+            }
+
+            // Check for special command: erase (Full Reset)
+            if (username.toLowerCase() === 'erase') {
+                const password = prompt('Ingrese la contraseña para resetear el aplicativo:');
+                if (password === 'dulzura.sv') {
+                    if (confirm('¿Está seguro de que desea borrar TODA la información del aplicativo? Esta acción no se puede deshacer.')) {
+                        localStorage.clear();
+                        alert('Aplicativo reseteado correctamente.');
+                        window.location.reload();
+                    }
+                }
+                usernameInput.value = '';
+                return;
+            }
+
+            // Check for special command: have.data (Check data status)
+            if (username.toLowerCase() === 'have.data') {
+                const hasData = localStorage.length > 0;
+                alert(hasData ? 'Sí: ' + localStorage.length : 'No');
+                usernameInput.value = '';
+                return;
             }
 
             let logins = [];
