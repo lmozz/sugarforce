@@ -439,31 +439,55 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSlideIdx = 0;
 
     const positiveMessages = [
-        "¡Tu sonrisa ilumina el día!",
-        "La perseverancia es la clave del éxito.",
-        "Cada pequeño paso cuenta para tu meta.",
-        "Hoy es un gran día para aprender algo nuevo.",
-        "Eres capaz de lograr cosas increíbles si te lo propones.",
-        "La amabilidad es un lenguaje que todos entienden.",
-        "Tu esfuerzo de hoy dará sus frutos mañana.",
-        "Cree en ti mismo y todo será posible.",
-        "El éxito no es el final, sino el camino que recorres."
+        { text: "¡Tu sonrisa ilumina el día!", user: "Ana García", date: "2026-01-17 10:30" },
+        { text: "La perseverancia es la clave del éxito.", user: "Carlos Ruiz", date: "2026-01-17 11:15" },
+        { text: "Cada pequeño paso cuenta para tu meta.", user: "Elena M.", date: "2026-01-17 12:05" },
+        { text: "Hoy es un gran día para aprender algo nuevo.", user: "Roberto S.", date: "2026-01-17 13:45" },
+        { text: "Eres capaz de lograr cosas increíbles si te lo propones.", user: "Lucía P.", date: "2026-01-17 14:20" },
+        { text: "La amabilidad es un lenguaje que todos entienden.", user: "Marcos T.", date: "2026-01-17 15:55" },
+        { text: "Tu esfuerzo de hoy dará sus frutos mañana.", user: "Sofia V.", date: "2026-01-17 16:10" },
+        { text: "Cree en ti mismo y todo será posible.", user: "Juan D.", date: "2026-01-17 17:30" },
+        { text: "El éxito no es el final, sino el camino que recorres.", user: "Carmen L.", date: "2026-01-17 18:00" }
     ];
     let currentMsgIdx = 0;
+    let typeWriterInterval = null;
 
     const startMessageRotation = () => {
         rotateMessage();
         messageTimer = setInterval(rotateMessage, 20000);
     };
 
+    const typeWriter = (element, text, i = 0) => {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            typeWriterInterval = setTimeout(() => typeWriter(element, text, i + 1), 50);
+        }
+    };
+
     const rotateMessage = () => {
         const p = document.getElementById('positiveMessage');
         if (!p) return;
-        const msg = positiveMessages[currentMsgIdx];
-        p.textContent = msg;
 
-        // Adaptar tamaño: Corto (< 40) -> Grande, Largo -> Pequeño
-        p.className = msg.length < 40 ? 'msg-large' : 'msg-small';
+        clearTimeout(typeWriterInterval);
+        const obj = positiveMessages[currentMsgIdx];
+
+        // Estructura del mensaje: Texto + Info Usuario
+        p.innerHTML = ''; // Limpiar para el efecto typewriter
+        p.className = obj.text.length < 40 ? 'msg-large' : 'msg-small';
+
+        // Iniciar efecto en el texto principal
+        typeWriter(p, obj.text);
+
+        // Añadir meta información (Usuario y Fecha) después de un leve delay
+        setTimeout(() => {
+            const meta = document.createElement('div');
+            meta.style.marginTop = '15px';
+            meta.style.fontSize = '12px';
+            meta.style.opacity = '0.7';
+            meta.style.fontStyle = 'italic';
+            meta.innerHTML = `<span style="color:var(--accent-blue); font-weight:700;">@${obj.user}</span> • ${obj.date}`;
+            p.appendChild(meta);
+        }, (obj.text.length * 50) + 100);
 
         currentMsgIdx = (currentMsgIdx + 1) % positiveMessages.length;
     };
