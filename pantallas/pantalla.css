@@ -851,21 +851,21 @@ body:not(.dark-mode) .img-choice {
 }
 
 .marquee-text {
+    display: inline-block;
     white-space: nowrap;
     font-size: 32px;
     font-weight: 700;
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.5);
-    padding-left: 100%;
     animation: marquee 15s linear infinite;
 }
 
 @keyframes marquee {
-    0% {
-        transform: translateX(0);
+    from {
+        transform: translateX(100vw);
     }
 
-    100% {
-        transform: translateX(-200%);
+    to {
+        transform: translateX(-100%);
     }
 }
 

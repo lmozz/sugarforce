@@ -483,6 +483,11 @@ document.addEventListener('DOMContentLoaded', () => {
         bg.style.backgroundImage = `url('${path}')`;
         txt.textContent = item.oracion || '';
 
+        // Reiniciar animación de marquesina
+        txt.style.animation = 'none';
+        void txt.offsetWidth; // Force reflow
+        txt.style.animation = ''; // Restoration to CSS default
+
         if (item.tipo === 'CD') img.classList.add('dynamic-zoom');
 
         setTimeout(() => {
