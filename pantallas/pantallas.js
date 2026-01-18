@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td data-label="Multimedia"><span style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:10px; font-size:12px;">${(d.multimedia || []).length} Recursos</span></td>
                 <td data-label="Acciones">
                     <div class="action-btn-group">
+                        ${d._kind === 'pantalla' ? `<button class="primary-btn" style="background:#34c759; color:#fff; padding:6px 12px; border:none; border-radius:8px; cursor:pointer;" onclick="startPresentation('${d.id}')">Presentación</button>` : ''}
                         <button class="edit-btn" onclick="openEdit('${d._kind}', '${d.id}')">Editar</button>
                         <button class="delete-btn" onclick="deleteRecord('${d._kind}', '${d.id}')">Borrar</button>
                     </div>
@@ -408,6 +409,98 @@ document.addEventListener('DOMContentLoaded', () => {
             renderTable();
         };
     });
+
+    // --- MODO PRESENTACIÓN ---
+    let presentationTimer = null;
+    let presentationMedia = [];
+    let currentSlideIdx = 0;
+
+    window.startPresentation = (id) => {
+        const screen = getPantallas().find(p => p.id == id);
+        if (!screen) return;
+
+        // Recolectar medios
+        let media = [...(screen.multimedia || [])];
+        const linked = screen.clasificaciones || [];
+        const allClases = getClases();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        linked.forEach(link => {
+            const cls = allClases.find(c => c.id == link.id);
+            if (!cls) return;
+
+            let include = false;
+            if (cls.tipo === 'S') {
+                include = true;
+            } else if (cls.tipo === 'D' && cls.periodo) {
+                const range = cls.periodo.split(' to ');
+                if (range.length === 2) {
+                    const start = new Date(range[0]);
+                    const end = new Date(range[1]);
+                    start.setHours(0, 0, 0, 0);
+                    end.setHours(23, 59, 59, 999);
+                    if (today >= start && today <= end) include = true;
+                } else {
+                    const onlyDate = new Date(cls.periodo);
+                    onlyDate.setHours(0, 0, 0, 0);
+                    if (today.getTime() === onlyDate.getTime()) include = true;
+                }
+            }
+            if (include) media = media.concat(cls.multimedia || []);
+        });
+
+        if (media.length === 0) {
+            alert("¡Pantalla sin medios para mostrar!");
+            return;
+        }
+
+        // Aleatorio
+        if (screen.aleatorio === true || screen.aleatorio === 'true') {
+            media.sort(() => Math.random() - 0.5);
+        }
+
+        presentationMedia = media;
+        currentSlideIdx = 0;
+        document.getElementById('presentationOverlay').classList.add('active');
+        renderSlide();
+    };
+
+    const renderSlide = () => {
+        if (!presentationMedia.length) return;
+        const item = presentationMedia[currentSlideIdx];
+        const overlay = document.getElementById('presentationOverlay');
+        const img = document.getElementById('slideImg');
+        const bg = document.getElementById('slideBg');
+        const txt = document.getElementById('slideText');
+
+        // Reset
+        img.classList.remove('slide-in-right', 'dynamic-zoom');
+        img.style.opacity = '0';
+
+        const path = `imgs/${item.imagen}`;
+        img.src = path;
+        bg.style.backgroundImage = `url('${path}')`;
+        txt.textContent = item.oracion || '';
+
+        if (item.tipo === 'CD') img.classList.add('dynamic-zoom');
+
+        setTimeout(() => {
+            img.style.opacity = '1';
+            img.classList.add('slide-in-right');
+        }, 50);
+
+        const dur = (parseInt(item.duracion) || 10) * 1000;
+        presentationTimer = setTimeout(() => {
+            currentSlideIdx = (currentSlideIdx + 1) % presentationMedia.length;
+            renderSlide();
+        }, dur);
+    };
+
+    window.stopPresentation = () => {
+        clearTimeout(presentationTimer);
+        document.getElementById('presentationOverlay').classList.remove('active');
+    };
 
     // --- Init ---
     if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');

@@ -255,6 +255,22 @@
         </div>
     </div>
 
+    <!-- Overlay de Presentación Full Screen -->
+    <div id="presentationOverlay" class="presentation-overlay">
+        <button class="close-presentation" onclick="stopPresentation()" style="opacity: 0;">&times;</button>
+        <div id="slideContainer" class="slide-container">
+            <!-- Background blurred -->
+            <div id="slideBg" class="slide-bg"></div>
+            <!-- Current Slide Content -->
+            <div class="slide-content-wrapper">
+                <img id="slideImg" src="" alt="Presentación">
+                <div class="marquee-container">
+                    <p id="slideText" class="marquee-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="pantallas.js"></script>
 </body>
 
