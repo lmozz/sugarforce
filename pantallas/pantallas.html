@@ -117,6 +117,16 @@
                             <input type="text" id="className" required placeholder=" ">
                             <label>Nombre</label>
                         </div>
+                        <div class="option-selector">
+                            <label>Tipo</label>
+                            <div class="btn-toggle-group">
+                                <button type="button" class="toggle-opt-type active" data-value="S">S</button>
+                                <button type="button" class="toggle-opt-type" data-value="D">D</button>
+                            </div>
+                            <input type="hidden" id="classType" value="S">
+                        </div>
+                    </div>
+                    <div id="periodContainer" style="display: none; margin-top: 20px;">
                         <div class="input-group">
                             <input type="text" id="classPeriod" placeholder=" ">
                             <label>Periodo (Fecha/Rango)</label>

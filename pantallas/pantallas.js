@@ -171,6 +171,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('classDesc').value = item.descripcion;
             document.getElementById('classPeriod').value = item.periodo || '';
             document.getElementById('classModalTitle').textContent = 'Editar Clasificación';
+
+            // Handle Type Toggle
+            const tipo = item.tipo || 'S';
+            document.getElementById('classType').value = tipo;
+            document.querySelectorAll('.toggle-opt-type').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === tipo);
+            });
+            updateClassTypeUI(tipo);
+
             currentMultimediaItems = [...(item.multimedia || [])];
             renderMediaList('classMediaList');
             // Reset tabs
@@ -219,6 +228,12 @@ document.addEventListener('DOMContentLoaded', () => {
         classForm.reset();
         document.getElementById('classId').value = '';
         document.getElementById('classModalTitle').textContent = 'Nueva Clasificación';
+
+        // Reset Type to 'S'
+        document.getElementById('classType').value = 'S';
+        document.querySelectorAll('.toggle-opt-type').forEach(b => b.classList.toggle('active', b.dataset.value === 'S'));
+        updateClassTypeUI('S');
+
         currentMultimediaItems = [];
         renderMediaList('classMediaList');
         openModal(classModal);
@@ -272,6 +287,31 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
+    // For Classification Type (S/D)
+    const updateClassTypeUI = (tipo) => {
+        const periodCont = document.getElementById('periodContainer');
+        const periodInp = document.getElementById('classPeriod');
+        if (tipo === 'D') {
+            periodCont.style.display = 'block';
+            periodInp.required = true;
+        } else {
+            periodCont.style.display = 'none';
+            periodInp.required = false;
+            periodInp.value = ''; // Clear if switching back to S
+        }
+    };
+
+    document.querySelectorAll('.toggle-opt-type').forEach(b => {
+        b.onclick = () => {
+            const wrap = b.closest('.btn-toggle-group');
+            wrap.querySelectorAll('.toggle-opt-type').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            const val = b.dataset.value;
+            document.getElementById('classType').value = val;
+            updateClassTypeUI(val);
+        };
+    });
+
     document.getElementById('addClassMediaBtn').onclick = () => openMediaModal();
     document.getElementById('addScreenMediaBtn').onclick = () => openMediaModal();
 
@@ -283,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const obj = {
             id,
             nombre: document.getElementById('className').value,
+            tipo: document.getElementById('classType').value,
             descripcion: document.getElementById('classDesc').value,
             periodo: document.getElementById('classPeriod').value,
             multimedia: currentMultimediaItems
