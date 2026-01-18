@@ -1,29 +1,34 @@
-/* CSS Módulo Pantallas - Alineación Final con GemaPTC */
+/* CSS Módulo Pantallas - REPARACIÓN FINAL TABLA Y BOTONES */
 
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.65);
-    --glass-border: rgba(0, 0, 0, 0.1);
-    --text-primary: #333;
-    --text-secondary: #666;
+    --glass-bg: rgba(30, 30, 30, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --text-primary: #fff;
+    --text-secondary: rgba(255, 255, 255, 0.6);
     --accent-blue: #007aff;
     --accent-red: #ff3b30;
-    --accent-green: #4caf50;
+    --accent-green: #34c759;
 }
 
 body.dark-mode {
-    --glass-bg: rgba(0, 0, 0, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.15);
-    --text-primary: #fff;
-    --text-secondary: #ccc;
+    --glass-bg: rgba(18, 18, 18, 0.85);
 }
 
+body:not(.dark-mode) {
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+}
+
+/* Backgrounds */
 body {
     background-image: url('../imgs/white.jpg') !important;
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    height: 100vh;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     overflow: hidden;
 }
 
@@ -31,7 +36,15 @@ body.dark-mode {
     background-image: url('../imgs/black.png') !important;
 }
 
-/* Fixed Actions - Buttons at Bottom Right */
+/* Sidebar */
+.sidebar {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border-right: 1px solid var(--glass-border) !important;
+}
+
+/* FAB BUTTONS */
 .fixed-actions {
     position: fixed !important;
     bottom: 30px !important;
@@ -40,29 +53,29 @@ body.dark-mode {
     flex-direction: row-reverse !important;
     gap: 15px !important;
     z-index: 9999 !important;
+    pointer-events: auto !important;
 }
 
 .fixed-actions .fab {
-    position: relative !important;
-    bottom: auto !important;
-    right: auto !important;
+    position: static !important;
     width: 60px !important;
     height: 60px !important;
     border-radius: 50% !important;
     border: none !important;
     color: white !important;
-    font-weight: bold !important;
-    cursor: pointer !important;
+    font-weight: 600 !important;
+    font-size: 16px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    font-size: 16px !important;
+    cursor: pointer !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+    pointer-events: auto !important;
 }
 
 .fixed-actions .fab:hover {
-    transform: scale(1.15) translateY(-5px) !important;
+    transform: scale(1.1) translateY(-5px) !important;
 }
 
 .fab-ai {
@@ -77,17 +90,122 @@ body.dark-mode {
     background: var(--accent-red) !important;
 }
 
-/* Modals - Match style.css mechanism (opacity/visibility) */
+/* REPARACIÓN DE TABLA - ASPECTO PREMIUM */
+.table-wrapper {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(40px) !important;
+    -webkit-backdrop-filter: blur(40px) !important;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border) !important;
+    margin: 20px 40px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.data-table th {
+    padding: 0 20px 15px 20px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: left;
+}
+
+.data-table tr td {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 18px 20px;
+    border-top: 1px solid var(--glass-border);
+    border-bottom: 1px solid var(--glass-border);
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+body:not(.dark-mode) .data-table tr td {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.data-table td:first-child {
+    border-left: 1px solid var(--glass-border);
+    border-radius: 14px 0 0 14px;
+}
+
+.data-table td:last-child {
+    border-right: 1px solid var(--glass-border);
+    border-radius: 0 14px 14px 0;
+}
+
+/* Colores laterales por tipo */
+.row-pantalla td:first-child {
+    border-left: 4px solid var(--accent-blue) !important;
+}
+
+.row-clasificacion td:first-child {
+    border-left: 4px solid var(--accent-red) !important;
+}
+
+/* REPARACIÓN DE BOTONES DE TABLA */
+.action-btn-group {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 10px 20px !important;
+    /* Más grandes y legibles */
+    border-radius: 10px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    border: none !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.edit-btn {
+    background: rgba(0, 122, 255, 0.15) !important;
+    color: var(--accent-blue) !important;
+}
+
+.edit-btn:hover {
+    background: var(--accent-blue) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.delete-btn {
+    background: rgba(255, 59, 48, 0.15) !important;
+    color: var(--accent-red) !important;
+}
+
+.delete-btn:hover {
+    background: var(--accent-red) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+}
+
+/* MODALS */
 .modal-overlay {
     position: fixed !important;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(15px) !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(25px) !important;
     display: flex !important;
-    /* Force flex for centering */
     justify-content: center;
     align-items: center;
     z-index: 10000 !important;
@@ -104,72 +222,192 @@ body.dark-mode {
 }
 
 .modal-content {
-    background: var(--glass-bg) !important;
-    backdrop-filter: blur(40px) !important;
-    border: 1px solid var(--glass-border) !important;
-    border-radius: 25px;
-    padding: 35px;
-    width: 90%;
-    max-width: 800px;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-    color: var(--text-primary);
+    background: #1c1c1e !important;
+    border-radius: 30px !important;
+    width: 90% !important;
+    max-width: 650px !important;
+    padding: 35px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transform: scale(0.9) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: #fff !important;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+}
+
+body:not(.dark-mode) .modal-content {
+    background: #fbfbfd !important;
+    color: #1d1d1f !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 .modal-overlay.open .modal-content {
-    transform: scale(1);
+    transform: scale(1) translateY(0);
 }
 
-/* Table Design */
-.table-wrapper {
-    background: rgba(0, 0, 0, 0.5) !important;
-    backdrop-filter: blur(25px) !important;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    margin: 0 40px 40px 40px;
-    overflow-y: auto;
-}
-
-.data-table th {
-    color: #aaa;
-    text-transform: uppercase;
-    font-size: 11px;
-    padding-bottom: 20px;
-}
-
-.data-table td {
-    color: #fff;
-    padding: 15px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Tabs */
+/* TABS */
 .modal-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid var(--glass-border);
+    gap: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body:not(.dark-mode) .modal-tabs {
+    border-color: rgba(0, 0, 0, 0.1);
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 10px 15px;
-    color: var(--text-secondary);
+    padding: 12px 0;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
+    position: relative;
+    transition: color 0.2s;
+}
+
+body:not(.dark-mode) .tab-btn {
+    color: rgba(0, 0, 0, 0.4);
 }
 
 .tab-btn.active {
-    color: var(--accent-blue);
-    border-bottom: 3px solid var(--accent-blue);
-    font-weight: 500;
+    color: var(--accent-blue) !important;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--accent-blue);
+    border-radius: 3px;
 }
 
 .tab-pane {
-    display: none;
+    display: none !important;
 }
 
 .tab-pane.active {
+    display: block !important;
+}
+
+/* INPUTS */
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.input-group label {
     display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 12px !important;
+    padding: 14px 18px !important;
+    color: #fff !important;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+body:not(.dark-mode) .input-group input,
+body:not(.dark-mode) .input-group textarea,
+body:not(.dark-mode) .input-group select {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    color: #1d1d1f !important;
+}
+
+/* TOGGLE BUTTONS (SI/NO - CD/SD) */
+.option-selector label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 8px;
+}
+
+.btn-toggle-group {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 4px;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: fit-content;
+}
+
+.toggle-opt,
+.toggle-opt-random {
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    padding: 10px 25px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.toggle-opt.active,
+.toggle-opt-random.active {
+    background: var(--accent-blue) !important;
+    color: #fff !important;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+/* BUTTONS ACCTION MODAL */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn-save {
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: none;
+    padding: 14px 35px !important;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 140px;
+    text-align: center;
+}
+
+body:not(.dark-mode) .btn-cancel {
+    background: rgba(0, 0, 0, 0.08);
+    color: #1d1d1f;
 }

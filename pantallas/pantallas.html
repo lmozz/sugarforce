@@ -104,7 +104,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 id="classModalTitle">Nueva Clasificación</h3>
-                <button class="close-modal">&times;</button>
+                <button type="button" class="close-modal">&times;</button>
             </div>
             <div class="modal-tabs">
                 <button class="tab-btn active" data-tab="class-general">General</button>
@@ -124,14 +124,15 @@
                         </div>
                     </div>
                     <div class="input-group" style="margin-top: 20px;">
-                        <textarea id="classDesc" style="height: 100px;" placeholder=" "></textarea>
                         <label>Descripción</label>
+                        <textarea id="classDesc" style="height: 100px;" placeholder="Escriba aquí..."></textarea>
                     </div>
                 </div>
                 <div id="class-multimedia" class="tab-pane">
-                    <div class="detail-header">
-                        <h4>Multimedia</h4>
-                        <button type="button" class="btn-create" id="addClassMediaBtn">Agregar</button>
+                    <div class="detail-header"
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                        <h4 style="margin:0;">Multimedia</h4>
+                        <button type="button" class="edit-btn" id="addClassMediaBtn">+ Agregar Recurso</button>
                     </div>
                     <div id="classMediaList" class="detail-list"></div>
                 </div>
@@ -169,15 +170,16 @@
                         </div>
                     </div>
                     <div class="input-group" style="margin-top: 20px;">
-                        <textarea id="screenDesc" style="height: 80px;" placeholder=" "></textarea>
                         <label>Descripción</label>
+                        <textarea id="screenDesc" style="height: 80px;" placeholder="Escriba aquí..."></textarea>
                     </div>
-                    <div class="toggle-control">
-                        <span>¿Reproducción Aleatoria?</span>
-                        <div class="radio-box">
-                            <label><input type="radio" name="screenRandom" value="true"> Sí</label>
-                            <label><input type="radio" name="screenRandom" value="false" checked> No</label>
+                    <div class="option-selector" style="margin-top: 10px;">
+                        <label>¿Reproducción Aleatoria?</label>
+                        <div class="btn-toggle-group">
+                            <button type="button" class="toggle-opt-random active" data-value="false">No</button>
+                            <button type="button" class="toggle-opt-random" data-value="true">Sí</button>
                         </div>
+                        <input type="hidden" id="screenRandom" value="false">
                     </div>
                 </div>
                 <div id="screen-multimedia" class="tab-pane">
