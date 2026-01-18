@@ -1,6 +1,28 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Módulo Pantallas: Iniciando Reparación Estructural V2...");
 
+    // --- ACTIVACIÓN INMEDIATA ASISTENTE IA ---
+    const aiBtn = document.getElementById('openAiBtn');
+    const aiWidget = document.getElementById('aiChatWidget');
+    if (aiBtn && aiWidget) {
+        console.log("IA Elements initialized.");
+        aiBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const isOpen = aiWidget.classList.contains('open');
+            if (isOpen) {
+                aiWidget.classList.remove('open');
+                aiWidget.style.display = 'none';
+            } else {
+                aiWidget.classList.add('open');
+                aiWidget.style.display = 'flex';
+            }
+            console.log("IA Toggle - Open:", !isOpen);
+        });
+    } else {
+        console.error("Critical: IA elements NOT found!", { aiBtn, aiWidget });
+    }
+
     // --- State ---
     const KEY_PANTALLAS = 'pantallas';
     const KEY_CLASES = 'claspantallas';
@@ -357,4 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTable();
     if (document.getElementById('searchInput')) document.getElementById('searchInput').oninput = renderTable;
     if (typeof flatpickr !== 'undefined') flatpickr("#classPeriod", { mode: "range", locale: "es", dateFormat: "Y-m-d" });
+
+    console.log("Módulo Pantallas: Script cargado completamente.");
 });
