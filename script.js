@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         notes: JSON.parse(localStorage.getItem('notes') || '[]'),
                         presentation: JSON.parse(localStorage.getItem('presentation') || '[]'),
                         procesos: JSON.parse(localStorage.getItem('procesos') || '[]'),
+                        claspantallas: JSON.parse(localStorage.getItem('claspantallas') || '[]'),
+                        pantallas: JSON.parse(localStorage.getItem('pantallas') || '[]'),
                         product: JSON.parse(localStorage.getItem('product') || '[]'),
                         steps: JSON.parse(localStorage.getItem('steps') || '[]')
                     };
@@ -270,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
                                     // Validate that it's the correct format
                                     const requiredKeys = ['cellar', 'classification', 'coa', 'coas', 'customer',
-                                        'login', 'notes', 'presentation', 'procesos', 'product', 'steps'];
+                                        'login', 'notes', 'presentation', 'procesos', 'claspantallas', 'pantallas', 'product', 'steps'];
 
                                     const hasAllKeys = requiredKeys.every(key => key in importData);
 
@@ -289,6 +291,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     localStorage.setItem('login', JSON.stringify(importData.login || []));
                                     localStorage.setItem('notes', JSON.stringify(importData.notes || []));
                                     localStorage.setItem('presentation', JSON.stringify(importData.presentation || []));
+                                    localStorage.setItem('claspantallas', JSON.stringify(importData.claspantallas || []));
+                                    localStorage.setItem('pantallas', JSON.stringify(importData.pantallas || []));
                                     localStorage.setItem('procesos', JSON.stringify(importData.procesos || []));
                                     localStorage.setItem('product', JSON.stringify(importData.product || []));
                                     localStorage.setItem('steps', JSON.stringify(importData.steps || []));
