@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentarios - SugarForce</title>
+    <link rel="stylesheet" href="comentarios.css">
+</head>
+
+<body>
+
+    <div class="comment-container">
+        <h1>Dejanos tu Comentario</h1>
+        <div class="input-wrapper">
+            <textarea id="commentInput" maxlength="100"
+                placeholder="Escribe algo positivo aquí... (15-100 caracteres)"></textarea>
+            <div id="charCount" class="char-counter">0 / 100</div>
+        </div>
+        <button id="sendBtn" class="send-btn" disabled>Enviar Comentario</button>
+    </div>
+
+    <!-- AI Floating Assistant -->
+    <div id="openAiBtn" class="ai-chat-btn">IA</div>
+    <div id="aiChatWidget" class="ai-chat-widget">
+        <iframe src="../ai/ai.html?context=comentarios" id="aiChatIframe"></iframe>
+    </div>
+
+    <script src="comentarios.js"></script>
+</body>
+
+</html>

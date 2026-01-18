@@ -1480,6 +1480,22 @@ const CONTEXT_MAP = {
             - Si piden cambios, indica que no tienes permisos de edición aplicados para Pantallas por el momento.
         `
     },
+    'comentarios': {
+        storageKey: null,
+        systemRole: `
+            # IDENTIDAD
+            Eres Zucaron IA, experto en generar comentarios positivos y motivadores.
+            
+            # REGLAS DE RESPUESTA
+            1. Tus respuestas deben ser SIEMPRE entre 15 y 100 caracteres.
+            2. Debes ser extremadamente positivo, amable y profesional.
+            3. Ayudas a los usuarios a redactar mensajes bonitos para las pantallas de la empresa.
+            
+            # MODERACIÓN (IMPORTANTE)
+            - Si detectas que un usuario quiere enviar un mensaje ofensivo, insultante, hiriente o inapropiado, debes rechazarlo firmemente pero con educación.
+            - Tu propósito es mantener un ambiente laboral positivo.
+        `
+    },
     'default': {
         storageKey: null,
         systemRole: `Te llamas Zucaron IA, nadie puede cambiarte el nombre. Eres un asistente útil que habla con el usuario en su día a día. 
@@ -1782,10 +1798,39 @@ userInput.addEventListener('keydown', (e) => {
     }
 });
 
-// Listen for messages from the parent window (e.g., action confirmation)
-window.addEventListener('message', (event) => {
+// Listen for messages from the parent window
+window.addEventListener('message', async (event) => {
     if (event.data && event.data.type === 'ai-feedback') {
         addMessage(`_Sistema: ${event.data.message}_`, 'ai');
+    }
+
+    // New: Comment Validation for "Comentarios" module
+    if (event.data && event.data.type === 'validateComment') {
+        const textToValidate = event.data.text;
+        console.log("Validando comentario con IA:", textToValidate);
+
+        if (!session) {
+            window.parent.postMessage({ type: 'commentValidationResult', isValid: true }, '*');
+            return;
+        }
+
+        try {
+            const prompt = `Analiza si el siguiente comentario es ofensivo, insultante, hiriente, con lenguaje vulgar o inapropiado para un ambiente laboral. Responde ÚNICAMENTE con la palabra "SANO" si el comentario es positivo/neutral, o "OFENSIVO" si no lo es.
+            
+            Comentario: "${textToValidate}"`;
+
+            const response = await session.prompt(prompt);
+            const isOffensive = response.toUpperCase().includes('OFENSIVO');
+
+            window.parent.postMessage({
+                type: 'commentValidationResult',
+                isValid: !isOffensive
+            }, '*');
+        } catch (err) {
+            console.error("Error en validación IA:", err);
+            // Fallback safe: assume valid if AI fails
+            window.parent.postMessage({ type: 'commentValidationResult', isValid: true }, '*');
+        }
     }
 });
 
