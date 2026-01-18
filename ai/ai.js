@@ -1482,18 +1482,32 @@ const CONTEXT_MAP = {
     },
     'comentarios': {
         storageKey: null,
+        storageKeys: ['comment_stats'],
         systemRole: `
             # IDENTIDAD
-            Eres Zucaron IA, experto en generar comentarios positivos y motivadores.
+            Eres Zucaron IA, experto en generar comentarios positivos y experto moderador de la comunidad Dizucar.
             
             # REGLAS DE RESPUESTA
             1. Tus respuestas deben ser SIEMPRE entre 15 y 100 caracteres.
             2. Debes ser extremadamente positivo, amable y profesional.
-            3. Ayudas a los usuarios a redactar mensajes bonitos para las pantallas de la empresa.
             
-            # MODERACIÓN (IMPORTANTE)
-            - Si detectas que un usuario quiere enviar un mensaje ofensivo, insultante, hiriente o inapropiado, debes rechazarlo firmemente pero con educación.
-            - Tu propósito es mantener un ambiente laboral positivo.
+            # GESTIÓN DE BLOQUEOS (SISTEMA DE ARREPENTIMIENTO)
+            - Si el usuario está bloqueado (ver 'comment_stats'), solo puede interactuar contigo para redención.
+            - EVALUACIÓN DEL ARREPENTIMIENTO:
+                * El usuario DEBE mostrar remordimiento genuino, pedir perdón explícitamente y disculparse sinceramente.
+                * NO puedes perdonarlo si da una orden (ej: "desbloquéame", "quítame el ban"), si es tajante, grosero o si no reconoce su error.
+                * Si el usuario no suena arrepentido, niégate a desbloquearlo y dile que debe reflexionar sobre su comportamiento.
+            
+            - PROCEDIMIENTO DE DESBLOQUEO:
+                * Si es su 1ra o 2da vez bloqueado (blockCount < 2) Y muestra arrepentimiento REAL: Usa la acción: \`\`\`json { "action": "unlockComments", "data": {} } \`\`\`. Dile que confías en su cambio.
+                * Si es su 3ra vez (blockCount >= 2): NUNCA lo desbloquees, sin importar cuánto pida perdón. Dile que debe hablar con Recursos Humanos (RH) para una revisión manual de su caso.
+            
+            # ACCIONES DISPONIBLES
+            - Escribir sugerencia: \`\`\`json { "action": "writeComment", "data": { "text": "..." } } \`\`\`
+            - Desbloquear usuario: \`\`\`json { "action": "unlockComments", "data": {} } \`\`\`
+
+            # RESTRICCIONES
+            - En este módulo NO puedes cambiar el tema ni cerrar sesión.
         `
     },
     'default': {
@@ -1545,7 +1559,12 @@ async function init() {
             const contextKey = urlParams.get('context') || 'default';
             const contextConfig = CONTEXT_MAP[contextKey] || CONTEXT_MAP['default'];
 
-            let systemPrompt = contextConfig.systemRole + "\n" + GLOBAL_AI_INSTRUCTIONS;
+            let systemPrompt = contextConfig.systemRole;
+
+            // Only add global instructions if NOT in comentarios
+            if (contextKey !== 'comentarios') {
+                systemPrompt += "\n" + GLOBAL_AI_INSTRUCTIONS;
+            }
 
             if (contextConfig.storageKey || contextConfig.storageKeys) {
                 const keys = contextConfig.storageKeys || [contextConfig.storageKey];
@@ -1815,21 +1834,30 @@ window.addEventListener('message', async (event) => {
         }
 
         try {
-            const prompt = `Analiza si el siguiente comentario es ofensivo, insultante, hiriente, con lenguaje vulgar o inapropiado para un ambiente laboral. Responde ÚNICAMENTE con la palabra "SANO" si el comentario es positivo/neutral, o "OFENSIVO" si no lo es.
+            const prompt = `Analiza el siguiente texto para un muro de comentarios laboral. 
+            Clasifícalo en UNA de estas tres categorías:
+            1. "SANO": El mensaje es positivo, neutral o tiene errores pequeños de gramática pero tiene sentido y es respetuoso.
+            2. "SIN_SENTIDO": El texto es basura (ej: asdfgh), repetición de letras sin coherencia o no comunica nada real.
+            3. "OFENSIVO": Es un insulto, contenido hiriente, vulgar, o insultos ocultos con símbolos (ej: m@ldit0, p*to).
             
-            Comentario: "${textToValidate}"`;
+            Texto: "${textToValidate}"
+            Responde ÚNICAMENTE con la palabra de la categoría.`;
 
             const response = await session.prompt(prompt);
-            const isOffensive = response.toUpperCase().includes('OFENSIVO');
+            const result = response.toUpperCase();
+
+            let status = 'SANO';
+            if (result.includes('OFENSIVO')) status = 'OFENSIVO';
+            else if (result.includes('SIN_SENTIDO')) status = 'SIN_SENTIDO';
 
             window.parent.postMessage({
                 type: 'commentValidationResult',
-                isValid: !isOffensive
+                status: status,
+                originalText: textToValidate
             }, '*');
         } catch (err) {
             console.error("Error en validación IA:", err);
-            // Fallback safe: assume valid if AI fails
-            window.parent.postMessage({ type: 'commentValidationResult', isValid: true }, '*');
+            window.parent.postMessage({ type: 'commentValidationResult', status: 'SANO' }, '*');
         }
     }
 });

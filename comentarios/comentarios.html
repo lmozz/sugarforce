@@ -10,7 +10,7 @@
 
 <body>
 
-    <div class="comment-container">
+    <div id="commentContainer" class="comment-container">
         <h1>Dejanos tu Comentario</h1>
         <div class="input-wrapper">
             <textarea id="commentInput" maxlength="100"
@@ -18,6 +18,18 @@
             <div id="charCount" class="char-counter">0 / 100</div>
         </div>
         <button id="sendBtn" class="send-btn" disabled>Enviar Comentario</button>
+    </div>
+
+    <!-- Blocked UI -->
+    <div id="blockedContainer" class="comment-container" style="display: none;">
+        <h1 style="color: #ff3b30; font-size: 28px;">Acceso Bloqueado</h1>
+        <p id="blockedMessage" style="font-size: 16px; line-height: 1.6; margin: 20px 0; color: rgba(255,255,255,0.9);">
+        </p>
+        <div
+            style="margin-top: 25px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 15px; font-size: 14px; opacity: 0.8; font-style: italic;">
+            Tu comportamiento ha sido registrado. Puedes hablar con el asistente IA (Zucaron) para solicitar el
+            desbloqueo.
+        </div>
     </div>
 
     <!-- AI Floating Assistant -->
