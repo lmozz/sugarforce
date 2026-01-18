@@ -1,23 +1,23 @@
 /* CSS Módulo Pantallas - REPARACIÓN FINAL TABLA Y BOTONES */
 
 :root {
-    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-bg: rgba(255, 255, 255, 0);
     /* Ultra-translucent for real crystal glass */
-    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0);
     --text-primary: #fff;
-    --text-secondary: rgba(255, 255, 255, 0.75);
+    --text-secondary: rgba(255, 255, 255, 0);
     --accent-blue: #007aff;
     --accent-red: #ff3b30;
     --accent-green: #34c759;
 }
 
 body.dark-mode {
-    --glass-bg: rgba(0, 0, 0, 0.1);
+    --glass-bg: rgba(0, 0, 0, 0.5);
 }
 
 body:not(.dark-mode) {
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(0, 0, 0, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0);
+    --glass-border: rgba(0, 0, 0, 0.5);
     --text-primary: #1d1d1f;
     --text-secondary: #3c3c43;
 }
@@ -40,8 +40,8 @@ body.dark-mode {
 /* Sidebar */
 .sidebar {
     background: var(--glass-bg) !important;
-    backdrop-filter: blur(15px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(15px) saturate(200%) !important;
+    backdrop-filter: blur(10px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(200%) !important;
     border-right: 1px solid var(--glass-border) !important;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
@@ -56,8 +56,8 @@ body.dark-mode {
         height: 100% !important;
         z-index: 10000 !important;
         background: rgba(10, 10, 10, 0.1) !important;
-        backdrop-filter: blur(25px) saturate(150%) !important;
-        -webkit-backdrop-filter: blur(25px) saturate(150%) !important;
+        backdrop-filter: blur(10px) saturate(150%) !important;
+        -webkit-backdrop-filter: blur(10px) saturate(150%) !important;
         border-right: none !important;
         border-top: 1px solid var(--glass-border) !important;
         border-radius: 20px 20px 0 0 !important;
@@ -121,8 +121,8 @@ body.dark-mode {
 /* REPARACIÓN DE TABLA - ASPECTO PREMIUM */
 .table-wrapper {
     background: var(--glass-bg) !important;
-    backdrop-filter: blur(15px) saturate(200%) !important;
-    -webkit-backdrop-filter: blur(15px) saturate(200%) !important;
+    backdrop-filter: blur(10px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(200%) !important;
     border-radius: 28px;
     border: 1px solid var(--glass-border) !important;
     margin: 20px 40px;
@@ -235,8 +235,8 @@ body:not(.dark-mode) .data-table tr td {
     height: 100%;
     background: rgba(0, 0, 0, 0.2) !important;
     /* Extremely subtle tint */
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     display: flex !important;
     justify-content: center;
     align-items: center;
@@ -256,8 +256,8 @@ body:not(.dark-mode) .data-table tr td {
 .modal-content {
     background: rgba(40, 40, 45, 0.4) !important;
     /* Truly translucent */
-    backdrop-filter: blur(50px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(50px) saturate(180%) !important;
+    backdrop-filter: blur(10px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(10px) saturate(180%) !important;
     border-radius: 30px !important;
     width: 90% !important;
     max-width: 650px !important;
@@ -562,7 +562,7 @@ body:not(.dark-mode) .img-choice {
 /* FLATPICKR PREMIUM DARK THEME FIX */
 .flatpickr-calendar {
     background: rgba(30, 30, 35, 0.95) !important;
-    backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(10px) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 18px !important;
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5) !important;
@@ -623,8 +623,8 @@ body:not(.dark-mode) .img-choice {
     width: 400px !important;
     height: 600px !important;
     background: var(--glass-bg) !important;
-    backdrop-filter: blur(40px) !important;
-    -webkit-backdrop-filter: blur(40px) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     border: 1px solid var(--glass-border) !important;
     border-radius: 24px !important;
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4) !important;
@@ -681,8 +681,8 @@ body:not(.dark-mode) .img-choice {
         padding: 20px !important;
         border-radius: 24px !important;
         background: var(--glass-bg) !important;
-        backdrop-filter: blur(20px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        backdrop-filter: blur(10px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(10px) saturate(180%) !important;
         border: 1px solid var(--glass-border) !important;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
     }
