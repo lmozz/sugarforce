@@ -376,6 +376,38 @@ body:not(.dark-mode) .input-group select {
 }
 
 /* BUTTONS ACCTION MODAL */
+.modal-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    margin-bottom: 25px !important;
+    width: 100% !important;
+}
+
+.close-modal,
+.close-sub-modal {
+    background: var(--accent-red) !important;
+    border: none !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    cursor: pointer !important;
+    font-size: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 4px 8px rgba(255, 59, 48, 0.3) !important;
+    margin-left: auto !important;
+}
+
+.close-modal:hover,
+.close-sub-modal:hover {
+    background: #ff453a !important;
+    transform: rotate(90deg) scale(1.1) !important;
+}
+
 .modal-actions {
     display: flex;
     justify-content: flex-end;
