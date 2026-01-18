@@ -181,13 +181,23 @@
                         <label>Descripción</label>
                         <textarea id="screenDesc" style="height: 80px;" placeholder="Escriba aquí..."></textarea>
                     </div>
-                    <div class="option-selector" style="margin-top: 10px;">
-                        <label>¿Reproducción Aleatoria?</label>
-                        <div class="btn-toggle-group">
-                            <button type="button" class="toggle-opt-random active" data-value="false">No</button>
-                            <button type="button" class="toggle-opt-random" data-value="true">Sí</button>
+                    <div class="option-selector" style="margin-top: 10px; display: flex; gap: 30px;">
+                        <div>
+                            <label>¿Reproducción Aleatoria?</label>
+                            <div class="btn-toggle-group">
+                                <button type="button" class="toggle-opt-random active" data-value="false">No</button>
+                                <button type="button" class="toggle-opt-random" data-value="true">Sí</button>
+                            </div>
+                            <input type="hidden" id="screenRandom" value="false">
                         </div>
-                        <input type="hidden" id="screenRandom" value="false">
+                        <div>
+                            <label>¿Activar Comentarios?</label>
+                            <div class="btn-toggle-group">
+                                <button type="button" class="toggle-opt-comments active" data-value="N">N</button>
+                                <button type="button" class="toggle-opt-comments" data-value="S">S</button>
+                            </div>
+                            <input type="hidden" id="screenComments" value="N">
+                        </div>
                     </div>
                 </div>
                 <div id="screen-multimedia" class="tab-pane">

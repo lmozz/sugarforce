@@ -418,7 +418,8 @@ body:not(.dark-mode) select option {
 
 .toggle-opt,
 .toggle-opt-random,
-.toggle-opt-type {
+.toggle-opt-type,
+.toggle-opt-comments {
     border: none;
     background: none;
     color: var(--text-secondary);
@@ -432,7 +433,8 @@ body:not(.dark-mode) select option {
 
 .toggle-opt.active,
 .toggle-opt-random.active,
-.toggle-opt-type.active {
+.toggle-opt-type.active,
+.toggle-opt-comments.active {
     background: var(--accent-blue) !important;
     color: #fff !important;
     box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);

@@ -204,6 +204,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 b.classList.toggle('active', b.dataset.value === String(isRandom));
             });
 
+            // Handle Comments Toggle
+            const hasComments = item.comentarios || 'N';
+            document.getElementById('screenComments').value = hasComments;
+            document.querySelectorAll('.toggle-opt-comments').forEach(b => {
+                b.classList.toggle('active', b.dataset.value === hasComments);
+            });
+
             currentMultimediaItems = [...(item.multimedia || [])];
             currentLinkedClasses = [...(item.clasificaciones || [])];
             renderMediaList('screenMediaList');
@@ -250,6 +257,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('screenRandom').value = 'false';
         document.querySelectorAll('.toggle-opt-random').forEach(b => b.classList.toggle('active', b.dataset.value === 'false'));
 
+        // Reset Comments Toggle
+        document.getElementById('screenComments').value = 'N';
+        document.querySelectorAll('.toggle-opt-comments').forEach(b => b.classList.toggle('active', b.dataset.value === 'N'));
+
         renderMediaList('screenMediaList');
         renderLinkedClasses();
         populateClassSelect();
@@ -285,6 +296,16 @@ document.addEventListener('DOMContentLoaded', () => {
             wrap.querySelectorAll('.toggle-opt-random').forEach(x => x.classList.remove('active'));
             b.classList.add('active');
             document.getElementById('screenRandom').value = b.dataset.value;
+        };
+    });
+
+    // For Comments Enabled (S/N)
+    document.querySelectorAll('.toggle-opt-comments').forEach(b => {
+        b.onclick = () => {
+            const wrap = b.closest('.btn-toggle-group');
+            wrap.querySelectorAll('.toggle-opt-comments').forEach(x => x.classList.remove('active'));
+            b.classList.add('active');
+            document.getElementById('screenComments').value = b.dataset.value;
         };
     });
 
@@ -344,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
             descripcion: document.getElementById('screenDesc').value,
             ubicacion: document.getElementById('screenLocation').value,
             aleatorio: document.getElementById('screenRandom').value === 'true',
+            comentarios: document.getElementById('screenComments').value,
             multimedia: currentMultimediaItems,
             clasificaciones: currentLinkedClasses
         };
