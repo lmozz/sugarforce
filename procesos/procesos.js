@@ -392,109 +392,131 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderTimeline = (processId, dateRangeStr = '', classFilter = '') => {
         const processes = getData();
         const process = processes.find(p => p.id === processId);
-        if (!process || !process.track || process.track.length === 0) {
-            timelineContainer.innerHTML = '<div style="flex:1; display:flex; justify-content:center; align-items:center; color:#888;">Sin historial disponible para visualizar</div>';
-            return;
-        }
 
-        let tracks = [...process.track].reverse(); // Oldest to Newest
+        if (!process) return;
 
-        // Parse Date Range
-        let startDate = null;
-        let endDate = null;
-        if (dateRangeStr.includes(" to ")) {
-            const parts = dateRangeStr.split(" to ");
-            startDate = new Date(parts[0]);
-            endDate = new Date(parts[1]);
-            // Set end date to end of day
-            endDate.setHours(23, 59, 59, 999);
-        } else if (dateRangeStr) {
-            // Single date selected (start of range or just one day)
-            startDate = new Date(dateRangeStr);
-            startDate.setHours(0, 0, 0, 0);
-            const singleEndDate = new Date(dateRangeStr);
-            singleEndDate.setHours(23, 59, 59, 999);
-            // If range mode might return single string while selecting
-            endDate = singleEndDate;
-        }
+        const allClassifications = JSON.parse(localStorage.getItem('classification') || '[]');
+        const allSteps = JSON.parse(localStorage.getItem('steps') || '[]');
 
-        const filteredTracks = tracks.filter(t => {
-            // Check Class Filter
-            const classMatch = classFilter ? t.classification === classFilter : true;
+        let relevantClassifications = allClassifications.filter(c =>
+            (c.tipo || 'Producto').toLowerCase() === (process.type || 'producto').toLowerCase()
+        );
 
-            // Check Date Range Filter
-            let dateMatch = true;
-            if (startDate) {
-                const trackDate = new Date(t.timestamp.split(' ')[0]); // Assuming YYYY-MM-DD format
-                // Simple string comparison often works if formats align, but Date obj is safer for ranges
-                if (endDate) {
-                    dateMatch = trackDate >= startDate && trackDate <= endDate;
-                } else {
-                    dateMatch = trackDate.getTime() === startDate.getTime();
-                }
-            }
-
-            return classMatch && dateMatch;
-        });
-
-        if (filteredTracks.length === 0) {
-            timelineContainer.innerHTML = '<div style="flex:1; display:flex; justify-content:center; align-items:center; color:#888;">No hay registros con los filtros seleccionados</div>';
-            return;
-        }
+        relevantClassifications.sort((a, b) => (parseInt(a.orden) || 999) - (parseInt(b.orden) || 999));
 
         timelineContainer.innerHTML = '';
+        timelineContainer.style.display = 'flex';
+        timelineContainer.style.justifyContent = 'center';
+        timelineContainer.style.padding = '20px';
 
-        // Render blocks linearly (no grouping containers) to fix scroll issues
-        // We will add classification labels above blocks if the classification changes
+        if (relevantClassifications.length === 0) {
+            timelineContainer.innerHTML = '<div style="text-align:center; padding: 20px; color:#666;">No hay configuraciones de clasificación para este tipo de proceso.</div>';
+            return;
+        }
 
-        filteredTracks.forEach((track, index) => {
-            const color = getClassificationColor(track.classification);
-            const prevTrack = filteredTracks[index - 1];
+        let currentClassIndex = -1;
+        if (process.currentClassification) {
+            currentClassIndex = relevantClassifications.findIndex(c => c.nombre === process.currentClassification);
+        }
 
-            // Check if classification changed compared to previous displayed block
-            const isNewClass = !prevTrack || prevTrack.classification !== track.classification;
+        const widgetWrapper = document.createElement('div');
+        widgetWrapper.style.display = 'flex';
+        widgetWrapper.style.gap = '30px';
+        widgetWrapper.style.alignItems = 'stretch';
+        widgetWrapper.style.height = '500px';
 
-            // Container for Block + optional Label
-            const itemWrapper = document.createElement('div');
-            itemWrapper.className = 'timeline-item-wrapper'; // New class for CSS if needed
-            itemWrapper.style.display = 'flex';
-            itemWrapper.style.flexDirection = 'column';
-            itemWrapper.style.flexShrink = '0'; // Crucial
+        const tubeWithBulb = document.createElement('div');
+        tubeWithBulb.style.display = 'flex';
+        tubeWithBulb.style.flexDirection = 'column';
+        tubeWithBulb.style.alignItems = 'center';
 
-            if (isNewClass) {
-                const label = document.createElement('div');
-                label.textContent = track.classification;
-                label.style.color = color;
-                label.style.fontSize = '12px';
-                label.style.fontWeight = '500';
-                label.style.marginBottom = '5px';
-                label.style.whiteSpace = 'nowrap';
-                label.style.borderBottom = `2px solid ${color}`;
-                label.style.paddingBottom = '2px';
-                itemWrapper.appendChild(label);
+        const tube = document.createElement('div');
+        tube.style.flex = '1';
+        tube.style.width = '100px';
+        tube.style.border = '4px solid #fff';
+        if (document.body.classList.contains('dark-mode')) tube.style.borderColor = '#555';
+
+        tube.style.borderRadius = '50px';
+        tube.style.background = 'rgba(0,0,0,0.05)';
+        if (document.body.classList.contains('dark-mode')) tube.style.background = 'rgba(255,255,255,0.05)';
+
+        tube.style.overflow = 'hidden';
+        tube.style.display = 'flex';
+        tube.style.flexDirection = 'column-reverse';
+        tube.style.position = 'relative';
+        tube.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+
+        const labelsCol = document.createElement('div');
+        labelsCol.style.display = 'flex';
+        labelsCol.style.flexDirection = 'column-reverse';
+        labelsCol.style.justifyContent = 'space-between';
+        labelsCol.style.padding = '10px 0';
+
+        relevantClassifications.forEach((classification, index) => {
+            let fillPercentage = 0;
+            let currentStepName = '';
+            let isActive = false;
+
+            if (index < currentClassIndex) {
+                fillPercentage = 100;
+                currentStepName = 'Completado';
+            } else if (index === currentClassIndex) {
+                isActive = true;
+                currentStepName = process.currentStep;
+                const stepDef = allSteps.find(s => s.nombre === process.currentStep);
+                fillPercentage = stepDef && stepDef.porcentual ? parseFloat(stepDef.porcentual) : 50;
             } else {
-                // Spacer to keep blocks aligned
-                const spacer = document.createElement('div');
-                spacer.style.height = '23px'; // Approx height of label
-                itemWrapper.appendChild(spacer);
+                fillPercentage = 0;
+                currentStepName = 'Pendiente';
             }
 
-            // Block
-            const block = document.createElement('div');
-            block.className = 'timeline-block';
-            block.style.backgroundColor = color;
-            block.innerHTML = `
-                <div class="timeline-block-status" title="${track.step}">${track.step}</div>
-                <div class="timeline-block-info">
-                    <div>${track.timestamp.split(' ')[0]}</div>
-                    <div>${track.timestamp.split(' ')[1]}</div>
-                    <div style="margin-top:2px; font-weight:500;">${track.user}</div>
-                </div>
-            `;
+            const color = classification.color || '#1a73e8';
 
-            itemWrapper.appendChild(block);
-            timelineContainer.appendChild(itemWrapper);
+            const segment = document.createElement('div');
+            segment.style.flex = '1';
+            segment.style.width = '100%';
+            segment.style.position = 'relative';
+            segment.style.borderBottom = '1px solid rgba(128,0,128, 0.5)';
+
+            const fill = document.createElement('div');
+            fill.style.position = 'absolute';
+            fill.style.bottom = '0';
+            fill.style.left = '0';
+            fill.style.width = '100%';
+            fill.style.height = `${fillPercentage}%`;
+            fill.style.backgroundColor = color;
+            fill.style.transition = 'height 1s ease-in-out';
+            fill.style.boxShadow = `0 0 10px ${color}`;
+
+            segment.appendChild(fill);
+            tube.appendChild(segment);
+
+            const labelItem = document.createElement('div');
+            labelItem.style.flex = '1';
+            labelItem.style.display = 'flex';
+            labelItem.style.flexDirection = 'column';
+            labelItem.style.justifyContent = 'center';
+            labelItem.style.marginLeft = '10px';
+
+            labelItem.innerHTML = `
+                <div style="font-weight: bold; font-size: 14px; color: ${isActive ? color : 'var(--text-color)'}; opacity: ${fillPercentage === 0 ? 0.5 : 1};">
+                    ${classification.orden}. ${classification.nombre}
+                </div>
+                ${isActive ? `<div style="font-size: 12px; color: ${color}; font-weight: 500;">● ${currentStepName} (${fillPercentage}%)</div>` : ''}
+                ${fillPercentage === 100 ? `<div style="font-size: 11px; color: #4caf50;">✓ Completado</div>` : ''}
+            `;
+            labelsCol.appendChild(labelItem);
         });
+
+        if (tube.lastElementChild) {
+            tube.lastElementChild.style.borderBottom = 'none';
+        }
+
+        tubeWithBulb.appendChild(tube);
+        widgetWrapper.appendChild(tubeWithBulb);
+        widgetWrapper.appendChild(labelsCol);
+
+        timelineContainer.appendChild(widgetWrapper);
     };
 
     timelineClassFilter.addEventListener('change', (e) => {
@@ -507,15 +529,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add Timeline Button to Card Actions
     const originalRenderProcesses = renderProcesses;
-    // We need to modify the card HTML generation in renderProcesses to include the timeline button.
-    // Since I can't easily hook into the middle of the existing function with this tool without rewriting it, 
-    // I will rewrite renderProcesses to include the new button.
-
-    // ... Wait, I am replacing the file content anyway. I will just update the renderProcesses function in the previous block logic if I were rewriting everything.
-    // BUT, here I am appending logic. I need to make sure the "Timeline" button exists.
-    // I previously edited renderProcesses. I should update it again to include the button.
-
-
 
     // --- Quill Editor Init ---
     const quill = new Quill('#editor-container', {
