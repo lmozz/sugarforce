@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (filtered.length === 0) {
-            classificationTableBody.innerHTML = `<tr><td colspan="5"><div class="no-data-container"><img src="../imgs/empty.png" class="no-data-img"><div class="no-data">Sin información</div></div></td></tr>`;
+            classificationTableBody.innerHTML = `<tr><td colspan="7"><div class="no-data-container"><img src="../imgs/empty.png" class="no-data-img"><div class="no-data">Sin información</div></div></td></tr>`;
             return;
         }
 
@@ -80,6 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `
                 <td data-label="Nombre">${item.nombre}</td>
                 <td data-label="Descripción">${item.descripcion}</td>
+                <td data-label="Orden">${item.orden || '-'}</td>
+                <td data-label="Tipo"><span class="badge ${item.tipo === 'Cliente' ? 'badge-client' : 'badge-product'}" style="padding: 4px 8px; border-radius: 4px; background: ${item.tipo === 'Cliente' ? '#e3f2fd' : '#f3e5f5'}; color: ${item.tipo === 'Cliente' ? '#1976d2' : '#7b1fa2'}; font-size: 12px;">${item.tipo || 'N/A'}</span></td>
                 <td data-label="Color">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: ${item.color || '#000000'}; border: 1px solid rgba(0,0,0,0.1);"></span>
@@ -145,12 +147,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('classificationId').value = item.id;
                 document.getElementById('className').value = item.nombre;
                 document.getElementById('classDesc').value = item.descripcion;
+                document.getElementById('classOrder').value = item.orden || '';
+                document.getElementById('classType').value = item.tipo || '';
                 document.getElementById('classColor').value = item.color || '#000000';
                 item.steps.forEach(step => detailTableBody.appendChild(createDetailRow(step)));
                 modalTitle.textContent = 'Editar Clasificación';
             }
         } else {
             document.getElementById('classificationId').value = '';
+            document.getElementById('classOrder').value = '';
+            document.getElementById('classType').value = '';
             document.getElementById('classColor').value = '#000000';
             modalTitle.textContent = 'Nueva Clasificación';
         }
@@ -223,6 +229,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = document.getElementById('classificationId').value || Date.now().toString();
         const nombre = document.getElementById('className').value;
         const descripcion = document.getElementById('classDesc').value;
+        const orden = document.getElementById('classOrder').value;
+        const tipo = document.getElementById('classType').value;
         const color = document.getElementById('classColor').value;
 
         // Collect steps and validate duplicates
@@ -239,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = getData('classification');
-        const classification = { id, nombre, descripcion, color, steps };
+        const classification = { id, nombre, descripcion, orden, tipo, color, steps };
 
         if (isEditing) {
             const index = data.findIndex(c => c.id === id);
@@ -302,6 +310,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const nombreClasif = data.nombre.trim();
                 const descripcionClasif = (data.descripcion || nombreClasif).trim();
+                const ordenClasif = data.orden || '';
+                const tipoClasif = data.tipo || 'Producto'; // Default
                 const colorClasif = data.color || '#000000';
 
                 // Verificar que no exista (case insensitive)
@@ -340,6 +350,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         id: Date.now().toString(),
                         nombre: nombreClasif,
                         descripcion: descripcionClasif,
+                        orden: ordenClasif,
+                        tipo: tipoClasif,
                         color: colorClasif,
                         steps: validatedSteps
                     };
@@ -379,6 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const idxRef = classifications.findIndex(c => c.nombre.toLowerCase() === originalName.toLowerCase());
                 const currentRef = idxRef !== -1 ? classifications[idxRef] : {};
                 const nuevoColor = data.color || currentRef.color || '#000000';
+                const nuevoOrden = data.orden || currentRef.orden || '';
+                const nuevoTipo = data.tipo || currentRef.tipo || 'Producto';
 
                 // Buscar clasificación (case insensitive)
                 const indexUpdate = classifications.findIndex(c =>
@@ -436,6 +450,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             ...classifications[indexUpdate],
                             nombre: nuevoNombre,
                             descripcion: nuevaDesc,
+                            orden: nuevoOrden,
+                            tipo: nuevoTipo,
                             color: nuevoColor,
                             steps: validatedSteps
                         };

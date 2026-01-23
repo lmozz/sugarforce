@@ -1307,18 +1307,18 @@ const CONTEXT_MAP = {
 
             ### 1. CREAR (createClassification)
             - Cuando: "crea una clasificación", "nueva clasificación"
-            - Datos: nombre, descripción, color (hex opcional), steps (array opcional)
-            - Ejemplo: "crea clasificación 'Producción' de color #FF0000"
+            - Datos: nombre, descripción, orden (num), tipo (Cliente/Producto), color (hex), steps (array)
+            - Ejemplo: "crea clasificación 'Producción' orden 1 tipo Producto color #FF0000"
             \`\`\`json
-            { "action": "createClassification", "data": { "nombre": "Producción", "descripcion": "Producción", "color": "#FF0000" } }
+            { "action": "createClassification", "data": { "nombre": "Producción", "descripcion": "Producción", "orden": 1, "tipo": "Producto", "color": "#FF0000" } }
             \`\`\`
 
             ### 2. EDITAR (updateClassification)
             - Cuando: "edita la clasificación X", "modifica clasificación Y"
-            - Datos: originalName, nombre, descripcion, color, steps
-            - Ejemplo: "cambia producción a color azul (#0000FF)"
+            - Datos: originalName, nombre, descripcion, orden, tipo, color, steps
+            - Ejemplo: "cambia producción a tipo Cliente y orden 2"
             \`\`\`json
-            { "action": "updateClassification", "data": { "originalName": "Producción", "color": "#0000FF" } }
+            { "action": "updateClassification", "data": { "originalName": "Producción", "tipo": "Cliente", "orden": 2 } }
             \`\`\`
 
             ### 3. ELIMINAR (deleteClassification)

@@ -58,6 +58,8 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Descripción</th>
+                            <th>Orden</th>
+                            <th>Tipo</th>
                             <th>Color</th>
                             <th>Pasos</th>
                             <th>Acción</th>
@@ -94,6 +96,24 @@
                     <div class="input-group">
                         <input type="text" id="classDesc" required placeholder=" ">
                         <label for="classDesc">Descripción</label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <input type="number" id="classOrder" required placeholder=" " min="1">
+                    <label for="classOrder">Orden</label>
+                </div>
+
+                <div class="modal-grid" style="margin-top: 15px;">
+                    <div class="input-group">
+                        <select id="classType" required
+                            style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; outline: none; background: transparent;">
+                            <option value="" disabled selected hidden>Seleccionar Tipo</option>
+                            <option value="Cliente">Cliente</option>
+                            <option value="Producto">Producto</option>
+                        </select>
+                        <label for="classType"
+                            style="top: -10px; font-size: 12px; color: #1a73e8; background: var(--bg-color); padding: 0 5px;">Tipo</label>
                     </div>
                 </div>
 
