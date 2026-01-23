@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         );
 
         if (filtered.length === 0) {
-            classificationTableBody.innerHTML = `<tr><td colspan="4"><div class="no-data-container"><img src="../imgs/empty.png" class="no-data-img"><div class="no-data">Sin información</div></div></td></tr>`;
+            classificationTableBody.innerHTML = `<tr><td colspan="5"><div class="no-data-container"><img src="../imgs/empty.png" class="no-data-img"><div class="no-data">Sin información</div></div></td></tr>`;
             return;
         }
 
@@ -80,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             row.innerHTML = `
                 <td data-label="Nombre">${item.nombre}</td>
                 <td data-label="Descripción">${item.descripcion}</td>
+                <td data-label="Color">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: ${item.color || '#000000'}; border: 1px solid rgba(0,0,0,0.1);"></span>
+                        <span style="font-size: 0.85em; opacity: 0.8;">${item.color || '#000000'}</span>
+                    </div>
+                </td>
                 <td data-label="Pasos">${stepsCount} paso(s)</td>
                 <td class="actions-cell" data-label="Acción">
                     <button class="action-btn edit-btn" data-id="${item.id}">Editar</button>
@@ -139,11 +145,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('classificationId').value = item.id;
                 document.getElementById('className').value = item.nombre;
                 document.getElementById('classDesc').value = item.descripcion;
+                document.getElementById('classColor').value = item.color || '#000000';
                 item.steps.forEach(step => detailTableBody.appendChild(createDetailRow(step)));
                 modalTitle.textContent = 'Editar Clasificación';
             }
         } else {
             document.getElementById('classificationId').value = '';
+            document.getElementById('classColor').value = '#000000';
             modalTitle.textContent = 'Nueva Clasificación';
         }
         classificationModal.classList.add('open');
@@ -215,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const id = document.getElementById('classificationId').value || Date.now().toString();
         const nombre = document.getElementById('className').value;
         const descripcion = document.getElementById('classDesc').value;
+        const color = document.getElementById('classColor').value;
 
         // Collect steps and validate duplicates
         const stepInputs = Array.from(detailTableBody.querySelectorAll('.step-input'));
@@ -230,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = getData('classification');
-        const classification = { id, nombre, descripcion, steps };
+        const classification = { id, nombre, descripcion, color, steps };
 
         if (isEditing) {
             const index = data.findIndex(c => c.id === id);
@@ -293,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const nombreClasif = data.nombre.trim();
                 const descripcionClasif = (data.descripcion || nombreClasif).trim();
+                const colorClasif = data.color || '#000000';
 
                 // Verificar que no exista (case insensitive)
                 const existeClasif = classifications.some(c =>
@@ -330,6 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         id: Date.now().toString(),
                         nombre: nombreClasif,
                         descripcion: descripcionClasif,
+                        color: colorClasif,
                         steps: validatedSteps
                     };
 
@@ -363,6 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const originalName = data.originalName.trim();
                 const nuevoNombre = data.nombre.trim();
                 const nuevaDesc = (data.descripcion || nuevoNombre).trim();
+
+                // Buscar clasificación para obtener color actual si no se provee
+                const idxRef = classifications.findIndex(c => c.nombre.toLowerCase() === originalName.toLowerCase());
+                const currentRef = idxRef !== -1 ? classifications[idxRef] : {};
+                const nuevoColor = data.color || currentRef.color || '#000000';
 
                 // Buscar clasificación (case insensitive)
                 const indexUpdate = classifications.findIndex(c =>
@@ -420,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ...classifications[indexUpdate],
                             nombre: nuevoNombre,
                             descripcion: nuevaDesc,
+                            color: nuevoColor,
                             steps: validatedSteps
                         };
 

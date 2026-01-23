@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stepIdInput = document.getElementById('stepId');
     const stepNameInput = document.getElementById('stepName');
     const stepDescInput = document.getElementById('stepDesc');
+    const stepPercentInput = document.getElementById('stepPercent');
 
     let isEditing = false;
     let editIndex = -1;
@@ -96,6 +97,10 @@ document.addEventListener('DOMContentLoaded', () => {
             descCell.textContent = step.descripcion;
             descCell.dataset.label = "Descripción";
 
+            const percentCell = document.createElement('td');
+            percentCell.textContent = (step.porcentual !== undefined && step.porcentual !== null) ? `${step.porcentual}%` : '-';
+            percentCell.dataset.label = "Porcentual";
+
             const actionsCell = document.createElement('td');
             actionsCell.className = 'actions-cell';
             actionsCell.dataset.label = "Acción";
@@ -115,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             row.appendChild(nameCell);
             row.appendChild(descCell);
+            row.appendChild(percentCell);
             row.appendChild(actionsCell);
 
             stepsTableBody.appendChild(row);
@@ -128,12 +134,14 @@ document.addEventListener('DOMContentLoaded', () => {
             modalTitle.textContent = 'Editar Paso';
             stepNameInput.value = step.nombre;
             stepDescInput.value = step.descripcion;
+            stepPercentInput.value = step.porcentual || '';
             // Store original name to find it later (simple approach)
             stepIdInput.value = step.nombre;
         } else {
             modalTitle.textContent = 'Nuevo Paso';
             stepForm.reset();
             stepIdInput.value = '';
+            stepPercentInput.value = '';
         }
     };
 
@@ -161,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const nombre = stepNameInput.value;
         const descripcion = stepDescInput.value;
+        const porcentual = stepPercentInput.value;
         const originalName = stepIdInput.value;
 
         let steps = getSteps();
@@ -169,11 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update
             const index = steps.findIndex(s => s.nombre === originalName);
             if (index !== -1) {
-                steps[index] = { nombre, descripcion };
+                steps[index] = { nombre, descripcion, porcentual };
             }
         } else {
             // Create
-            steps.push({ nombre, descripcion });
+            steps.push({ nombre, descripcion, porcentual });
         }
 
         saveSteps(steps);
@@ -294,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const nombreCrear = data.nombre.trim();
                 const descripcionCrear = (data.descripcion || nombreCrear).trim();
+                const porcentualCrear = data.porcentual || '';
 
                 // Verificar que no exista (case insensitive)
                 const existeCrear = steps.some(s => s.nombre.toLowerCase() === nombreCrear.toLowerCase());
@@ -302,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     success = false;
                     messages.push(message);
                 } else {
-                    steps.push({ nombre: nombreCrear, descripcion: descripcionCrear });
+                    steps.push({ nombre: nombreCrear, descripcion: descripcionCrear, porcentual: porcentualCrear });
                     message = `✅ Paso "${nombreCrear}" creado exitosamente`;
                     actionPerformed = true;
                     stepsChanged = true;
@@ -327,6 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Buscar paso (case insensitive)
                 const indexUpdate = steps.findIndex(s => s.nombre.toLowerCase() === originalName.toLowerCase());
 
+                const nuevoPorcentual = (data.porcentual !== undefined) ? data.porcentual : (steps[indexUpdate]?.porcentual || '');
+
                 if (indexUpdate === -1) {
                     message = `❌ Error: No se encontró el paso "${originalName}"`;
                     success = false;
@@ -343,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         messages.push(message);
                     } else {
                         const nombreAnterior = steps[indexUpdate].nombre;
-                        steps[indexUpdate] = { nombre: nuevoNombre, descripcion: nuevaDesc };
+                        steps[indexUpdate] = { nombre: nuevoNombre, descripcion: nuevaDesc, porcentual: nuevoPorcentual };
                         message = `✅ Paso "${nombreAnterior}" actualizado a "${nuevoNombre}"`;
                         actionPerformed = true;
                         stepsChanged = true;

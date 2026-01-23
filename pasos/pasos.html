@@ -58,6 +58,7 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Descripción</th>
+                            <th>Porcentual</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -91,6 +92,10 @@
                 <div class="input-group">
                     <input type="text" id="stepDesc" required placeholder=" ">
                     <label for="stepDesc">Descripción</label>
+                </div>
+                <div class="input-group">
+                    <input type="number" id="stepPercent" step="0.01" min="0" max="100" required placeholder=" ">
+                    <label for="stepPercent">Porcentual (%)</label>
                 </div>
                 <div class="modal-actions">
                     <button type="button" class="modal-btn btn-cancel" id="cancelBtn">Cancelar</button>

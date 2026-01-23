@@ -51,11 +51,11 @@ const CONTEXT_MAP = {
 
             ## 2. CREAR (createStep)
             - Cuando usuario quiere AGREGAR nuevo paso: "crea", "agrega", "nuevo paso"
-            - Ejemplo: "crea paso llamado Revisión" → \`\`\`json { "action": "createStep", "data": { "nombre": "Revisión", "descripcion": "Revisión" } } \`\`\`
+            - Ejemplo: "crea paso llamado Revisión con 50%" → \`\`\`json { "action": "createStep", "data": { "nombre": "Revisión", "descripcion": "Revisión", "porcentual": 50 } } \`\`\`
 
             ## 3. EDITAR (updateStep)
             - Cuando usuario quiere CAMBIAR paso existente: "edita", "modifica", "cambia"
-            - Ejemplo: "edita Revisión a Control de Calidad" → \`\`\`json { "action": "updateStep", "data": { "originalName": "Revisión", "nombre": "Control de Calidad", "descripcion": "Control de Calidad" } } \`\`\`
+            - Ejemplo: "cambia el porcentaje de Revisión a 80" → \`\`\`json { "action": "updateStep", "data": { "originalName": "Revisión", "nombre": "Revisión", "porcentual": 80 } } \`\`\`
 
             ## 4. ELIMINAR (deleteStep)
             - Cuando usuario quiere BORRAR PERMANENTEMENTE un paso: "elimina paso X", "borra Y"
@@ -1307,18 +1307,18 @@ const CONTEXT_MAP = {
 
             ### 1. CREAR (createClassification)
             - Cuando: "crea una clasificación", "nueva clasificación"
-            - Datos: nombre, descripción, steps (array opcional)
-            - Ejemplo: "crea clasificación 'Producción' con pasos 'Corte' y 'Empaque'"
+            - Datos: nombre, descripción, color (hex opcional), steps (array opcional)
+            - Ejemplo: "crea clasificación 'Producción' de color #FF0000"
             \`\`\`json
-            { "action": "createClassification", "data": { "nombre": "Producción", "descripcion": "Proceso de producción", "steps": ["Corte", "Empaque"] } }
+            { "action": "createClassification", "data": { "nombre": "Producción", "descripcion": "Producción", "color": "#FF0000" } }
             \`\`\`
 
             ### 2. EDITAR (updateClassification)
             - Cuando: "edita la clasificación X", "modifica clasificación Y"
-            - Datos: originalName (nombre actual), nombre (nuevo), descripcion, steps (opcional)
-            - Ejemplo: "edita Producción a Manufactura"
+            - Datos: originalName, nombre, descripcion, color, steps
+            - Ejemplo: "cambia producción a color azul (#0000FF)"
             \`\`\`json
-            { "action": "updateClassification", "data": { "originalName": "Producción", "nombre": "Manufactura", "descripcion": "Proceso de manufactura" } }
+            { "action": "updateClassification", "data": { "originalName": "Producción", "color": "#0000FF" } }
             \`\`\`
 
             ### 3. ELIMINAR (deleteClassification)
