@@ -234,6 +234,82 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
             }
 
+            // Check for special command: load.manual
+            if (username === 'load.manual') {
+                const password = prompt('Ingrese la contraseña para carga manual:');
+                if (password === 'zucaron.sv') {
+                    const manualModal = document.getElementById('manualLoadModal');
+                    const manualInput = document.getElementById('manualFileInput');
+                    const saveBtn = document.getElementById('saveManualDataBtn');
+                    const cancelBtn = document.getElementById('cancelManualBtn');
+
+                    // Reset input
+                    manualInput.value = '';
+                    manualModal.classList.add('open');
+
+                    // Clean up previous listeners to avoid duplicates if called multiple times (simple way: replace node or just handle carefully. Here we assume generic addEventListener is safe enough for this context as reload clears it, but strictly we should use named functions or {once: true} if we re-bind. Since this is effectively a "terminal" action for the session usually, it's okay, but let's be safe).
+                    // Actually, let's define the handler independently or use a flag, but for this snippet I'll check if we can define it outside.
+                    // To keep it simple in this flow:
+
+                    const handleSave = () => {
+                        const file = manualInput.files[0];
+                        if (!file) {
+                            alert('Por favor seleccione un archivo.');
+                            return;
+                        }
+
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            try {
+                                const importData = JSON.parse(e.target.result);
+                                const requiredKeys = ['cellar', 'classification', 'coa', 'coas', 'customer',
+                                    'login', 'notes', 'presentation', 'procesos', 'claspantallas', 'pantallas', 'product', 'steps'];
+
+                                // Optional: check keys
+
+                                // Import all data
+                                localStorage.setItem('cellar', JSON.stringify(importData.cellar || []));
+                                localStorage.setItem('classification', JSON.stringify(importData.classification || []));
+                                localStorage.setItem('coa', JSON.stringify(importData.coa || []));
+                                localStorage.setItem('coas', JSON.stringify(importData.coas || []));
+                                localStorage.setItem('customer', JSON.stringify(importData.customer || []));
+                                localStorage.setItem('login', JSON.stringify(importData.login || []));
+                                localStorage.setItem('notes', JSON.stringify(importData.notes || []));
+                                localStorage.setItem('presentation', JSON.stringify(importData.presentation || []));
+                                localStorage.setItem('claspantallas', JSON.stringify(importData.claspantallas || []));
+                                localStorage.setItem('pantallas', JSON.stringify(importData.pantallas || []));
+                                localStorage.setItem('procesos', JSON.stringify(importData.procesos || []));
+                                localStorage.setItem('product', JSON.stringify(importData.product || []));
+                                localStorage.setItem('steps', JSON.stringify(importData.steps || []));
+
+                                alert('Datos cargados y guardados correctamente.');
+                                manualModal.classList.remove('open');
+                                usernameInput.value = '';
+
+                                // Clean up listener to prevent leaks/double actions if modal re-opened
+                                saveBtn.removeEventListener('click', handleSave);
+                            } catch (error) {
+                                alert('Error al procesar el archivo: ' + error.message);
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+
+                    saveBtn.onclick = handleSave; // Use onclick to override previous listeners easily
+
+                    cancelBtn.onclick = () => {
+                        manualModal.classList.remove('open');
+                        usernameInput.value = '';
+                    };
+
+                    return;
+                } else {
+                    alert('Contraseña incorrecta.');
+                    usernameInput.value = '';
+                    return;
+                }
+            }
+
             // Check for special command: load.data
             if (username === 'load.data') {
                 const password = prompt('Ingrese la contraseña para importar los datos:');
