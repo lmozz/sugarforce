@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'lorena.png', 'mister.png', 'nsv.png', 'teclana.png'
     ];
     const BRAND_IMAGES = [
-        'cañal.png', 'esevia.png', 'glass.png', 'muzza.png',
+        'cañal.png', 'esevia.png', 'glass.png', 'muzza.png', 'zips.png', 'goza.png',
         'pura.png', 'roseliere.png', 'upperade.png'
     ];
 
