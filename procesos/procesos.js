@@ -58,16 +58,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Filtering Logic ---
-    let currentTypeFilter = null; // 'cliente' | 'marca' | null
+    let currentTypeFilter = 'marca'; // Default strict to 'marca'
+
+    // Initialize Filter UI
+    const initFilters = () => {
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            if (btn.dataset.filter === currentTypeFilter) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    };
+    initFilters();
 
     // --- Rendering ---
     const renderProcesses = (filterText = '') => {
         const processes = getData();
         const filtered = processes.filter(p => {
             const matchesText = (p.name || '').toLowerCase().includes(filterText.toLowerCase());
-            const matchesType = currentTypeFilter ? p.type === currentTypeFilter : true;
+            // Strict filtering: must match currentTypeFilter
+            const matchesType = currentTypeFilter ? p.type === currentTypeFilter : false;
             return matchesText && matchesType;
         });
+
+        // ... (rest of render logic remains same, but we are replacing the block start)
 
         processesContainer.innerHTML = '';
 
@@ -151,19 +166,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Filter Buttons Event Listeners
     document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
             const filterType = btn.dataset.filter;
 
+            // Prevent deselecting the current filter (enforce strict selection)
             if (btn.classList.contains('active')) {
-                // Deactivate filter
-                btn.classList.remove('active');
-                currentTypeFilter = null;
-            } else {
-                // Activate filter (and deactivate others)
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                currentTypeFilter = filterType;
+                return;
             }
+
+            // Activate new filter and deactivate others
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTypeFilter = filterType;
+
             renderProcesses(searchInput.value);
         });
     });
