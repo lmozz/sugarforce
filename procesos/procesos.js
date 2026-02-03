@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.getElementById('sidebar');
     const openMenuBtn = document.getElementById('openMenuBtn');
     const closeMenuBtn = document.getElementById('closeMenuBtn');
-    openMenuBtn?.addEventListener('click', () => sidebar.classList.add('open'));
-    closeMenuBtn?.addEventListener('click', () => sidebar.classList.remove('open'));
+    openMenuBtn?.addEventListener('click', () => sidebar.classList.add('active'));
+    closeMenuBtn?.addEventListener('click', () => sidebar.classList.remove('active'));
 
     // --- User Info & Logout ---
     const userInfo = document.getElementById('userInfo');
