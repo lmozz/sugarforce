@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     console.log("inicio de sesion");
 
-    // Check if AI models are already downloaded
-    const aiModelsStatus = localStorage.getItem('aiModelsDownloaded');
-    console.log(aiModelsStatus);
-    const aiDownloadModal = document.getElementById('aiDownloadModal');
+
 
     // Global AI objects
     window.aiModels = {
@@ -16,129 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         session: null
     };
 
-    // Function to update progress
-    function updateProgress(modelName, percentage) {
-        const progressFill = document.getElementById(`progress-${modelName}`);
-        const progressText = document.getElementById(`text-${modelName}`);
-        if (progressFill && progressText) {
-            progressFill.style.width = `${percentage}%`;
-            progressText.textContent = `${Math.round(percentage)}%`;
-        }
-    }
 
-    // Function to download AI models
-    async function downloadAIModels() {
-        const statusDiv = document.getElementById('downloadStatus');
-        const models = ['writer', 'translator', 'detector', 'summarizer', 'rewriter', 'session'];
-        let allSuccess = true;
-
-        try {
-            // Writer
-            statusDiv.textContent = 'Descargando Writer...';
-            window.aiModels.writer = await Writer.create({
-                monitor(m) {
-                    m.addEventListener("downloadprogress", e => {
-                        updateProgress('writer', e.loaded * 100);
-                    });
-                }
-            });
-            updateProgress('writer', 100);
-
-            // Translator
-            statusDiv.textContent = 'Descargando Translator...';
-            window.aiModels.translator = await Translator.create({
-                sourceLanguage: 'es',
-                targetLanguage: 'fr',
-                monitor(m) {
-                    m.addEventListener('downloadprogress', (e) => {
-                        updateProgress('translator', e.loaded * 100);
-                    });
-                },
-            });
-            updateProgress('translator', 100);
-
-            // Detector
-            statusDiv.textContent = 'Descargando Detector...';
-            window.aiModels.detector = await LanguageDetector.create({
-                monitor(m) {
-                    m.addEventListener('downloadprogress', (e) => {
-                        updateProgress('detector', e.loaded * 100);
-                    });
-                },
-            });
-            updateProgress('detector', 100);
-
-            // Summarizer
-            statusDiv.textContent = 'Descargando Summarizer...';
-            window.aiModels.summarizer = await Summarizer.create({
-                monitor(m) {
-                    m.addEventListener('downloadprogress', (e) => {
-                        updateProgress('summarizer', e.loaded * 100);
-                    });
-                }
-            });
-            updateProgress('summarizer', 100);
-
-            // Rewriter
-            statusDiv.textContent = 'Descargando Rewriter...';
-            window.aiModels.rewriter = await Rewriter.create({
-                monitor(m) {
-                    m.addEventListener("downloadprogress", e => {
-                        updateProgress('rewriter', e.loaded * 100);
-                    });
-                }
-            });
-            updateProgress('rewriter', 100);
-
-            // Session
-            statusDiv.textContent = 'Descargando Session...';
-            window.aiModels.session = await LanguageModel.create({
-                monitor(m) {
-                    m.addEventListener('downloadprogress', (e) => {
-                        updateProgress('session', e.loaded * 100);
-                    });
-                },
-            });
-            updateProgress('session', 100);
-
-            statusDiv.textContent = '✓ Todos los modelos descargados correctamente';
-            statusDiv.style.color = '#28a745';
-
-            // Mark as successfully downloaded
-            localStorage.setItem('aiModelsDownloaded', 'success');
-
-        } catch (error) {
-            console.error('Error downloading AI models:', error);
-            statusDiv.textContent = '⚠ Error al descargar modelos. Intente refrescar la página.';
-            statusDiv.style.color = '#d93025';
-            allSuccess = false;
-
-            // Mark as failed
-            localStorage.setItem('aiModelsDownloaded', 'failed');
-        }
-
-        // Hide modal after 2 seconds
-        setTimeout(() => {
-            aiDownloadModal.classList.remove('open');
-        }, 2000);
-
-        return allSuccess;
-    }
-
-    // Check if we need to download
-    if (aiModelsStatus === 'success') {
-        // Already downloaded, hide modal immediately
-        console.log('AI models already downloaded, skipping...');
-        aiDownloadModal.classList.remove('open');
-
-        // Set all progress bars to 100%
-        const models = ['writer', 'translator', 'detector', 'summarizer', 'rewriter', 'session'];
-        models.forEach(model => updateProgress(model, 100));
-    } else {
-        // Need to download
-        console.log('Downloading AI models...');
-        await downloadAIModels();
-    }
 
     const inputs = document.querySelectorAll('.input-group input');
     inputs.forEach(input => {
