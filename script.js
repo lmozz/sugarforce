@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         localStorage.removeItem('tfa');
 
                         console.log('Prototype data loaded from test-info.json. Logging in as zucaritos...');
-                        window.location.href = 'pasos/pasos.html';
+                        window.location.href = 'procesos/procesos.html';
                     })
                     .catch(error => {
                         console.error('Error loading test-info.json:', error);
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     localStorage.setItem('currentUser', username);
                     localStorage.removeItem('tfa'); // Clean up
 
-                    window.location.href = 'pasos/pasos.html';
+                    window.location.href = 'procesos/procesos.html';
                 }
             }, 1000);
 
