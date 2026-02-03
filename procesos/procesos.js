@@ -414,8 +414,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const allClassifications = JSON.parse(localStorage.getItem('classification') || '[]');
         const allSteps = JSON.parse(localStorage.getItem('steps') || '[]');
 
+        // Determine required classification type
+        // Process types: 'cliente', 'marca'
+        // Classification types: 'cliente', 'producto'
+        const requiredType = process.type === 'cliente' ? 'cliente' : 'producto'; // Maps 'marca' -> 'producto'
+
         let relevantClassifications = allClassifications.filter(c =>
-            (c.tipo || 'Producto').toLowerCase() === (process.type || 'producto').toLowerCase()
+            (c.tipo || '').toLowerCase() === requiredType
         );
 
         relevantClassifications.sort((a, b) => (parseInt(a.orden) || 999) - (parseInt(b.orden) || 999));
