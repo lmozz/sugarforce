@@ -1,0 +1,1658 @@
+{
+    "cellar": [
+        {
+            "nombre": "Izalco",
+            "descripcion": "Izalco"
+        },
+        {
+            "nombre": "Dizucar Central",
+            "descripcion": "Dizucar Central"
+        },
+        {
+            "nombre": "Plan de la Laguna",
+            "descripcion": "Plan de la Laguna"
+        },
+        {
+            "nombre": "Chaparrastique",
+            "descripcion": "Chaparrastique"
+        }
+    ],
+    "classification": [
+        {
+            "id": "1769200377171",
+            "nombre": "Propuesta de Diseño",
+            "descripcion": "Empaque de marca",
+            "orden": "1",
+            "tipo": "Cliente",
+            "color": "#7a0000",
+            "steps": [
+                "Creacion",
+                "Rechazada",
+                "Aprobado"
+            ]
+        },
+        {
+            "id": "1769214561056",
+            "nombre": "Calidad",
+            "descripcion": "Aprobacion del empaque de calidad",
+            "orden": "2",
+            "tipo": "Cliente",
+            "color": "#ff7b00",
+            "steps": [
+                "Mercadeo",
+                "Innovacion y Desarrollo",
+                "Calidad"
+            ]
+        },
+        {
+            "id": "1769214857726",
+            "nombre": "Pruebas de Color",
+            "descripcion": "Validar la impresion en sustrato del empaque",
+            "orden": "3",
+            "tipo": "Cliente",
+            "color": "#eeff00",
+            "steps": [
+                "Aprobacion de MG",
+                "Aprobacion de Impresion en Sustrato"
+            ]
+        },
+        {
+            "id": "1769215045464",
+            "nombre": "Produccion",
+            "descripcion": "Empacar Azucar",
+            "orden": "4",
+            "tipo": "Cliente",
+            "color": "#9bf8aa",
+            "steps": [
+                "Recibe bobina placa/sustrato",
+                "Empacar el Azucar"
+            ]
+        },
+        {
+            "id": "1769215203579",
+            "nombre": "Entrega de Producto",
+            "descripcion": "Logistica de ruta y entrega",
+            "orden": "5",
+            "tipo": "Cliente",
+            "color": "#0e7500",
+            "steps": [
+                "Listo Para Entregar",
+                "Entregado"
+            ]
+        },
+        {
+            "id": "1770090189887",
+            "nombre": "Formulacion/Innovacion",
+            "descripcion": "Creacion de formula del producto",
+            "orden": "1",
+            "tipo": "Producto",
+            "color": "#b30000",
+            "steps": [
+                "Datos Nutricionales",
+                "Ingredientes",
+                "Stock",
+                "Plano y Sustrato"
+            ]
+        },
+        {
+            "id": "1770090512818",
+            "nombre": "Creacion de Producto",
+            "descripcion": "Creacion de Producto",
+            "orden": "2",
+            "tipo": "Producto",
+            "color": "#ff0000",
+            "steps": [
+                "Creacion del Producto",
+                "Aceptacion Interna"
+            ]
+        },
+        {
+            "id": "1770090598411",
+            "nombre": "Branding",
+            "descripcion": "Branding",
+            "orden": "3",
+            "tipo": "Producto",
+            "color": "#ff6600",
+            "steps": [
+                "1er Brand",
+                "2do Brand",
+                "3er Brand",
+                "Aceptacion de Branding"
+            ]
+        },
+        {
+            "id": "1770090626590",
+            "nombre": "Empaque",
+            "descripcion": "Empaque",
+            "orden": "4",
+            "tipo": "Producto",
+            "color": "#fff700",
+            "steps": [
+                "Creacion",
+                "Rechazada",
+                "Aprobado"
+            ]
+        },
+        {
+            "id": "1770090883801",
+            "nombre": "Calidad Producto",
+            "descripcion": "Calidad Producto",
+            "orden": "5",
+            "tipo": "Producto",
+            "color": "#a9ff9e",
+            "steps": [
+                "Mercadeo",
+                "Calidad",
+                "Innovacion y Desarrollo"
+            ]
+        },
+        {
+            "id": "1770090960929",
+            "nombre": "Pruebas de Color (P)",
+            "descripcion": "Pruebas de Color (P)",
+            "orden": "6",
+            "tipo": "Producto",
+            "color": "#34cb0b",
+            "steps": [
+                "Aprobacion de MG",
+                "Aprobacion de Impresion en Sustrato"
+            ]
+        },
+        {
+            "id": "1770091068519",
+            "nombre": "Produccion (P)",
+            "descripcion": "Produccion (P)",
+            "orden": "7",
+            "tipo": "Producto",
+            "color": "#00852e",
+            "steps": [
+                "Recibe bobina placa/sustrato",
+                "Empacar el Azucar"
+            ]
+        },
+        {
+            "id": "1770091105271",
+            "nombre": "Entrega de Producto (P)",
+            "descripcion": "Entrega de Producto (P)",
+            "orden": "8",
+            "tipo": "Producto",
+            "color": "#003809",
+            "steps": [
+                "Listo Para Entregar",
+                "Entregado"
+            ]
+        }
+    ],
+    "coa": [
+        {
+            "nombre": "Olor*",
+            "descripcion": "No olor fuera de especificacion",
+            "metodo": "SM-PR-420",
+            "unidades": "-"
+        },
+        {
+            "nombre": "Apariencia*",
+            "descripcion": "Cristales en polvo cristalino sin material extraño",
+            "metodo": "SM-PR-420",
+            "unidades": "-"
+        },
+        {
+            "nombre": "Sabor*",
+            "descripcion": "Tipicamente dulce sin sabores extraños",
+            "metodo": "SM-PR-420",
+            "unidades": "-"
+        },
+        {
+            "nombre": "Polarización*",
+            "descripcion": "Minimo 99.5",
+            "metodo": "GS1/2/3/9-11(2011)",
+            "unidades": "onzas"
+        },
+        {
+            "nombre": "Ceniza conductiva*",
+            "descripcion": "Máximo 0.10%",
+            "metodo": "GS1/3/4/7/8-13(1994)",
+            "unidades": "%"
+        },
+        {
+            "nombre": "Humedad",
+            "descripcion": "Máximo 0.1%",
+            "metodo": "Balanza de humedad",
+            "unidades": "%"
+        },
+        {
+            "nombre": "Color*",
+            "descripcion": "Maximo 500 unidades ICUMSA-4",
+            "metodo": "GS1/3-7 (2011)",
+            "unidades": "UI"
+        },
+        {
+            "nombre": "Dióxido de azufre*",
+            "descripcion": "Máximo 70",
+            "metodo": "GS2/1/7/9-33 (2011)",
+            "unidades": "mg/kg"
+        },
+        {
+            "nombre": "Plomo como Pb*",
+            "descripcion": "Máximo 0.50",
+            "metodo": "GS2/3-24-98",
+            "unidades": "mg/kg"
+        },
+        {
+            "nombre": "Arsenico como As*",
+            "descripcion": "Máximo 1.00",
+            "metodo": "GS2/3-23-05",
+            "unidades": "mǥ/kg"
+        },
+        {
+            "nombre": "Cobre como Cu*",
+            "descripcion": "Máximo 2.00",
+            "metodo": "GS2/3-29-94",
+            "unidades": "mg/kg"
+        },
+        {
+            "nombre": "Mesofilos aerobios*",
+            "descripcion": "< 200",
+            "metodo": "GS2/3-41 (2011)",
+            "unidades": "UFC/10 gr"
+        },
+        {
+            "nombre": "Levaduras*",
+            "descripcion": "< 10",
+            "metodo": "GS2/3-47 (2015)",
+            "unidades": "UFC/10 gr"
+        },
+        {
+            "nombre": "Hongos*",
+            "descripcion": "< 10",
+            "metodo": "GS2/3-47 (2015)",
+            "unidades": "UFC/10 gr"
+        },
+        {
+            "nombre": "Granulometría",
+            "descripcion": "98%-100% <0.10 mm",
+            "metodo": "GS2/9-37 (2007)",
+            "unidades": "Micrones"
+        }
+    ],
+    "coas": [
+        {
+            "id": "1770094968073",
+            "cliente": "Diana S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-03",
+            "usuarioSolicitante": "lmoz",
+            "detalles": [
+                {
+                    "parametro": "Olor*",
+                    "resultado": "Sin olores raros"
+                },
+                {
+                    "parametro": "Polarización*",
+                    "resultado": "Bueno"
+                },
+                {
+                    "parametro": "Dióxido de azufre*",
+                    "resultado": "58"
+                },
+                {
+                    "parametro": "Plomo como Pb*",
+                    "resultado": "15"
+                }
+            ],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:02:48 PM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:07:29 PM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:08:48 PM"
+                },
+                {
+                    "status": "impresion",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:08:49 PM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:09:19 PM"
+                },
+                {
+                    "status": "impresion",
+                    "user": "lmoz",
+                    "time": "2/2/2026, 11:09:25 PM"
+                }
+            ],
+            "status": "impresion",
+            "usuarioInicio": "lmoz",
+            "fechaInicio": "2/2/2026, 11:07:29 PM",
+            "direccion": "San Salvador, San Salvador, Calle la mascota avenida 12",
+            "producto": "Azucar Glass",
+            "presentacion": "1KG",
+            "descripcion": "Azucar Glass",
+            "bodega": "Izalco",
+            "cantidad": "10",
+            "tarimas": "88",
+            "marchamo": "80009",
+            "fechaAnalisis": "2026-02-03",
+            "fechaRevision": "2026-02-03",
+            "fechaProduccion": "2026-02-03",
+            "fechaVencimiento": "2026-02-03",
+            "lote": "4566",
+            "usuarioFinaliza": "lmoz",
+            "fechaFinaliza": "2/2/2026, 11:09:19 PM"
+        }
+    ],
+    "customer": [
+        {
+            "nombre": "Diana S.A. de C.V.",
+            "direccion": "Calle la mascota avenida 12",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "principal@diana.com"
+            ]
+        },
+        {
+            "nombre": "La Constancia S.A. de C.V.",
+            "direccion": "Centro urbano plan de la Laguna",
+            "departamento": "San Salvador",
+            "municipio": "Santo Tomas",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "contacto@laconstancia.com"
+            ]
+        }
+    ],
+    "login": [
+        {
+            "usuario": "lmoz"
+        },
+        {
+            "usuario": "irvin"
+        },
+        {
+            "usuario": "arce"
+        },
+        {
+            "usuario": "miguel"
+        }
+    ],
+    "notes": [
+        {
+            "id": "1770094332384",
+            "nombre": "Nota 1",
+            "orden": "1",
+            "descripcion": "Nota 1: Los resultados oblenidos corresponden a la muestra analizada."
+        },
+        {
+            "id": "1770094342752",
+            "nombre": "Nota 2",
+            "orden": "2",
+            "descripcion": "Nota 2: En nuestros procesos no utilizamos materia prima que sean alérgenos."
+        },
+        {
+            "id": "1770094365167",
+            "nombre": "Nota 3",
+            "orden": "3",
+            "descripcion": "Nota 3: Para conservar las caracteristicas de calidad e inocuidad, mantenga el producto en lugares seguros, frescos y secos. Se recomienda el uso del azucar pulverizada dentro de 36 horas posterior a su produccion."
+        },
+        {
+            "id": "1770094383928",
+            "nombre": "Resultados",
+            "orden": "4",
+            "descripcion": "* Los resultados son obtenidos de una muestra compuesta en etapa de producción enviada a un laboratorio subcontratado."
+        },
+        {
+            "id": "1770094405890",
+            "nombre": "Certifico",
+            "orden": "5",
+            "descripcion": "Certifico que el servicio especificado ha sido realizado obteniendose los resultados descritos. Los resultados del analisis cumplen con las especificaciones del RTS 67.06.01:13 Fortificación de alimentos. Especificaciones; NSO 67.20.01:03 Azucares."
+        },
+        {
+            "id": "1770094420303",
+            "nombre": "Aseguramiento",
+            "orden": "6",
+            "descripcion": "Como aseguramiento de inocuidad en el flujo de pulverizacion, los de los cristales de azúcar pasan por una rejilla imantada para detectar metales."
+        }
+    ],
+    "presentation": [
+        {
+            "nombre": "1KG",
+            "descripcion": "1 Kilogramos"
+        },
+        {
+            "nombre": "5KG",
+            "descripcion": "5 Kilogramos"
+        },
+        {
+            "nombre": "10KG",
+            "descripcion": "10 Kilogramos"
+        },
+        {
+            "nombre": "25KG",
+            "descripcion": "25 Kilogramos"
+        }
+    ],
+    "procesos": [
+        {
+            "id": "1769215311222",
+            "name": "Ban Ban",
+            "type": "cliente",
+            "image": "banban.png",
+            "currentClassification": "Entrega de Producto",
+            "currentStep": "Listo Para Entregar",
+            "track": [
+                {
+                    "classification": "Entrega de Producto",
+                    "step": "Listo Para Entregar",
+                    "previousStep": "Entregado",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:43:29"
+                },
+                {
+                    "classification": "Entrega de Producto",
+                    "step": "Entregado",
+                    "previousStep": "Listo Para Entregar",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:43:01"
+                },
+                {
+                    "classification": "Entrega de Producto",
+                    "step": "Listo Para Entregar",
+                    "previousStep": "Empacar el Azucar",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:58"
+                },
+                {
+                    "classification": "Produccion",
+                    "step": "Empacar el Azucar",
+                    "previousStep": "Recibe bobina placa/sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:53"
+                },
+                {
+                    "classification": "Produccion",
+                    "step": "Recibe bobina placa/sustrato",
+                    "previousStep": "Aprobacion de Impresion en Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:49"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:43"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:40"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Calidad",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:33"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:29"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Rechazada",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:19"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Rechazada",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:16"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:42:11"
+                }
+            ]
+        },
+        {
+            "id": "1769215479926",
+            "name": "Buen Provecho",
+            "type": "cliente",
+            "image": "buenprovecho.png",
+            "currentClassification": "Pruebas de Color",
+            "currentStep": "Aprobacion de MG",
+            "track": [
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:45:27"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Calidad",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:45:12"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-01-23 18:45:03"
+                }
+            ]
+        },
+        {
+            "id": "1769215704773",
+            "name": "Santa Eduvigis",
+            "type": "cliente",
+            "image": "eduvigis.png",
+            "currentClassification": "Calidad",
+            "currentStep": "Mercadeo",
+            "track": [
+                {
+                    "classification": "Calidad",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:29"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:19"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Rechazada",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:16"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Rechazada",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:13"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:09"
+                }
+            ]
+        },
+        {
+            "id": "1769215723279",
+            "name": "Lilian",
+            "type": "cliente",
+            "image": "lilian.png",
+            "currentClassification": "Pruebas de Color",
+            "currentStep": "Aprobacion de Impresion en Sustrato",
+            "track": [
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:31:38"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:31:36"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Calidad",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:31:29"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Mercadeo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:31:00"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:57"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:53"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:30:49"
+                }
+            ]
+        },
+        {
+            "id": "1769215736886",
+            "name": "Lorena",
+            "type": "cliente",
+            "image": "lorena.png",
+            "currentClassification": "Produccion",
+            "currentStep": "Recibe bobina placa/sustrato",
+            "track": [
+                {
+                    "classification": "Produccion",
+                    "step": "Recibe bobina placa/sustrato",
+                    "previousStep": "Aprobacion de Impresion en Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:23"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:19"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:17"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Calidad",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:13"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Mercadeo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:11"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:08"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:05"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:02"
+                }
+            ]
+        },
+        {
+            "id": "1769215753290",
+            "name": "Mister Donut",
+            "type": "cliente",
+            "image": "mister.png",
+            "currentClassification": "Propuesta de Diseño",
+            "currentStep": "Creacion",
+            "track": [
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:32:44"
+                }
+            ]
+        },
+        {
+            "id": "1769215768907",
+            "name": "Grupo Nsv",
+            "type": "cliente",
+            "image": "nsv.png",
+            "currentClassification": "Propuesta de Diseño",
+            "currentStep": "Aprobado",
+            "track": [
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:05"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:03"
+                }
+            ]
+        },
+        {
+            "id": "1769215780322",
+            "name": "La Tecleña",
+            "type": "cliente",
+            "image": "teclana.png",
+            "currentClassification": "Entrega de Producto",
+            "currentStep": "Entregado",
+            "track": [
+                {
+                    "classification": "Entrega de Producto",
+                    "step": "Entregado",
+                    "previousStep": "Listo Para Entregar",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:48"
+                },
+                {
+                    "classification": "Entrega de Producto",
+                    "step": "Listo Para Entregar",
+                    "previousStep": "Empacar el Azucar",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:46"
+                },
+                {
+                    "classification": "Produccion",
+                    "step": "Empacar el Azucar",
+                    "previousStep": "Recibe bobina placa/sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:41"
+                },
+                {
+                    "classification": "Produccion",
+                    "step": "Recibe bobina placa/sustrato",
+                    "previousStep": "Aprobacion de Impresion en Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:38"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:35"
+                },
+                {
+                    "classification": "Pruebas de Color",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:32"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Calidad",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:28"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Mercadeo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:26"
+                },
+                {
+                    "classification": "Calidad",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:23"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:19"
+                },
+                {
+                    "classification": "Propuesta de Diseño",
+                    "step": "Creacion",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:33:17"
+                }
+            ]
+        },
+        {
+            "id": "1769216093015",
+            "name": "Del Cañal",
+            "type": "marca",
+            "image": "cañal.png",
+            "currentClassification": "Branding",
+            "currentStep": "1er Brand",
+            "track": [
+                {
+                    "classification": "Branding",
+                    "step": "1er Brand",
+                    "previousStep": "Creacion del Producto",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:59:40"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Creacion del Producto",
+                    "previousStep": "Plano y Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:59:33"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Plano y Sustrato",
+                    "previousStep": "Stock",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:59:22"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Stock",
+                    "previousStep": "Ingredientes",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:59:18"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:59:15"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 21:45:20"
+                }
+            ]
+        },
+        {
+            "id": "1769216122893",
+            "name": "Esevia",
+            "type": "marca",
+            "image": "esevia.png",
+            "currentClassification": "Empaque",
+            "currentStep": "Aprobado",
+            "track": [
+                {
+                    "classification": "Empaque",
+                    "step": "Aprobado",
+                    "previousStep": "Rechazada",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:36"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Rechazada",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:33"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Creacion",
+                    "previousStep": "Aceptacion de Branding",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:30"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "Aceptacion de Branding",
+                    "previousStep": "3er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:23"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "3er Brand",
+                    "previousStep": "3er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:20"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "3er Brand",
+                    "previousStep": "2do Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:17"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "2do Brand",
+                    "previousStep": "1er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:11"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "1er Brand",
+                    "previousStep": "Aceptacion Interna",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:08"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Aceptacion Interna",
+                    "previousStep": "Creacion del Producto",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:03"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Creacion del Producto",
+                    "previousStep": "Plano y Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:00"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Plano y Sustrato",
+                    "previousStep": "Stock",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:03:54"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Stock",
+                    "previousStep": "Ingredientes",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:03:51"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:03:47"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:03:45"
+                }
+            ]
+        },
+        {
+            "id": "1769216135818",
+            "name": "Glass",
+            "type": "marca",
+            "image": "glass.png",
+            "currentClassification": "Entrega de Producto (P)",
+            "currentStep": "Entregado",
+            "track": [
+                {
+                    "classification": "Entrega de Producto (P)",
+                    "step": "Entregado",
+                    "previousStep": "Listo Para Entregar",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:06:22"
+                },
+                {
+                    "classification": "Entrega de Producto (P)",
+                    "step": "Listo Para Entregar",
+                    "previousStep": "Empacar el Azucar",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:06:19"
+                },
+                {
+                    "classification": "Produccion (P)",
+                    "step": "Empacar el Azucar",
+                    "previousStep": "Recibe bobina placa/sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:06:13"
+                },
+                {
+                    "classification": "Produccion (P)",
+                    "step": "Recibe bobina placa/sustrato",
+                    "previousStep": "Aprobacion de Impresion en Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:06:11"
+                },
+                {
+                    "classification": "Pruebas de Color (P)",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:06:02"
+                },
+                {
+                    "classification": "Pruebas de Color (P)",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:59"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:53"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Calidad",
+                    "previousStep": "Mercadeo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:50"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:47"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Aprobado",
+                    "previousStep": "Rechazada",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:42"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Rechazada",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:38"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Creacion",
+                    "previousStep": "Aceptacion de Branding",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:35"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "Aceptacion de Branding",
+                    "previousStep": "3er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:30"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "3er Brand",
+                    "previousStep": "2do Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:27"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "2do Brand",
+                    "previousStep": "1er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:24"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "1er Brand",
+                    "previousStep": "Aceptacion Interna",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:21"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Aceptacion Interna",
+                    "previousStep": "Creacion del Producto",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:13"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Creacion del Producto",
+                    "previousStep": "Plano y Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:11"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Plano y Sustrato",
+                    "previousStep": "Stock",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:06"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Stock",
+                    "previousStep": "Ingredientes",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:05:03"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:54"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:04:51"
+                }
+            ]
+        },
+        {
+            "id": "1769216328021",
+            "name": "Muzza",
+            "type": "marca",
+            "image": "muzza.png",
+            "currentClassification": "Formulacion/Innovacion",
+            "currentStep": "Datos Nutricionales",
+            "track": [
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:07:25"
+                }
+            ]
+        },
+        {
+            "id": "1769216338888",
+            "name": "Caña Pura",
+            "type": "marca",
+            "image": "pura.png",
+            "currentClassification": "Produccion (P)",
+            "currentStep": "Recibe bobina placa/sustrato",
+            "track": [
+                {
+                    "classification": "Produccion (P)",
+                    "step": "Recibe bobina placa/sustrato",
+                    "previousStep": "Aprobacion de Impresion en Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:35"
+                },
+                {
+                    "classification": "Pruebas de Color (P)",
+                    "step": "Aprobacion de Impresion en Sustrato",
+                    "previousStep": "Aprobacion de MG",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:20"
+                },
+                {
+                    "classification": "Pruebas de Color (P)",
+                    "step": "Aprobacion de MG",
+                    "previousStep": "Innovacion y Desarrollo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:17"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Innovacion y Desarrollo",
+                    "previousStep": "Calidad",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:10"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Calidad",
+                    "previousStep": "Mercadeo",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:06"
+                },
+                {
+                    "classification": "Calidad Producto",
+                    "step": "Mercadeo",
+                    "previousStep": "Aprobado",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:03"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Aprobado",
+                    "previousStep": "Creacion",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:58"
+                },
+                {
+                    "classification": "Empaque",
+                    "step": "Creacion",
+                    "previousStep": "Aceptacion de Branding",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:55"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "Aceptacion de Branding",
+                    "previousStep": "3er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:50"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "3er Brand",
+                    "previousStep": "2do Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:47"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "2do Brand",
+                    "previousStep": "1er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:43"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "1er Brand",
+                    "previousStep": "Aceptacion Interna",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:40"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Aceptacion Interna",
+                    "previousStep": "Creacion del Producto",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:35"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Creacion del Producto",
+                    "previousStep": "Plano y Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:32"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Plano y Sustrato",
+                    "previousStep": "Stock",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:23"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Stock",
+                    "previousStep": "Ingredientes",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:19"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:08:16"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:07:41"
+                }
+            ]
+        },
+        {
+            "id": "1769216347665",
+            "name": "Roseliere",
+            "type": "marca",
+            "image": "roseliere.png",
+            "currentClassification": "Branding",
+            "currentStep": "3er Brand",
+            "track": [
+                {
+                    "classification": "Branding",
+                    "step": "3er Brand",
+                    "previousStep": "2do Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:28"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "2do Brand",
+                    "previousStep": "1er Brand",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:23"
+                },
+                {
+                    "classification": "Branding",
+                    "step": "1er Brand",
+                    "previousStep": "Aceptacion Interna",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:12"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Aceptacion Interna",
+                    "previousStep": "Creacion del Producto",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:07"
+                },
+                {
+                    "classification": "Creacion de Producto",
+                    "step": "Creacion del Producto",
+                    "previousStep": "Plano y Sustrato",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:04"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Plano y Sustrato",
+                    "previousStep": "Stock",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:59"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Stock",
+                    "previousStep": "Ingredientes",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:56"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:52"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:09:50"
+                }
+            ]
+        },
+        {
+            "id": "1769216357665",
+            "name": "Upperade",
+            "type": "marca",
+            "image": "upperade.png",
+            "currentClassification": "Formulacion/Innovacion",
+            "currentStep": "Ingredientes",
+            "track": [
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Ingredientes",
+                    "previousStep": "Datos Nutricionales",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:54"
+                },
+                {
+                    "classification": "Formulacion/Innovacion",
+                    "step": "Datos Nutricionales",
+                    "previousStep": "Inicio",
+                    "user": "lmoz",
+                    "timestamp": "2026-02-02 22:10:41"
+                }
+            ]
+        }
+    ],
+    "claspantallas": [
+        {
+            "id": "1768705180229",
+            "nombre": "Cumpleañeros fecha 12",
+            "tipo": "S",
+            "descripcion": "Cumpleañeros de fecha 12 solo para presentar en esta fecha",
+            "periodo": "",
+            "multimedia": [
+                {
+                    "imagen": "8.png",
+                    "duracion": "10",
+                    "tipo": "CD",
+                    "oracion": "muchisimas felicidades Maria Paola por tu cumpleaños que la pases super en este dia"
+                }
+            ]
+        },
+        {
+            "id": "1768705202049",
+            "nombre": "Notificaciones recurrentes 1",
+            "tipo": "S",
+            "descripcion": "Notificaciones que aveces se daran y aveces no 1",
+            "periodo": "",
+            "multimedia": [
+                {
+                    "imagen": "7.png",
+                    "duracion": "10",
+                    "tipo": "CD",
+                    "oracion": "obten mas zucaritos para demostrar tu dedicacion con la empresa"
+                },
+                {
+                    "imagen": "5.png",
+                    "duracion": "10",
+                    "tipo": "CD",
+                    "oracion": "Compra ya tu agenda"
+                },
+                {
+                    "imagen": "2.png",
+                    "duracion": "10",
+                    "tipo": "CD",
+                    "oracion": "Ya llego el fin de año ven a celebrar con nosotros"
+                }
+            ]
+        }
+    ],
+    "pantallas": [
+        {
+            "id": "1768702830949",
+            "nombre": "Pantalla entrada 15A",
+            "descripcion": "Pantalla principal de oficinal",
+            "ubicacion": "Oficinas Centrales Empaqsa",
+            "aleatorio": true,
+            "comentarios": "S",
+            "multimedia": [
+                {
+                    "imagen": "9.png",
+                    "duracion": "7",
+                    "tipo": "CD",
+                    "oracion": "Tu compromiso si importa"
+                }
+            ],
+            "clasificaciones": [
+                {
+                    "id": "1768705180229",
+                    "nombre": "Cumpleañeros fecha 12"
+                },
+                {
+                    "id": "1768705202049",
+                    "nombre": "Notificaciones recurrentes 1"
+                }
+            ]
+        },
+        {
+            "id": "1770088943191",
+            "nombre": "Pantalla CA Izalco",
+            "descripcion": "Pantalla de un centro de empacado",
+            "ubicacion": "Centro de Empaques Izalco",
+            "aleatorio": true,
+            "comentarios": "S",
+            "multimedia": [
+                {
+                    "imagen": "6.png",
+                    "duracion": "20",
+                    "tipo": "CD",
+                    "oracion": "Felicidades Meli por tu Gran Esfuerzo y dedicacion en la empresa sin duda cada logro cuenta y mas si formas parte de nuestra gran familia dulce y acaramelada"
+                }
+            ],
+            "clasificaciones": []
+        }
+    ],
+    "product": [
+        {
+            "nombre": "Azucar Glass",
+            "descripcion": "Azucar Glass",
+            "presentacion": "1KG"
+        },
+        {
+            "nombre": "Azucar Blanca",
+            "descripcion": "Azucar Glass",
+            "presentacion": "10KG"
+        }
+    ],
+    "steps": [
+        {
+            "nombre": "Creacion",
+            "descripcion": "Propuesta de diseño: Creacion",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Rechazada",
+            "descripcion": "Propuesta de diseño: Rechazada",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Aprobado",
+            "descripcion": "Propuesta de diseño: Aprobado",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Mercadeo",
+            "descripcion": "Revision: mercadeo",
+            "porcentual": "33"
+        },
+        {
+            "nombre": "Calidad",
+            "descripcion": "Revision: calidad",
+            "porcentual": "66"
+        },
+        {
+            "nombre": "Innovacion y Desarrollo",
+            "descripcion": "Revision: innovacion y desarrollo",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Aprobacion de MG",
+            "descripcion": "Calidad",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Aprobacion de Impresion en Sustrato",
+            "descripcion": "Calidad",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Recibe bobina placa/sustrato",
+            "descripcion": "Produccion",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Empacar el Azucar",
+            "descripcion": "Produccion",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Listo Para Entregar ",
+            "descripcion": "Entrega de Producto",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Entregado",
+            "descripcion": "Entrega de Producto",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Datos Nutricionales",
+            "descripcion": "Datos Nutricionales",
+            "porcentual": "25"
+        },
+        {
+            "nombre": "Ingredientes",
+            "descripcion": "Ingredientes",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Stock",
+            "descripcion": "Stock",
+            "porcentual": "75"
+        },
+        {
+            "nombre": "Plano y Sustrato",
+            "descripcion": "Plano y Sustrato",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "Creacion del Producto",
+            "descripcion": "Creacion del Producto",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "Aceptacion Interna",
+            "descripcion": "Aceptacion Interna",
+            "porcentual": "100"
+        },
+        {
+            "nombre": "1er Brand",
+            "descripcion": "1er Brand",
+            "porcentual": "25"
+        },
+        {
+            "nombre": "2do Brand",
+            "descripcion": "2do Brand",
+            "porcentual": "50"
+        },
+        {
+            "nombre": "3er Brand",
+            "descripcion": "3er Brand",
+            "porcentual": "75"
+        },
+        {
+            "nombre": "Aceptacion de Branding",
+            "descripcion": "Aceptacion Interna",
+            "porcentual": "100"
+        }
+    ]
+}
