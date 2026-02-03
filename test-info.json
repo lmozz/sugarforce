@@ -17,6 +17,58 @@
             "descripcion": "Chaparrastique"
         }
     ],
+    "calidad": [
+        {
+            "id": 1,
+            "centroEmpacado": "Izalco",
+            "fechaProduccion": "2024-05-20",
+            "maquina": "Cargado",
+            "presentacion": "25 KG",
+            "pesoNeto": 45.8,
+            "cantidadBolsas": "56",
+            "usuario": "zucaritos"
+        },
+        {
+            "id": 2,
+            "centroEmpacado": "Izalco",
+            "fechaProduccion": "2026-02-03",
+            "maquina": "Empacadora 3",
+            "presentacion": "0.5 KG",
+            "pesoNeto": 88,
+            "cantidadBolsas": 55,
+            "usuario": "zucaritos"
+        },
+        {
+            "id": 3,
+            "centroEmpacado": "Izalco",
+            "fechaProduccion": "2026-02-03",
+            "maquina": "Empacadora 2",
+            "presentacion": "0.5 KG",
+            "pesoNeto": 50.66,
+            "cantidadBolsas": 25,
+            "usuario": "zucaritos"
+        },
+        {
+            "id": 4,
+            "centroEmpacado": "Izalco",
+            "fechaProduccion": "03-02-2026",
+            "maquina": "Empacadora 1",
+            "presentacion": "0.5 KG",
+            "pesoNeto": 98,
+            "cantidadBolsas": 569,
+            "usuario": "zucaritos"
+        },
+        {
+            "id": 5,
+            "centroEmpacado": "Dizucar",
+            "fechaProduccion": "15 enero 2026",
+            "maquina": "Empacadora 1",
+            "presentacion": "25 KG",
+            "pesoNeto": 69,
+            "cantidadBolsas": 588,
+            "usuario": "zucaritos"
+        }
+    ],
     "classification": [
         {
             "id": "1769200377171",
