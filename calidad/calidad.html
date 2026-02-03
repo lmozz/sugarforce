@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dizucar - GemaPTC - Calidad</title>
+    <link rel="icon" href="../imgs/icon.png" type="image/png">
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="../coa/flatpickr.min.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../imgs/icon.png" class="sidebar-logo" alt="Logo">
+                <h2>GemaPTC</h2>
+                <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
+            </div>
+            <ul>
+                <li><a href="../pantallas/pantallas.html">Pantallas</a></li>
+                <li><a href="../procesos/procesos.html">Procesos</a></li>
+                <li><a href="../coa/coa.html">Certificados COA</a></li>
+                <li><a href="#" class="active">Calidad</a></li> <!-- New Module -->
+                <li>
+                    <details>
+                        <summary style="padding: 10px; cursor: pointer; font-weight: 500; color: #1a73e8;">
+                            Configuraciones
+                        </summary>
+                        <ul
+                            style="padding-left: 10px; background: rgba(0,0,0,0.03); border-radius: 8px; margin-top: 5px;">
+                            <li><a href="../param-coa/param-coa.html">Parametros Coa</a></li>
+                            <li><a href="../notes-coa/notes-coa.html">Notas COA</a></li>
+                            <li><a href="../product/product.html">Productos</a></li>
+                            <li><a href="../cellar/cellar.html">Bodegas</a></li>
+                            <li><a href="../presentation/presentation.html">Presentaciones</a></li>
+                            <li><a href="../cliente/cliente.html">Clientes</a></li>
+                            <li><a href="../pasos/pasos.html">Pasos</a></li>
+                            <li><a href="../clasificacion/clasificacion.html">Clasificación</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <button type="button" id="themeToggle" class="theme-btn"
+                    style="margin-bottom: 10px; padding: 10px; font-size: 14px;">Cambiar Tema</button>
+                <div class="user-info" id="userInfo"></div>
+                <a href="#" class="logout-btn" id="logoutBtn">Cerrar sesión</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header-bar">
+                <div class="header-left">
+                    <button class="menu-btn" id="openMenuBtn">☰</button>
+                    <div class="header-title">Control de Calidad</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Buscar calidad...">
+                </div>
+            </header>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Centro de Empacado</th>
+                            <th>Máquina</th>
+                            <th>Presentación</th>
+                            <th>Peso Neto</th>
+                            <th>Cantidad</th>
+                            <th>Fecha Produccion</th>
+                            <th>Usuario</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calidadTableBody">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+
+        <!-- Chat AI Widget -->
+        <div class="ai-chat-widget" id="aiChatWidget">
+            <iframe src="../ai/ai.html?context=calidad" frameborder="0"></iframe>
+        </div>
+
+        <!-- FAB Buttons -->
+        <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
+        <button class="fab" id="addCalidadBtn">+</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="calidadModal">
+        <div class="modal-content">
+            <div class="modal-header" id="modalTitle">Nuevo Registro de Calidad</div>
+            <form id="calidadForm">
+                <input type="hidden" id="calidadId">
+
+                <div class="input-group">
+                    <select id="centroEmpacado" required class="form-control">
+                        <option value="" disabled selected>Seleccione Centro...</option>
+                        <option value="Izalco">Izalco</option>
+                        <option value="Chaparrastique">Chaparrastique</option>
+                        <option value="Jiboa">Jiboa</option>
+                        <option value="Dizucar">Dizucar</option>
+                    </select>
+                    <label for="centroEmpacado">Centro de Empacado</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="fechaProduccion" required placeholder=" ">
+                    <label for="fechaProduccion">Fecha de Producción</label>
+                </div>
+
+
+
+                <div class="input-group">
+                    <select id="maquina" required class="form-control">
+                        <option value="" disabled selected>Seleccione Máquina...</option>
+                        <option value="Cargado">Cargado</option>
+                        <option value="Empacadora 1">Empacadora 1</option>
+                        <option value="Empacadora 2">Empacadora 2</option>
+                        <option value="Empacadora 3">Empacadora 3</option>
+                    </select>
+                    <label for="maquina">Máquina</label>
+                </div>
+
+                <div class="input-group">
+                    <select id="presentacion" required class="form-control">
+                        <option value="" disabled selected>Seleccione Presentación...</option>
+                        <option value="25 KG">25 KG</option>
+                        <option value="0.5 KG">0.5 KG</option>
+                        <option value="1.0 KG">1.0 KG</option>
+                        <option value="2.5 KG">2.5 KG</option>
+                    </select>
+                    <label for="presentacion">Presentación</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="number" id="pesoNeto" required step="0.01" placeholder=" ">
+                    <label for="pesoNeto">Peso Neto</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="number" id="cantidadBolsas" required placeholder=" ">
+                    <label for="cantidadBolsas">Cantidad de Bolsas</label>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="login-btn" id="cancelBtn"
+                        style="background-color: transparent; color: #333; border: 1px solid #333; margin-right: 10px;">Cancelar</button>
+                    <button type="submit" class="login-btn">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../coa/flatpickr.js"></script>
+    <script src="../coa/es.js"></script>
+    <script src="calidad.js"></script>
+    <script>
+        // Inline script to handle sidebar toggle and AI widget
+        document.addEventListener('DOMContentLoaded', () => {
+            const openMenuBtn = document.getElementById('openMenuBtn');
+            const closeMenuBtn = document.getElementById('closeMenuBtn');
+            const sidebar = document.getElementById('sidebar');
+            const openAiBtn = document.getElementById('openAiBtn');
+            const aiChatWidget = document.getElementById('aiChatWidget');
+            const logoutBtn = document.getElementById('logoutBtn');
+
+            if (openMenuBtn) openMenuBtn.addEventListener('click', () => sidebar.classList.add('active'));
+            if (closeMenuBtn) closeMenuBtn.addEventListener('click', () => sidebar.classList.remove('active'));
+
+            if (openAiBtn && aiChatWidget) {
+                openAiBtn.addEventListener('click', () => {
+                    aiChatWidget.classList.toggle('open');
+                });
+            }
+
+            // Logout Logic
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '../index.html';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

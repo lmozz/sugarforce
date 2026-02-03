@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     // Export all localStorage data
                     const exportData = {
                         cellar: JSON.parse(localStorage.getItem('cellar') || '[]'),
+                        calidad: JSON.parse(localStorage.getItem('calidad') || '[]'),
                         classification: JSON.parse(localStorage.getItem('classification') || '[]'),
                         coa: JSON.parse(localStorage.getItem('coa') || '[]'),
                         coas: JSON.parse(localStorage.getItem('coas') || '[]'),
@@ -137,12 +138,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                         reader.onload = (e) => {
                             try {
                                 const importData = JSON.parse(e.target.result);
-                                const requiredKeys = ['cellar', 'classification', 'coa', 'coas', 'customer',
+                                const requiredKeys = ['calidad', 'cellar', 'classification', 'coa', 'coas', 'customer',
                                     'login', 'notes', 'presentation', 'procesos', 'claspantallas', 'pantallas', 'product', 'steps'];
 
                                 // Optional: check keys
 
                                 // Import all data
+                                localStorage.setItem('calidad', JSON.stringify(importData.calidad || []));
                                 localStorage.setItem('cellar', JSON.stringify(importData.cellar || []));
                                 localStorage.setItem('classification', JSON.stringify(importData.classification || []));
                                 localStorage.setItem('coa', JSON.stringify(importData.coa || []));
@@ -222,7 +224,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     const importData = JSON.parse(e.target.result);
 
                                     // Validate that it's the correct format
-                                    const requiredKeys = ['cellar', 'classification', 'coa', 'coas', 'customer',
+                                    const requiredKeys = ['calidad', 'cellar', 'classification', 'coa', 'coas', 'customer',
                                         'login', 'notes', 'presentation', 'procesos', 'claspantallas', 'pantallas', 'product', 'steps'];
 
                                     const hasAllKeys = requiredKeys.every(key => key in importData);
@@ -234,6 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     }
 
                                     // Import all data to localStorage
+                                    localStorage.setItem('calidad', JSON.stringify(importData.calidad || []));
                                     localStorage.setItem('cellar', JSON.stringify(importData.cellar || []));
                                     localStorage.setItem('classification', JSON.stringify(importData.classification || []));
                                     localStorage.setItem('coa', JSON.stringify(importData.coa || []));
@@ -283,7 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         localStorage.removeItem('tfa');
 
                         console.log('Prototype data loaded from test-info.json. Logging in as zucaritos...');
-                        window.location.href = 'procesos/procesos.html';
+                        window.location.href = 'calidad/calidad.html';
                     })
                     .catch(error => {
                         console.error('Error loading test-info.json:', error);
@@ -369,7 +372,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     localStorage.setItem('currentUser', username);
                     localStorage.removeItem('tfa'); // Clean up
 
-                    window.location.href = 'procesos/procesos.html';
+                    window.location.href = 'calidad/calidad.html';
                 }
             }, 1000);
 

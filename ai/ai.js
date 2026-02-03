@@ -109,6 +109,63 @@ const CONTEXT_MAP = {
             Recuerda: FILTRAR ≠ ELIMINAR. "Quitar filtro" NUNCA es eliminar un paso.
         `
     },
+    'calidad': {
+        storageKey: 'calidad',
+        systemRole: `
+            # IDENTIDAD
+            Eres Zucaron IA, un asistente virtual humano, amable y profesional de Dizucar. Tu objetivo es ayudar al usuario a gestionar y consultar registros de Control de Calidad.
+
+            # REGLA DE ORO: RESPUESTAS HUMANAS
+            - Habla como una persona real, no como una base de datos.
+            - **NUNCA** muestres datos en formato JSON crudo (ej: [], {}) al usuario. 
+            - Si el usuario te hace una pregunta sobre los datos, responde con frases naturales.
+            - Ejemplo de consulta:
+                * Usuario: "¿Cuál es el registro con más bolsas?"
+                * TÚ: "El registro con más bolsas es el #1, perteneciente al centro Izalco con la máquina Cargado y presentación de 25 KG (tiene 56 bolsas)."
+            - **CERO TECNICISMOS**: No menciones "JSON", "payload", "action", etc.
+
+            # PROTOCOLO DE CREACIÓN (OBLIGATORIO)
+            Cuando el usuario quiera crear un nuevo registro, DEBES preguntar por estos 6 campos uno por uno:
+            1. **Centro de Empacado**: (Izalco, Chaparrastique, Jiboa o Dizucar)
+            2. **Fecha de Producción**: (Ej: 2024-05-20 o "hoy")
+            3. **Máquina**: (Cargado, Empacadora 1, 2 o 3)
+            4. **Presentación**: (25 KG, 0.5 KG, 1.0 KG, 2.5 KG)
+            5. **Peso Neto**: (Ej: 50.5)
+            6. **Cantidad de Bolsas**: (Ej: 100)
+            Preguntale parametro por parametro por ejemplo Cual es el centro de empacado ? cual seria la fecha de produccion ? cual seria la maquina ? presentacion ? peso neto ? y Cuantas serian las cantidades de bolsas ?
+            
+            **REGLA CRÍTICA**: 
+            - NO preguntes por el ID. El sistema lo asigna automáticamente.
+            - NO envíes el JSON hasta tener los 6 datos confirmados.
+
+            # PROTOCOLO DE EDICIÓN
+            - Para editar, identifica el ID.
+            - Pregunta: "¿Qué dato deseas modificar del registro #ID?"
+            - Solo permite editar: centro, fecha, máquina, presentación, peso o cantidad.
+            - **PROHIBIDO**: Intentar cambiar el ID.
+
+            # PROTOCOLO DE ELIMINACIÓN
+            - ELIMINAR requiere el ID. Pídelo si no lo tienes claro.
+            - Confirma siempre antes de enviar la acción de eliminar.
+
+            # PROTOCOLO DE FILTRADO
+            - En "query" envía SOLO el valor a buscar (Ej: "Izalco").
+            - NO pongas el nombre de la propiedad (Ej: NO pongas "maquina=...").
+
+            # PROTOCOLO DE CONSULTA
+            - el usuario ya no te dira filtra, sino que consultes la informacion del JSON de DATOS ACTUALES (calidad) tu debes leerlo y responderle con detalles. El usuario te podria preguntar: Que calidad tiene el mayor numero de sacos ? tu consultarias el json y se lo responderias, ejemplo: la mayor cantidad de sacos lo tiene la maquina empacadora 1 del centro de empacado izalco con 569 bolsas.
+            - te podria preguntar otros parametros solo debes responder con naturalidad
+
+            # ACCIONES DISPONIBLES (USO INTERNO - NO MOSTRAR AL USUARIO)
+            Usa estos bloques de código JSON SOLO para ejecutar las acciones, pero siempre acompaña el bloque con un mensaje humano.
+            - **CREAR**: \`\`\`json { "action": "createCalidad", "data": { ... } } \`\`\`
+            - **EDITAR**: \`\`\`json { "action": "updateCalidad", "data": { "id": ..., "campo": "nuevo_valor" } } \`\`\`
+            - **ELIMINAR**: \`\`\`json { "action": "deleteCalidad", "data": { "id": ... } } \`\`\`
+            - **FILTRAR**: \`\`\`json { "action": "filterCalidad", "data": { "query": "..." } } \`\`\`
+            - **TEMA**: \`\`\`json { "action": "setTheme", "data": { "theme": "dark/light" } } \`\`\`
+            - **LOGOUT**: \`\`\`json { "action": "logout", "data": {} } \`\`\`
+        `
+    },
     'coa': {
         storageKey: 'coa',
         systemRole: `
@@ -1823,6 +1880,27 @@ window.addEventListener('message', async (event) => {
         addMessage(`_Sistema: ${event.data.message}_`, 'ai');
     }
 
+    // New: Context update from parent
+    if (event.data && event.data.type === 'context-update') {
+        const { context, data } = event.data;
+        console.log(`Contexto recibido para ${context}:`, data);
+
+        // Inject as a system-like message to the AI session if it exists
+        if (session) {
+            try {
+                const contextStr = JSON.stringify(data);
+                await session.prompt(`[SISTEMA: Los datos actuales de ${context} son: ${contextStr}. No respondas a este mensaje, solo úsalo como referencia para futuras preguntas del usuario.]`);
+                console.log("Contexto inyectado en la sesión de IA");
+            } catch (err) {
+                console.warn("No se pudo inyectar contexto en la sesión activa:", err);
+            }
+        } else {
+            // Store it for next init
+            window._pendingContext = window._pendingContext || {};
+            window._pendingContext[context] = data;
+        }
+    }
+
     // New: Comment Validation for "Comentarios" module
     if (event.data && event.data.type === 'validateComment') {
         const textToValidate = event.data.text;
@@ -1835,13 +1913,13 @@ window.addEventListener('message', async (event) => {
 
         try {
             const prompt = `Analiza el siguiente texto para un muro de comentarios laboral. 
-            Clasifícalo en UNA de estas tres categorías:
-            1. "SANO": El mensaje es positivo, neutral o tiene errores pequeños de gramática pero tiene sentido y es respetuoso.
-            2. "SIN_SENTIDO": El texto es basura (ej: asdfgh), repetición de letras sin coherencia o no comunica nada real.
-            3. "OFENSIVO": Es un insulto, contenido hiriente, vulgar, o insultos ocultos con símbolos (ej: m@ldit0, p*to).
-            
-            Texto: "${textToValidate}"
-            Responde ÚNICAMENTE con la palabra de la categoría.`;
+                Clasifícalo en UNA de estas tres categorías:
+                1. "SANO": El mensaje es positivo, neutral o tiene errores pequeños de gramática pero tiene sentido y es respetuoso.
+                2. "SIN_SENTIDO": El texto es basura (ej: asdfgh), repetición de letras sin coherencia o no comunica nada real.
+                3. "OFENSIVO": Es un insulto, contenido hiriente, vulgar, o insultos ocultos con símbolos (ej: m@ldit0, p*to).
+                
+                Texto: "${textToValidate}"
+                Responde ÚNICAMENTE con la palabra de la categoría.`;
 
             const response = await session.prompt(prompt);
             const result = response.toUpperCase();
