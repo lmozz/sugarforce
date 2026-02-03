@@ -942,16 +942,25 @@ document.addEventListener('DOMContentLoaded', () => {
         manageModal.classList.add('open');
 
         // Load Classifications
+        // Load Classifications
         const classifications = JSON.parse(localStorage.getItem('classification') || '[]');
         classificationSelect.innerHTML = '<option value="" disabled selected>Seleccione Clasificación</option>';
 
+        // Determine required classification type
+        // Process types: 'cliente', 'marca'
+        // Classification types: 'cliente', 'producto'
+        const requiredType = process.type === 'cliente' ? 'cliente' : 'producto'; // Maps 'marca' -> 'producto'
+
         classifications.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.nombre; // Storing name as per request
-            option.dataset.steps = JSON.stringify(c.steps || []);
-            option.textContent = c.nombre;
-            if (process.currentClassification === c.nombre) option.selected = true;
-            classificationSelect.appendChild(option);
+            // Filter by type (ensure case-insensitive match)
+            if (c.tipo && c.tipo.toLowerCase() === requiredType) {
+                const option = document.createElement('option');
+                option.value = c.nombre; // Storing name as per request
+                option.dataset.steps = JSON.stringify(c.steps || []);
+                option.textContent = c.nombre;
+                if (process.currentClassification === c.nombre) option.selected = true;
+                classificationSelect.appendChild(option);
+            }
         });
 
         // Load Steps based on current selection or reset
