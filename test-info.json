@@ -277,78 +277,388 @@
     ],
     "coas": [
         {
-            "id": "1770094968073",
+            "id": "1770130498405",
             "cliente": "Diana S.A. de C.V.",
-            "fechaRequerimiento": "2026-02-03",
-            "usuarioSolicitante": "lmoz",
+            "fechaRequerimiento": "2026-02-04",
+            "usuarioSolicitante": "zucaritos",
             "detalles": [
                 {
-                    "parametro": "Olor*",
-                    "resultado": "Sin olores raros"
-                },
-                {
-                    "parametro": "Polarización*",
-                    "resultado": "Bueno"
-                },
-                {
-                    "parametro": "Dióxido de azufre*",
-                    "resultado": "58"
+                    "parametro": "Apariencia*",
+                    "resultado": "Sin apariencias extrañas"
                 },
                 {
                     "parametro": "Plomo como Pb*",
-                    "resultado": "15"
+                    "resultado": "84"
+                },
+                {
+                    "parametro": "Arsenico como As*",
+                    "resultado": "0.02"
+                },
+                {
+                    "parametro": "Sabor*",
+                    "resultado": "Sabor dulce a miel"
+                },
+                {
+                    "parametro": "Dióxido de azufre*",
+                    "resultado": "55"
+                },
+                {
+                    "parametro": "Olor*",
+                    "resultado": "Sin Olores Extraños"
                 }
             ],
             "track": [
                 {
                     "status": "nuevo",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:02:48 PM"
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:54:58 AM"
                 },
                 {
                     "status": "iniciado",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:07:29 PM"
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:33 AM"
                 },
                 {
                     "status": "finalizado",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:08:48 PM"
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:11:23 AM"
                 },
                 {
                     "status": "impresion",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:08:49 PM"
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:39 AM"
                 },
                 {
                     "status": "finalizado",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:09:19 PM"
-                },
-                {
-                    "status": "impresion",
-                    "user": "lmoz",
-                    "time": "2/2/2026, 11:09:25 PM"
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:19:13 AM"
                 }
             ],
-            "status": "impresion",
-            "usuarioInicio": "lmoz",
-            "fechaInicio": "2/2/2026, 11:07:29 PM",
+            "status": "finalizado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 8:55:33 AM",
             "direccion": "San Salvador, San Salvador, Calle la mascota avenida 12",
             "producto": "Azucar Glass",
             "presentacion": "1KG",
             "descripcion": "Azucar Glass",
             "bodega": "Izalco",
-            "cantidad": "10",
-            "tarimas": "88",
-            "marchamo": "80009",
-            "fechaAnalisis": "2026-02-03",
-            "fechaRevision": "2026-02-03",
-            "fechaProduccion": "2026-02-03",
-            "fechaVencimiento": "2026-02-03",
-            "lote": "4566",
-            "usuarioFinaliza": "lmoz",
-            "fechaFinaliza": "2/2/2026, 11:09:19 PM"
+            "cantidad": "50",
+            "tarimas": "800",
+            "marchamo": "L000987",
+            "fechaAnalisis": "2026-02-04",
+            "fechaRevision": "2026-02-04",
+            "fechaProduccion": "2026-02-04",
+            "fechaVencimiento": "2026-02-04",
+            "lote": "L807",
+            "usuarioFinaliza": "zucaritos",
+            "fechaFinaliza": "2/3/2026, 9:19:13 AM"
+        },
+        {
+            "id": "1770130504117",
+            "cliente": "La Constancia S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-04",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [
+                {
+                    "parametro": "Granulometría",
+                    "resultado": "0.006"
+                },
+                {
+                    "parametro": "Hongos*",
+                    "resultado": "Ninguno"
+                }
+            ],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:04 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:35 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:11:25 AM"
+                },
+                {
+                    "status": "impresion",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:46 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:19:20 AM"
+                }
+            ],
+            "status": "finalizado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 8:55:35 AM",
+            "direccion": "San Salvador, Santo Tomas, Centro urbano plan de la Laguna",
+            "producto": "Azucar Blanca",
+            "presentacion": "10KG",
+            "descripcion": "Azucar Glass",
+            "bodega": "Izalco",
+            "cantidad": "90",
+            "tarimas": "500",
+            "marchamo": "0001F2",
+            "fechaAnalisis": "2026-02-05",
+            "fechaRevision": "2026-02-05",
+            "fechaProduccion": "2026-02-05",
+            "fechaVencimiento": "2026-02-05",
+            "lote": "667",
+            "usuarioFinaliza": "zucaritos",
+            "fechaFinaliza": "2/3/2026, 9:19:20 AM"
+        },
+        {
+            "id": "1770130512214",
+            "cliente": "Cosco S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-05",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [
+                {
+                    "parametro": "Olor*",
+                    "resultado": "Sin olores extraños"
+                },
+                {
+                    "parametro": "Apariencia*",
+                    "resultado": "Un poco mas morena de lo usual"
+                },
+                {
+                    "parametro": "Sabor*",
+                    "resultado": "Sabor un poco mas dulce de lo normal"
+                },
+                {
+                    "parametro": "Polarización*",
+                    "resultado": "Sin polarizaciones extrañas"
+                }
+            ],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:12 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:36 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:11:27 AM"
+                },
+                {
+                    "status": "impresion",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:50 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:19:22 AM"
+                }
+            ],
+            "status": "finalizado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 8:55:36 AM",
+            "direccion": "San Salvador, San Salvador, Avenida bernal sobre calle arce",
+            "producto": "Azucar Glass",
+            "presentacion": "1KG",
+            "descripcion": "Azucar Glass",
+            "bodega": "Dizucar Central",
+            "cantidad": "55",
+            "tarimas": "508",
+            "marchamo": "LK5689",
+            "fechaAnalisis": "2026-02-04",
+            "fechaRevision": "2026-02-04",
+            "fechaProduccion": "2026-02-04",
+            "fechaVencimiento": "2026-02-04",
+            "lote": "L998",
+            "usuarioFinaliza": "zucaritos",
+            "fechaFinaliza": "2/3/2026, 9:19:22 AM"
+        },
+        {
+            "id": "1770130519205",
+            "cliente": "Lido S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-05",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:19 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:38 AM"
+                }
+            ],
+            "status": "iniciado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 8:55:38 AM"
+        },
+        {
+            "id": "1770130530549",
+            "cliente": "Polher S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-06",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [
+                {
+                    "parametro": "Olor*",
+                    "resultado": "Sin olores extraños"
+                },
+                {
+                    "parametro": "Apariencia*",
+                    "resultado": "Sin apariencias extrañas"
+                },
+                {
+                    "parametro": "Sabor*",
+                    "resultado": "Sin Sabores Extraños"
+                },
+                {
+                    "parametro": "Polarización*",
+                    "resultado": "Polarizacion alta"
+                },
+                {
+                    "parametro": "Ceniza conductiva*",
+                    "resultado": "Buena Carga"
+                },
+                {
+                    "parametro": "Humedad",
+                    "resultado": "56"
+                },
+                {
+                    "parametro": "Color*",
+                    "resultado": "Buen color"
+                }
+            ],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:30 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 8:55:40 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:15:59 AM"
+                },
+                {
+                    "status": "impresion",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:56 AM"
+                },
+                {
+                    "status": "finalizado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:19:23 AM"
+                }
+            ],
+            "status": "finalizado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 8:55:40 AM",
+            "direccion": "San Salvador, San Salvador, Avenida los bambues S.S.",
+            "producto": "Azucar Blanca",
+            "presentacion": "10KG",
+            "descripcion": "Azucar Glass",
+            "bodega": "Izalco",
+            "cantidad": "14",
+            "tarimas": "56",
+            "marchamo": "L00000058",
+            "fechaAnalisis": "2026-02-04",
+            "fechaRevision": "2026-02-04",
+            "fechaProduccion": "2026-02-04",
+            "fechaVencimiento": "2026-02-04",
+            "lote": "877",
+            "usuarioFinaliza": "zucaritos",
+            "fechaFinaliza": "2/3/2026, 9:19:23 AM"
+        },
+        {
+            "id": "1770131767804",
+            "cliente": "Corvera S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-04",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:07 AM"
+                }
+            ],
+            "status": "nuevo"
+        },
+        {
+            "id": "1770131775891",
+            "cliente": "Bimbo S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-04",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:15 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:33 AM"
+                }
+            ],
+            "status": "iniciado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 9:16:33 AM"
+        },
+        {
+            "id": "1770131781452",
+            "cliente": "Levuni S.A. de C.V.",
+            "fechaRequerimiento": "2026-02-06",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:21 AM"
+                },
+                {
+                    "status": "iniciado",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:37 AM"
+                }
+            ],
+            "status": "iniciado",
+            "usuarioInicio": "zucaritos",
+            "fechaInicio": "2/3/2026, 9:16:37 AM"
+        },
+        {
+            "id": "1770131790242",
+            "cliente": "Panaderia San Antonio",
+            "fechaRequerimiento": "2026-02-04",
+            "usuarioSolicitante": "zucaritos",
+            "detalles": [],
+            "track": [
+                {
+                    "status": "nuevo",
+                    "user": "zucaritos",
+                    "time": "2/3/2026, 9:16:30 AM"
+                }
+            ],
+            "status": "nuevo"
         }
     ],
     "customer": [
@@ -370,6 +680,76 @@
             "clasificacion": "Gran contribuyente",
             "emails": [
                 "contacto@laconstancia.com"
+            ]
+        },
+        {
+            "nombre": "Cosco S.A. de C.V.",
+            "direccion": "Avenida bernal sobre calle arce",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "atencionalcliente@cosco.com"
+            ]
+        },
+        {
+            "nombre": "Lido S.A. de C.V.",
+            "direccion": "49 Avenida Norte y Av. Roosvelt",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "atencion@lido.com.sv"
+            ]
+        },
+        {
+            "nombre": "Polher S.A. de C.V.",
+            "direccion": "Avenida los bambues S.S.",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "polher@polher.com.sv"
+            ]
+        },
+        {
+            "nombre": "Corvera S.A. de C.V.",
+            "direccion": "Centro Urbano Buganvillas S.S.",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "atencionalcliente@corvera.com"
+            ]
+        },
+        {
+            "nombre": "Bimbo S.A. de C.V.",
+            "direccion": "Boulvard del ejercito Av.88",
+            "departamento": "San Salvador",
+            "municipio": "Soyapango",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "clientes@bimbo.com.sv"
+            ]
+        },
+        {
+            "nombre": "Levuni S.A. de C.V.",
+            "direccion": "San Salvador Centro",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "publico@levuni.com.sv"
+            ]
+        },
+        {
+            "nombre": "Panaderia San Antonio",
+            "direccion": "Entre calle arce y 13va calle pnte",
+            "departamento": "San Salvador",
+            "municipio": "San Salvador",
+            "clasificacion": "Gran contribuyente",
+            "emails": [
+                "panaderiasanantonio@p-sanantonio.com"
             ]
         }
     ],

@@ -598,11 +598,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const allNotes = JSON.parse(localStorage.getItem('notes') || '[]');
 
         // Audit Track: Track this print action
-        trackStatus(coa, 'impresion');
+        if (!coa.track) coa.track = [];
+        coa.track.push({
+            status: 'impresion',
+            user: currentUser || 'Anonimo',
+            time: new Date().toLocaleString()
+        });
+        // NOTE: We do NOT update coa.status to 'impresion'. It remains 'finalizado'.
+
         const coas = getData('coas');
         const idx = coas.findIndex(c => c.id === coa.id);
         if (idx !== -1) {
-            coas[idx] = coa; // Already has the new track entry
+            coas[idx] = coa;
             saveData('coas', coas);
         }
 
