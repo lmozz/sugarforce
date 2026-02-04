@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const stepsTableBody = document.getElementById('stepsTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -242,28 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // AI Chat Widget Logic
-    const openAiBtn = document.getElementById('openAiBtn');
-    const closeAiBtn = document.getElementById('closeAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
 
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            // Check if currently visible (flex)
-            const currentDisplay = window.getComputedStyle(aiChatWidget).display;
-            if (currentDisplay === 'flex') {
-                aiChatWidget.style.display = 'none';
-            } else {
-                aiChatWidget.style.display = 'flex';
-            }
-        });
-    }
-
-    if (closeAiBtn && aiChatWidget) {
-        closeAiBtn.addEventListener('click', () => {
-            aiChatWidget.style.display = 'none';
-        });
-    }
 
     // AI CRUD Handler
     // AI CRUD Handler - MODIFICADO// AI CRUD Handler - COMPLETO Y MEJORADO PARA MÚLTIPLES ACCIONES

@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const notesTableBody = document.getElementById('notesTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -299,15 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const openAiBtn = document.getElementById('openAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
 
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const currentDisplay = window.getComputedStyle(aiChatWidget).display;
-            aiChatWidget.style.display = currentDisplay === 'flex' ? 'none' : 'flex';
-        });
-    }
 
     // AI CRUD Handler - COMPLETO PARA NOTAS COA (con funcionalidad de orden)
     window.addEventListener('message', (event) => {

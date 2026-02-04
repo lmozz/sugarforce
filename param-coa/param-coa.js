@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const coaTableBody = document.getElementById('coaTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -247,27 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // AI Chat Widget Logic
-    const openAiBtn = document.getElementById('openAiBtn');
-    const closeAiBtn = document.getElementById('closeAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
 
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const currentDisplay = window.getComputedStyle(aiChatWidget).display;
-            if (currentDisplay === 'flex') {
-                aiChatWidget.style.display = 'none';
-            } else {
-                aiChatWidget.style.display = 'flex';
-            }
-        });
-    }
-
-    if (closeAiBtn && aiChatWidget) {
-        closeAiBtn.addEventListener('click', () => {
-            aiChatWidget.style.display = 'none';
-        });
-    }
 
     // AI CRUD Handler - COMPLETO PARA PARÁMETROS COA
     window.addEventListener('message', (event) => {

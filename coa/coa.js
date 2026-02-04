@@ -13,6 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const coaTableBody = document.getElementById('coaTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -796,14 +805,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const openAiBtn = document.getElementById('openAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const isVisible = window.getComputedStyle(aiChatWidget).display === 'flex';
-            aiChatWidget.style.display = isVisible ? 'none' : 'flex';
-        });
-    }
+
 
     // Initial Load
     renderTable();

@@ -1,26 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log("Módulo Pantallas: Iniciando Reparación Estructural V2...");
 
-    // --- ACTIVACIÓN INMEDIATA ASISTENTE IA ---
-    const aiBtn = document.getElementById('openAiBtn');
-    const aiWidget = document.getElementById('aiChatWidget');
-    if (aiBtn && aiWidget) {
-        console.log("IA Elements initialized.");
-        aiBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const isOpen = aiWidget.classList.contains('open');
-            if (isOpen) {
-                aiWidget.classList.remove('open');
-                aiWidget.style.display = 'none';
-            } else {
-                aiWidget.classList.add('open');
-                aiWidget.style.display = 'flex';
-            }
-            console.log("IA Toggle - Open:", !isOpen);
+    // --- AI Widget Activation ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
         });
-    } else {
-        console.error("Critical: IA elements NOT found!", { aiBtn, aiWidget });
     }
 
     // --- State ---

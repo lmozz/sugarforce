@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & Elements ---
     let isEditing = false;
     let currentTargetRow = null;
@@ -263,14 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('searchInput').addEventListener('keyup', (e) => renderTable(e.target.value));
 
-    // --- AI Widget Controls ---
-    const aiChatWidget = document.getElementById('aiChatWidget');
-    const openAiBtn = document.getElementById('openAiBtn');
-    if (openAiBtn) {
-        openAiBtn.addEventListener('click', () => {
-            aiChatWidget.style.display = aiChatWidget.style.display === 'flex' ? 'none' : 'flex';
-        });
-    }
+
 
     // AI CRUD Handler
     // AI CRUD Handler - MEJORADO PARA CLASIFICACIONES (maestro-detalle)

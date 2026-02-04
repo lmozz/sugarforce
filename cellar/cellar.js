@@ -12,6 +12,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     const cellarTableBody = document.getElementById('cellarTableBody');
     const searchInput = document.getElementById('searchInput');
     const addCellarBtn = document.getElementById('addCellarBtn');
@@ -172,14 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) logoutBtn.addEventListener('click', () => { if (confirm('¿Cerrar sesión?')) window.location.href = '../index.html'; });
 
-    const openAiBtn = document.getElementById('openAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const isVisible = window.getComputedStyle(aiChatWidget).display === 'flex';
-            aiChatWidget.style.display = isVisible ? 'none' : 'flex';
-        });
-    }
+
 
     // AI CRUD Handler
     // AI CRUD Handler - MEJORADO (igual que pasos.js)

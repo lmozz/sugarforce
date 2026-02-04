@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const productTableBody = document.getElementById('productTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -279,14 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (confirm('¿Cerrar sesión?')) window.location.href = '../index.html';
     });
 
-    const openAiBtn = document.getElementById('openAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const isVisible = window.getComputedStyle(aiChatWidget).display === 'flex';
-            aiChatWidget.style.display = isVisible ? 'none' : 'flex';
-        });
-    }
+
 
     // AI CRUD Handler - COMPLETO PARA PRODUCTOS (con validación de presentaciones)
     window.addEventListener('message', (event) => {

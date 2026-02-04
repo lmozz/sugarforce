@@ -15,6 +15,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- AI Widget Activation (Immediate) ---
+    const openAiBtn = document.getElementById('openAiBtn');
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
     // --- State & DOM Elements ---
     const clientTableBody = document.getElementById('clientTableBody');
     const searchInput = document.getElementById('searchInput');
@@ -306,20 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- AI Chat Widget Logic ---
-    const openAiBtn = document.getElementById('openAiBtn');
-    const aiChatWidget = document.getElementById('aiChatWidget');
 
-    if (openAiBtn && aiChatWidget) {
-        openAiBtn.addEventListener('click', () => {
-            const currentDisplay = window.getComputedStyle(aiChatWidget).display;
-            if (currentDisplay === 'flex') {
-                aiChatWidget.style.display = 'none';
-            } else {
-                aiChatWidget.style.display = 'flex';
-            }
-        });
-    }
 
     // AI CRUD Handler - COMPLETO PARA CLIENTES
     window.addEventListener('message', (event) => {

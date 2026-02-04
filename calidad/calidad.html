@@ -169,34 +169,7 @@
     <script src="../coa/flatpickr.js"></script>
     <script src="../coa/es.js"></script>
     <script src="calidad.js"></script>
-    <script>
-        // Inline script to handle sidebar toggle and AI widget
-        document.addEventListener('DOMContentLoaded', () => {
-            const openMenuBtn = document.getElementById('openMenuBtn');
-            const closeMenuBtn = document.getElementById('closeMenuBtn');
-            const sidebar = document.getElementById('sidebar');
-            const openAiBtn = document.getElementById('openAiBtn');
-            const aiChatWidget = document.getElementById('aiChatWidget');
-            const logoutBtn = document.getElementById('logoutBtn');
 
-            if (openMenuBtn) openMenuBtn.addEventListener('click', () => sidebar.classList.add('active'));
-            if (closeMenuBtn) closeMenuBtn.addEventListener('click', () => sidebar.classList.remove('active'));
-
-            if (openAiBtn && aiChatWidget) {
-                openAiBtn.addEventListener('click', () => {
-                    aiChatWidget.classList.toggle('open');
-                });
-            }
-
-            // Logout Logic
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    localStorage.removeItem('currentUser');
-                    window.location.href = '../index.html';
-                });
-            }
-        });
-    </script>
 </body>
 
 </html>
