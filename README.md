@@ -28,9 +28,9 @@ El proyecto se divide en tres bloques fundamentales, cada uno atendiendo necesid
 
 ---
 
-## 🤖 Zucaron IA: El Corazón del Sistema
+## 🤖 Azucarillo: El Corazón del Sistema
 
-Todos los módulos de SugarForce cuentan con integración de Inteligencia Artificial mediante **Zucaron IA**.
+Todos los módulos de SugarForce cuentan con integración de Inteligencia Artificial mediante **Azucarillo**.
 
 *   **Capacidades:**
     *   **Consulta:** Análisis y búsqueda inteligente de información dentro de los módulos.

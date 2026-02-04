@@ -22,10 +22,9 @@
                 <button class="close-menu-btn" id="closeMenuBtn">&times;</button>
             </div>
             <ul>
-                <li><a href="../pantallas/pantallas.html">Pantallas</a></li>
-                <li><a href="../procesos/procesos.html">Procesos</a></li>
-                <li><a href="../coa/coa.html">Certificados COA</a></li>
-                <li><a href="#" class="active">Calidad</a></li> <!-- New Module -->
+                <li><a href="../pantallas/pantallas.html">Recursos Humanos</a></li>
+                <li><a href="../procesos/procesos.html">Marcas / Clientes</a></li>
+                <li><a href="../calidad/calidad.html" class="active">Calidad</a></li> <!-- New Module -->
                 <li>
                     <details>
                         <summary style="padding: 10px; cursor: pointer; font-weight: 500; color: #1a73e8;">
@@ -58,7 +57,7 @@
             <header class="header-bar">
                 <div class="header-left">
                     <button class="menu-btn" id="openMenuBtn">☰</button>
-                    <div class="header-title">Control de Calidad</div>
+                    <div class="header-title">Registro de Inspecciones</div>
                 </div>
                 <div class="search-container">
                     <input type="text" id="searchInput" class="search-input" placeholder="Buscar calidad...">
@@ -94,6 +93,8 @@
         </div>
 
         <!-- FAB Buttons -->
+        <button class="fab fab-ai" style="right: 200px; background: crimson;"
+            onclick="window.location.href = '../coa/coa.html'">COA</button>
         <button class="fab fab-ai" id="openAiBtn" style="right: 120px; background: #4caf50;">IA</button>
         <button class="fab" id="addCalidadBtn">+</button>
     </div>
