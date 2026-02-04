@@ -282,3 +282,47 @@ body.dark-mode .message-content pre {
     font-family: monospace;
     font-size: 0.9em;
 }
+
+/* New Image Styles */
+.header-ai-img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px;
+}
+
+.welcome-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.welcome-ai-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    animation: floating 3s ease-in-out infinite;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes floating {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+body.dark-mode .welcome-ai-img {
+    filter: drop-shadow(0 5px 15px rgba(255, 255, 255, 0.1));
+}

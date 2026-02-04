@@ -13,12 +13,13 @@
 </head>
 
 <body>
-    <!-- Background is handled by body in style.css -->
-
     <div class="chat-wrapper">
         <div class="glass-chat-container">
             <div class="chat-header">
-                <h2>Azucarillo</h2>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2>Azucarillo</h2>
+                    <img src="../imgs/img-ia.png" alt="Azucarillo Logo" class="header-ai-img">
+                </div>
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <div id="statusIndicator" class="status-indicator">Iniciando...</div>
                     <button onclick="window.location.reload()" class="clear-btn">Limpiar</button>
@@ -26,6 +27,9 @@
             </div>
 
             <div class="chat-messages" id="chatHistory">
+                <div class="welcome-container">
+                    <img src="../imgs/img-ia.png" alt="Azucarillo" class="welcome-ai-img">
+                </div>
                 <!-- Messages will appear here -->
                 <div class="message ai">
                     <div class="message-content">
