@@ -16,6 +16,67 @@ document.addEventListener('DOMContentLoaded', () => {
     const noDataState = document.getElementById('noDataState');
     const searchInput = document.getElementById('searchInput');
 
+    // --- AI Widget Activation (Immediate) ---
+    const aiChatWidget = document.getElementById('aiChatWidget');
+    const openAiBtn = document.getElementById('openAiBtn');
+    if (openAiBtn && aiChatWidget) {
+        openAiBtn.addEventListener('click', () => {
+            aiChatWidget.classList.toggle('open');
+        });
+    }
+
+    // AI Message Handler
+    window.addEventListener('message', (event) => {
+        if (!event.data || !event.data.action) return;
+        const { action, data } = event.data;
+
+        let processes = getData();
+        let message = "";
+
+        switch (action) {
+            case 'createProcess':
+                let imgFile = data.image;
+                if (!imgFile) {
+                    const list = data.type === 'cliente' ? CLIENT_IMAGES : BRAND_IMAGES;
+                    imgFile = list.find(f => f.toLowerCase().includes(data.name.toLowerCase())) || list[0];
+                }
+
+                processes.push({
+                    id: Date.now().toString(),
+                    name: data.name,
+                    type: data.type.toLowerCase(),
+                    image: imgFile
+                });
+                message = `Procesado: "${data.name}" creado.`;
+                break;
+
+            case 'filterProcess':
+                searchInput.value = data.query;
+                renderProcesses(data.query);
+                message = `Filtrando por "${data.query}".`;
+                break;
+
+            case 'setTheme':
+                if (data.theme === 'dark') document.body.classList.add('dark-mode');
+                else document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', data.theme);
+                message = `Tema cambiado a ${data.theme}.`;
+                break;
+
+            case 'logout':
+                localStorage.removeItem('currentUser');
+                window.location.href = '../index.html';
+                return;
+        }
+
+        saveData(processes);
+        renderProcesses(searchInput.value);
+
+        if (event.source) {
+            event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
+        }
+    });
+
     // Modal Elements
     const processModal = document.getElementById('processModal');
     const processForm = document.getElementById('processForm');
@@ -1072,67 +1133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchInput.addEventListener('keyup', (e) => renderProcesses(e.target.value));
 
-    // --- AI Widget ---
-    const aiChatWidget = document.getElementById('aiChatWidget');
-    document.getElementById('openAiBtn')?.addEventListener('click', () => {
-        aiChatWidget.style.display = aiChatWidget.style.display === 'flex' ? 'none' : 'flex';
-    });
 
-    // AI Message Handler
-    window.addEventListener('message', (event) => {
-        const { action, data } = event.data;
-        if (!action || !data) return;
-
-        let processes = getData();
-        let message = "";
-
-        switch (action) {
-            case 'createProcess':
-                // Check if image exists in registry
-                let imgFile = data.image; // Assume AI sends exact filename or closest match logic could go here
-
-                // If AI doesn't send specific file, try to match by name or default
-                if (!imgFile) {
-                    const list = data.type === 'cliente' ? CLIENT_IMAGES : BRAND_IMAGES;
-                    // Simple heuristic: try to find substring match or pick random
-                    imgFile = list.find(f => f.toLowerCase().includes(data.name.toLowerCase())) || list[0];
-                }
-
-                processes.push({
-                    id: Date.now().toString(),
-                    name: data.name,
-                    type: data.type.toLowerCase(), // 'cliente' or 'marca'
-                    image: imgFile
-                });
-                message = `Proceso "${data.name}" creado.`;
-                break;
-
-            case 'filterProcess':
-                searchInput.value = data.query;
-                renderProcesses(data.query);
-                message = `Filtrando por "${data.query}".`;
-                break;
-
-            case 'setTheme': // Global action
-                if (data.theme === 'dark') document.body.classList.add('dark-mode');
-                else document.body.classList.remove('dark-mode');
-                localStorage.setItem('theme', data.theme);
-                message = `Tema cambiado a ${data.theme}.`;
-                break;
-
-            case 'logout': // Global action
-                localStorage.removeItem('currentUser');
-                window.location.href = '../index.html';
-                return;
-        }
-
-        saveData(processes);
-        renderProcesses(searchInput.value);
-
-        if (event.source) {
-            event.source.postMessage({ type: 'ai-feedback', message }, event.origin);
-        }
-    });
 
     // Initial Render
     renderProcesses();

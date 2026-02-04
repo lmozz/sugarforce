@@ -470,6 +470,7 @@ body.dark-mode .search-input:focus {
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
+
 }
 
 body.dark-mode .table-container {
@@ -1140,7 +1141,8 @@ body.dark-mode #tfaMessage {
     -webkit-backdrop-filter: blur(20px);
     border-radius: 24px;
     box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
-    display: none; /* Keep display:none by default if needed, but flex when open */
+    display: none;
+    /* Keep display:none by default if needed, but flex when open */
     flex-direction: column;
     overflow: hidden;
     z-index: 100000;
