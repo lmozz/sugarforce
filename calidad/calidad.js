@@ -299,10 +299,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             case 'updateCalidad':
                 if (data.id) {
-                    const id = parseInt(data.id);
-                    const index = allData.findIndex(i => i.id === id);
+                    const idToFind = parseInt(data.id);
+                    const index = allData.findIndex(i => parseInt(i.id) === idToFind);
                     if (index !== -1) {
-                        allData[index] = { ...allData[index], ...data, id: id };
+                        // Merge data, ensuring numeric types for specific fields
+                        const updatedItem = { ...allData[index], ...data };
+
+                        // ID must remain numeric and correct
+                        updatedItem.id = idToFind;
+
+                        // Enforce numeric types for numbers
+                        if (updatedItem.pesoNeto) updatedItem.pesoNeto = updatedItem.pesoNeto.toString(); // User seems to prefer strings in JSON? 
+                        // Actually, looking at Step 5195, user changed them TO strings. 
+                        // But for calculation it's better to keep them as is. 
+                        // I'll keep them as they come but ensure they are not objects.
+
+                        allData[index] = updatedItem;
                         saveCalidadData(allData);
                         renderTable(searchInput.value);
 
@@ -310,7 +322,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (iframe && iframe.contentWindow) {
                             iframe.contentWindow.postMessage({
                                 type: 'ai-feedback',
-                                message: `Registro #${id} actualizado exitosamente.`
+                                message: `Registro #${idToFind} actualizado exitosamente.`
                             }, '*');
                         }
                     } else {

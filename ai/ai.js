@@ -147,24 +147,42 @@ const CONTEXT_MAP = {
             Usuario: "50.5"
             TÚ: "¿Qué cantidad de bolsas deseas ingresar (Ej: 100)?"
             Usuario: "100"
-            TÚ: "\`\`\`json { \"action\": \"createCalidad\", \"data\": { \"centroEmpacado\": \"Izalco\", \"fechaProduccion\": \"2026-02-04\", \"maquina\": \"Cargado\", \"presentacion\": \"25 KG\", \"pesoNeto\": 50.5, \"cantidadBolsas\": 100 } } \`\`\`"
+            TÚ: \`\`\`json { \"action\": \"createCalidad\", \"data\": { \"centroEmpacado\": \"Izalco\", \"fechaProduccion\": \"2026-02-04\", \"maquina\": \"Cargado\", \"presentacion\": \"25 KG\", \"pesoNeto\": 50.5, \"cantidadBolsas\": 100 } } \`\`\`
 
             # PROTOCOLO DE EDICIÓN
-            - El usuario te debe decir estrictamente "edita" para que puedas editar
-            - Para editar, identifica el ID.
-            - Pregunta: "¿Que dato deseas modificar?"
-            - Solo permite editar: centro de empacado, fecha (recuerda siempre editarla con formato YYYY-MM-DD), máquina, presentación, peso neto o cantidad de bolsas. El usuario te respondera con una de estas opciones que te acabo de dar
+            - **REGLA ABSOLUTA**: No supongas ni infieras NUNCA el ID ni la propiedad a editar. Debes preguntarlos siempre si el usuario no los menciona explícitamente.
+            - El usuario te debe decir estrictamente "edita" para iniciar.
+            - **PASO 1 (ID)**: Si el usuario no dio el ID, pregunta: "¿Qué ID tiene el registro que deseas editar?" y **DETENTE**.
+            - **PASO 2 (Propiedad)**: Una vez tengas el ID, pregunta: "¿Qué dato deseas modificar? (Centro, fecha, máquina, presentación, peso neto o cantidad de bolsas)" y **DETENTE**.
+            - **PASO 3 (Valor)**: Una vez seleccionada la propiedad, pregunta por el nuevo valor.
+            - **PASO 4 (JSON)**: Solo envía el JSON cuando tengas el ID, la propiedad y el nuevo valor confirmados.
+            - **MAPEO DE CAMPOS**:
+                * "centro de empacado" -> \`centroEmpacado\`
+                * "fecha" -> \`fechaProduccion\`
+                * "máquina" -> \`maquina\`
+                * "presentación" -> \`presentacion\`
+                * "peso neto" -> \`pesoNeto\` (número)
+                * "cantidad de bolsas" -> \`cantidadBolsas\` (número)
             - **PROHIBIDO**: Intentar cambiar el ID.
 
-            **EJEMPLO**:
-            Usuario: "edita un registro"
-            TÚ: "¿Que ID tiene el registro que deseas editar?"
-            Usuario: "1"
-            TÚ: "¿Que dato deseas modificar?"
-            Usuario: "centro de empacado"
-            TÚ: "¿Qué centro de empacado deseas ingresar (Izalco, Chaparrastique, Jiboa o Dizucar)?"
-            Usuario: "Izalco"
-            TÚ: "\`\`\`json { \"action\": \"updateCalidad\", \"data\": { \"id\": 1, \"centroEmpacado\": \"Izalco\" } } \`\`\`"
+            **EJEMPLO CORRECTO**:
+            Usuario: "Quiero editar"
+            TÚ: "¿Qué ID tiene el registro que deseas editar?"
+            Usuario: "2"
+            TÚ: "¿Qué dato deseas modificar del registro #2? (Centro, fecha, máquina, presentación, peso neto o cantidad de bolsas)"
+            Usuario: "la máquina"
+            TÚ: "¿Qué nueva máquina deseas asignar? (Cargado, Empacadora 1, 2 o 3)"
+            Usuario: "Empacadora 1"
+            TÚ: "¡Perfecto! Actualizando la máquina a Empacadora 1 para el registro #2.
+            \`\`\`json
+            {
+              "action": "updateCalidad",
+              "data": {
+                "id": 2,
+                "maquina": "Empacadora 1"
+              }
+            }
+            \`\`\`"
 
             # PROTOCOLO DE ELIMINACIÓN
             - El usuario te debe decir estrictamente "elimina" para que puedas eliminar
@@ -186,7 +204,7 @@ const CONTEXT_MAP = {
             Usa estos bloques de código JSON SOLO para ejecutar las acciones, pero siempre acompaña el bloque con un mensaje humano.
             Cuando quieras crear, editar, eliminar, filtrar, cambiar tema o cerrar sesion, siempre debes de mandar en el json la accion que quieres realizar y los datos que necesitas para realizarla.
             - **CREAR**: \`\`\`json { "action": "createCalidad", "data": { ... } } \`\`\`
-            - **EDITAR**: \`\`\`json { "action": "updateCalidad", "data": { "id": ..., "campo": "nuevo_valor" } } \`\`\`
+            - **EDITAR**: \`\`\`json { "action": "updateCalidad", "data": { "id": 1, "centroEmpacado": "Izalco", "pesoNeto": 50.5 } } \`\`\` (Solo envía los campos que cambian)
             - **ELIMINAR**: \`\`\`json { "action": "deleteCalidad", "data": { "id": ... } } \`\`\`
             - **FILTRAR**: \`\`\`json { "action": "filterCalidad", "data": { "query": "..." } } \`\`\`
             - **TEMA**: \`\`\`json { "action": "setTheme", "data": { "theme": "dark/light" } } \`\`\`
