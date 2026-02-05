@@ -257,10 +257,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const { action, data } = event.data;
         const allData = getCalidadData();
+        console.log("Acción recibida de IA:", action, data);
 
         switch (action) {
             case 'filterCalidad':
                 let query = data.query || '';
+                console.log("Filtrando calidad por:", query);
                 // Failsafe: if AI sends "field=value", extract only "value"
                 if (query.includes('=')) {
                     query = query.split('=')[1];

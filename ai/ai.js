@@ -190,25 +190,27 @@ const CONTEXT_MAP = {
             - Confirma siempre antes de enviar la acción de eliminar.
 
             # PROTOCOLO DE FILTRADO
-            - El usuario te debe decir estrictamente "filtra" o "busca" para que puedas filtrar
+            - El usuario te debe decir estrictamente "filtra" o "busca" para que puedas filtrar la tabla.
             - En "query" envía SOLO el valor a buscar (Ej: "Izalco").
-            - NO pongas el nombre de la propiedad (Ej: NO pongas "maquina=Jiboa"). solo debes colocar el valor que se quiere filtrar
-            - El usuario te puede decir "borra el filtro"  o "borra la busqueda"en "query" envia el valor en vacio para que borres el filtro
+            - NO pongas el nombre de la propiedad (Ej: NO pongas "maquina=Jiboa"). Solo el valor.
+            - Para "borra el filtro", envía query vacía "".
 
-            # PROTOCOLO DE CONSULTA
-            - El usuario te debe decir estrictamente "consulta" para que puedas consultar
-            - el usuario ya no te dira filtra, sino que consultes la informacion del JSON de DATOS ACTUALES (calidad) tu debes leerlo y responderle con detalles. El usuario te podria preguntar: Que calidad tiene el mayor numero de sacos ? tu consultarias el json y se lo responderias, ejemplo: la mayor cantidad de sacos lo tiene la maquina empacadora 1 del centro de empacado izalco con 569 bolsas.
-            - te podria preguntar otros parametros solo debes responder con naturalidad
+            # PROTOCOLO DE CONSULTA (LECTURA DE DATOS)
+            - **REGLA DE ORO**: Cuando el usuario te haga preguntas sobre los registros (ej: "¿Cuál pesa menos?", "¿Cuántos sacos hay?", "Dame resumen de Izalco"), **NO ENVÍES NINGÚN BLOQUE JSON**.
+            - Responde usando los "DATOS ACTUALES" que te han sido proporcionados por el sistema automáticamente.
+            - Tu respuesta debe ser natural, humana y detallada basada estrictamente en los datos que ves.
+            - Ejemplo: "Analizando los datos, la inspección con menos peso neto es el registro #1 de Izalco, con 45.8 KG."
 
-            # ACCIONES DISPONIBLES
-            Usa estos bloques de código JSON SOLO para ejecutar las acciones, pero siempre acompaña el bloque con un mensaje humano.
-            Cuando quieras crear, editar, eliminar, filtrar, cambiar tema o cerrar sesion, siempre debes de mandar en el json la accion que quieres realizar y los datos que necesitas para realizarla.
-            - **CREAR**: \`\`\`json { "action": "createCalidad", "data": { ... } } \`\`\`
-            - **EDITAR**: \`\`\`json { "action": "updateCalidad", "data": { "id": 1, "centroEmpacado": "Izalco", "pesoNeto": 50.5 } } \`\`\` (Solo envía los campos que cambian)
-            - **ELIMINAR**: \`\`\`json { "action": "deleteCalidad", "data": { "id": ... } } \`\`\`
-            - **FILTRAR**: \`\`\`json { "action": "filterCalidad", "data": { "query": "..." } } \`\`\`
-            - **TEMA**: \`\`\`json { "action": "setTheme", "data": { "theme": "dark/light" } } \`\`\`
-            - **LOGOUT**: \`\`\`json { "action": "logout", "data": {} } \`\`\`
+            # ACCIONES TÉCNICAS (ÚNICAS QUE REQUIEREN JSON)
+            Solo envía bloques JSON para estas 6 acciones. Cualquier otra cosa es conversación natural:
+            1. \`createCalidad\`: Crear nuevo.
+            2. \`updateCalidad\`: Editar existente.
+            3. \`deleteCalidad\`: Eliminar (borrar).
+            4. \`filterCalidad\`: Aplicar filtro/búsqueda física en la tabla.
+            5. \`setTheme\`: Cambiar tema.
+            6. \`logout\`: Cerrar sesión.
+
+            **PROHIBIDO**: Inventar acciones como "consulta" o "ver" en JSON. Para eso usa tus palabras y los datos que ya tienes. No pidas permiso para leer los datos, ya los tienes.
         `
     },
     'coa': {
@@ -1621,16 +1623,16 @@ const CONTEXT_MAP = {
 
 const GLOBAL_AI_INSTRUCTIONS = `
 ### INSTRUCCIONES CRÍTICAS DE ACCIONES:
-Para realizar cualquier acción técnica, DEBES generar un bloque de código JSON válido. No confirmes que la acción se ha realizado 
-hasta que el sistema te devuelva un mensaje de confirmación (vía "ai-feedback").
+- **REGLA DE ORO DE ENVÍO**: Envía CUALQUIER bloque JSON exactamente **UNA VEZ** por respuesta. No lo repitas "para mostrar" y luego "para procesar". Solo una vez al final o donde corresponda.
+- Para realizar cualquier acción técnica, DEBES generar un bloque de código JSON válido. 
+- No confirmes que la acción se ha realizado hasta que el sistema te devuelva un mensaje de confirmación (vía "ai-feedback").
+- Si envías el bloque JSON, el sistema lo ejecutará automáticamente. No necesitas decir "Estoy procesando..." con otro bloque igual abajo.
 
 **Acciones Globales Disponibles:**
 1. **Cambiar Tema**: 
    - Comando: \`\`\`json { "action": "setTheme", "data": { "theme": "dark" } }\`\`\` (o "light")
-   - Nota: Usa el contexto del tema actual para decidir si no se especifica.
 2. **Cerrar Sesión**: 
    - Comando: \`\`\`json { "action": "logout", "data": {} }\`\`\`
-   - Nota: Pregunta siempre si el usuario está seguro antes de ejecutar.
 `;
 
 // Initialize AI
@@ -1776,10 +1778,13 @@ async function sendMessage() {
 
         // Primero encontrar todos los bloques
         while ((match = jsonBlockRegex.exec(fullResponse)) !== null) {
-            allJsonBlocks.push(match[1].trim());
+            const block = match[1].trim();
+            if (!allJsonBlocks.includes(block)) {
+                allJsonBlocks.push(block);
+            }
         }
 
-        console.log("Bloques JSON encontrados:", allJsonBlocks);
+        console.log("Bloques JSON encontrados (deduplicados):", allJsonBlocks);
 
         // Método 2: Si no encontró bloques con ```json, buscar objetos JSON sueltos
         if (allJsonBlocks.length === 0) {
@@ -1787,10 +1792,11 @@ async function sendMessage() {
             const jsonObjects = fullResponse.match(/\{[^{}]*\}(?=\s*\{[^{}]*\})*/g);
             if (jsonObjects) {
                 jsonObjects.forEach(obj => {
-                    // Verificar que sea un objeto JSON válido (empieza con { y termina con })
                     const trimmed = obj.trim();
                     if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
-                        allJsonBlocks.push(trimmed);
+                        if (!allJsonBlocks.includes(trimmed)) {
+                            allJsonBlocks.push(trimmed);
+                        }
                     }
                 });
             }
