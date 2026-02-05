@@ -220,12 +220,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const id = parseInt(calidadIdInput.value);
             const index = data.findIndex(i => i.id === id);
             if (index !== -1) {
-                data[index] = { ...data[index], ...newItem, id: id }; // Keep ID
+                // Ensure numeric types for numbers
+                const peso = parseFloat(newItem.pesoNeto) || 0;
+                const bolsas = parseInt(newItem.cantidadBolsas) || 0;
+                data[index] = { ...data[index], ...newItem, id: id, pesoNeto: peso, cantidadBolsas: bolsas };
             }
         } else {
             // Generar ID único incremental
             const maxId = data.reduce((max, item) => Math.max(max, parseInt(item.id || 0)), 0);
             newItem.id = maxId + 1;
+            // Ensure numeric types
+            newItem.pesoNeto = parseFloat(newItem.pesoNeto) || 0;
+            newItem.cantidadBolsas = parseInt(newItem.cantidadBolsas) || 0;
             data.push(newItem);
         }
 
@@ -280,8 +286,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         fechaProduccion: data.fechaProduccion || new Date().toISOString().split('T')[0],
                         maquina: data.maquina || 'Cargado',
                         presentacion: data.presentacion || '25 KG',
-                        pesoNeto: data.pesoNeto || 0,
-                        cantidadBolsas: data.cantidadBolsas || 0,
+                        pesoNeto: parseFloat(data.pesoNeto) || 0,
+                        cantidadBolsas: parseInt(data.cantidadBolsas) || 0,
                         usuario: currentUser || 'IA Assistant'
                     };
                     allData.push(newItem);

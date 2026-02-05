@@ -1635,6 +1635,25 @@ const GLOBAL_AI_INSTRUCTIONS = `
    - Comando: \`\`\`json { "action": "logout", "data": {} }\`\`\`
 `;
 
+// Helper to format JSON data as a Markdown table (better for Gemini Nano reasoning)
+function formatDataAsTable(data) {
+    try {
+        const parsed = typeof data === 'string' ? JSON.parse(data) : data;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            const headers = Object.keys(parsed[0]);
+            let table = `| ${headers.join(' | ')} |\n`;
+            table += `| ${headers.map(() => '---').join(' | ')} |\n`;
+            parsed.forEach(row => {
+                table += `| ${headers.map(h => row[h]).join(' | ')} |\n`;
+            });
+            return table;
+        }
+        return JSON.stringify(data);
+    } catch (e) {
+        return data;
+    }
+}
+
 // Initialize AI
 async function init() {
     try {
@@ -1675,9 +1694,10 @@ async function init() {
                 let combinedData = "";
 
                 keys.forEach(key => {
-                    const data = localStorage.getItem(key) || '[]';
-                    if (data !== '[]') {
-                        combinedData += `\n\n--- DATOS ACTUALES (${key}) ---\n${data}\n`;
+                    const rawData = localStorage.getItem(key) || '[]';
+                    if (rawData !== '[]') {
+                        const tableData = formatDataAsTable(rawData);
+                        combinedData += `\n\n--- DATOS ACTUALES (${key}) ---\n${tableData}\n`;
                     } else {
                         combinedData += `\n\n(No se encontró información en localStorage para la clave "${key}").\n`;
                     }
@@ -1936,19 +1956,22 @@ window.addEventListener('message', async (event) => {
         const { context, data } = event.data;
         console.log(`Contexto recibido para ${context}:`, data);
 
+        // Convert JSON to a Markdown Table for better AI reasoning
+        const tableData = formatDataAsTable(data);
+        let contextMessage = `[SISTEMA: Los datos actuales de ${context} son:\n\n${tableData}\n\nNo respondas a este mensaje, solo úsalo como referencia exacta para futuras preguntas.]`;
+
         // Inject as a system-like message to the AI session if it exists
         if (session) {
             try {
-                const contextStr = JSON.stringify(data);
-                await session.prompt(`[SISTEMA: Los datos actuales de ${context} son: ${contextStr}. No respondas a este mensaje, solo úsalo como referencia para futuras preguntas del usuario.]`);
-                console.log("Contexto inyectado en la sesión de IA");
+                await session.prompt(contextMessage);
+                console.log("Contexto tabular inyectado en la sesión de IA");
             } catch (err) {
                 console.warn("No se pudo inyectar contexto en la sesión activa:", err);
             }
         } else {
             // Store it for next init
             window._pendingContext = window._pendingContext || {};
-            window._pendingContext[context] = data;
+            window._pendingContext[context] = contextMessage;
         }
     }
 
